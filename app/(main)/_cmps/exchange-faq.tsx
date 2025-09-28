@@ -18,7 +18,7 @@ const faqData = [
       "You can track crypto prices through our real-time market data, price charts, and mobile app notifications. We provide 24/7 price monitoring, technical indicators, trading volume data, and customizable alerts for your favorite cryptocurrencies.",
   },
   {
-    question: "How to trade cryptocurrencies on Block.trading",
+    question: "How to trade cryptocurrencies on Blockechange",
     answer:
       "Start by creating and verifying your account, then deposit funds via bank transfer or crypto. Navigate to the trading interface, select your desired trading pair, choose between market or limit orders, and execute your trades with our advanced trading tools.",
   },
