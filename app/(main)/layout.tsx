@@ -11,7 +11,7 @@ export default function layout({
       <Header />
       <div className="min-h-screen bg-background">
         {children}
-        <UserChat />
+        {/* <UserChat /> */}
         <div className="h-16 md:hidden" />
       </div>
     </>
