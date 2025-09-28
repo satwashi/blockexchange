@@ -31,7 +31,8 @@ export const metadata: Metadata = {
       "Blockechange is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.",
     images: [
       {
-        url: "/og-image.png", // served from /public
+        // ✅ absolute URL
+        url: "https://www.blockechange.com/og-image.png",
         width: 1200,
         height: 630,
         alt: "Blockechange logo",
@@ -43,7 +44,7 @@ export const metadata: Metadata = {
     title: "Blockechange – Secure & Simple Digital Asset Exchange",
     description:
       "Blockechange is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.",
-    images: ["/og-image.png"],
+    images: ["https://www.blockechange.com/og-image.png"], // ✅ absolute URL
   },
 };
 
