@@ -15,7 +15,7 @@ import Logo from "../shared/header/logo";
 import Link from "next/link";
 import { signIn } from "@/utils/auth-client";
 import { TelegramLogin } from "./telegram-login";
-import { signInServer } from "@/server/user/users";
+// import { signInServer } from "@/server/user/users";
 import GoogleLoging from "./google-loging";
 
 export function LoginForm({
@@ -25,7 +25,7 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Your own email/password sign-in logic
-    await signInServer();
+    // await signInServer();
   };
 
   return (
