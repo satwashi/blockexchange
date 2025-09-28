@@ -2,12 +2,15 @@
 
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
 import supabase from "@/lib/client";
 import getUserWallets from "@/server/wallets/get-user-wallets";
+import { decimalAdd, decimalMul } from "@/utils/crypto/arthimetic";
+import useCoins from "../coins/use-coins";
+import Decimal from "decimal.js";
 
 export const useUserWallets = (userId: string) => {
   const queryClient = useQueryClient();
+  const { coins } = useCoins(); // all live coin data
 
   const {
     data: wallets,
@@ -29,10 +32,10 @@ export const useUserWallets = (userId: string) => {
           event: "*",
           schema: "public",
           table: "wallets",
-          filter: `user_id=eq.${userId}`, // only listen for this user
+          filter: `user_id=eq.${userId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ["wallets", userId] });
+          queryClient.invalidateQueries({ queryKey: ["user_wallets", userId] });
         }
       )
       .subscribe();
@@ -44,22 +47,22 @@ export const useUserWallets = (userId: string) => {
 
   const walletList = wallets ?? [];
 
-  const mockPrices: Record<string, number> = {
-    BTC: 42750.0,
-    ETH: 2580.5,
-    USDT: 1.0,
-    ADA: 0.485,
-    SOL: 98.75,
-  };
+  // ✅ Map symbols to their current USDT price
+  const priceMap: Record<string, number> = {};
+  coins?.forEach((c) => {
+    priceMap[c.symbol.toUpperCase()] = c.price; // e.g. { BTC: 42000, ETH: ... }
+  });
 
-  const totalBalance = walletList.reduce((sum, wallet) => {
-    console.log(wallet.wallet_type);
-    const price = mockPrices[wallet.wallet_type] || 0;
-    return sum + wallet.balance * price;
-  }, 0);
+  // ✅ Compute total balance with Decimal.js
+  const totalBalance = walletList
+    .reduce((sum, wallet) => {
+      const price = priceMap[wallet.wallet_type.toUpperCase()] || 0;
+      return decimalAdd(sum, decimalMul(wallet.balance, price));
+    }, new Decimal(0))
+    .toNumber();
 
   const totalChange24h = walletList.length
-    ? walletList.reduce((sum, wallet) => sum + (wallet?.change24h || 0), 0) /
+    ? walletList.reduce((s, w) => s + (w?.change24h || 0), 0) /
       walletList.length
     : 0;
 

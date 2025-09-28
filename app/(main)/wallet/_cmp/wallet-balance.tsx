@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useUserWallets } from "@/queries/wallets/use-user-wallets";
 import { TrendingUp, Wallet } from "lucide-react";
+import { WalletBalanceSkeleton } from "./skeletons/wallet-balance";
 
 interface WalletBalanceProps {
   userId: string;
@@ -10,7 +11,7 @@ export const WalletBalance = ({ userId }: WalletBalanceProps) => {
   const { totalBalance, totalAssets, totalChange24h, isLoading, error } =
     useUserWallets(userId);
 
-  if (isLoading) return <>Loading</>;
+  if (isLoading) return <WalletBalanceSkeleton />;
   if (error) return <>Error</>;
 
   const formatCurrency = (amount: number) => {
