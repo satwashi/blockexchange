@@ -2,15 +2,15 @@
 
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Decimal from "decimal.js";
 import supabase from "@/lib/client";
 import getUserWallets from "@/server/wallets/get-user-wallets";
-import { decimalAdd, decimalMul } from "@/utils/crypto/arthimetic";
 import useCoins from "../coins/use-coins";
-import Decimal from "decimal.js";
+import { decimalAdd, decimalMul } from "@/utils/crypto/arthimetic";
 
 export const useUserWallets = (userId: string) => {
   const queryClient = useQueryClient();
-  const { coins } = useCoins(); // all live coin data
+  const { coins } = useCoins();
 
   const {
     data: wallets,
@@ -23,7 +23,6 @@ export const useUserWallets = (userId: string) => {
 
   useEffect(() => {
     if (!userId) return;
-
     const channel = supabase
       .channel("wallets-realtime")
       .on(
@@ -39,40 +38,57 @@ export const useUserWallets = (userId: string) => {
         }
       )
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => supabase.removeChannel(channel);
   }, [userId, queryClient]);
 
   const walletList = wallets ?? [];
 
-  // ✅ Map symbols to their current USDT price
-  const priceMap: Record<string, number> = {};
-  coins?.forEach((c) => {
-    priceMap[c.symbol.toUpperCase()] = c.price; // e.g. { BTC: 42000, ETH: ... }
+  // build a lookup of symbol -> coin data
+  const coinMap: Record<string, (typeof coins)[number]> = {};
+  coins?.forEach((c) => (coinMap[c.symbol.toUpperCase()] = c));
+
+  let totalCurrent = new Decimal(0);
+  let totalPrev24h = new Decimal(0);
+
+  // ✅ attach change24h % to each wallet
+  const walletsWithChange = walletList.map((wallet) => {
+    const coin = coinMap[wallet.wallet_type.toUpperCase()];
+    if (!coin) return { ...wallet, change24h: 0 };
+
+    const priceNow = new Decimal(coin.price);
+    const valueNow = decimalMul(wallet.balance, priceNow);
+    totalCurrent = decimalAdd(totalCurrent, valueNow);
+
+    // value 24h ago = current value / (1 + change24h/100)
+    const value24hAgo = valueNow.div(
+      new Decimal(1).add(new Decimal(coin.change24h).div(100))
+    );
+    totalPrev24h = decimalAdd(totalPrev24h, value24hAgo);
+
+    // wallet’s own % change
+    const walletChange24h = value24hAgo.gt(0)
+      ? valueNow.minus(value24hAgo).div(value24hAgo).mul(100).toNumber()
+      : 0;
+
+    return {
+      ...wallet,
+      change24h: walletChange24h,
+    };
   });
 
-  // ✅ Compute total balance with Decimal.js
-  const totalBalance = walletList
-    .reduce((sum, wallet) => {
-      const price = priceMap[wallet.wallet_type.toUpperCase()] || 0;
-      return decimalAdd(sum, decimalMul(wallet.balance, price));
-    }, new Decimal(0))
-    .toNumber();
+  const totalBalance = totalCurrent.toNumber();
 
-  const totalChange24h = walletList.length
-    ? walletList.reduce((s, w) => s + (w?.change24h || 0), 0) /
-      walletList.length
+  const totalChange24h = totalPrev24h.gt(0)
+    ? totalCurrent.minus(totalPrev24h).div(totalPrev24h).mul(100).toNumber()
     : 0;
 
   const totalAssets = walletList.length;
 
   return {
-    wallets,
+    wallets: walletsWithChange, // ✅ every wallet now has its own change24h %
     totalBalance,
     totalAssets,
-    totalChange24h,
+    totalChange24h, // portfolio-wide change
     isLoading,
     error,
   };

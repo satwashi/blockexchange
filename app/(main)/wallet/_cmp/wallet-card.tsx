@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Wallet, TrendingUp, Copy, CheckCircle2 } from "lucide-react";
 import { DialogTrigger } from "@/components/ui/dialog";
 
 import WithdrawDialog from "./withdraw-dialogue";
 import DepositDialog from "./deposite-dialogue";
-// import WithdrawDialog from "./withdraw-dialog"; // ✅ new dialog
 
 export interface WalletData {
   id: string;
@@ -15,7 +13,7 @@ export interface WalletData {
   name: string;
   balance: number;
   address?: string;
-  change24h?: number;
+  change24h?: number; // 24 h % change
   icon?: string;
 }
 
@@ -25,31 +23,28 @@ interface WalletCardProps {
 
 export const WalletCard = ({ wallet }: WalletCardProps) => {
   const [copied, setCopied] = useState(false);
-
-  const { wallet_type, balance, address, icon, name } = wallet;
+  const { wallet_type, balance, address, icon, name, change24h } = wallet;
 
   const handleCopyAddress = async () => {
-    if (wallet.address) {
-      await navigator.clipboard.writeText(wallet.address);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    if (!address) return;
+    await navigator.clipboard.writeText(address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const formatAddress = (address: string) => {
-    return `${address.slice(0, 8)}...${address.slice(-6)}`;
-  };
+  const formatAddress = (addr: string) =>
+    `${addr.slice(0, 8)}...${addr.slice(-6)}`;
 
-  const formatBalance = (balance: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatBalance = (val: number) =>
+    new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 8,
-    }).format(balance);
-  };
+    }).format(val);
 
   return (
     <Card className="group bg-secondary hover:shadow-card-hover transition-card cursor-pointer border border-border/50">
       <CardContent className="p-6">
+        {/* Header: icon + name + 24 h change */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center shadow-primary">
@@ -62,25 +57,28 @@ export const WalletCard = ({ wallet }: WalletCardProps) => {
               <p className="text-muted-foreground text-sm">{name}</p>
             </div>
           </div>
-          {wallet.change24h && (
-            <Badge
-              variant={wallet.change24h >= 0 ? "default" : "destructive"}
-              className="flex items-center gap-1"
+
+          {change24h !== undefined && (
+            <div
+              className={`flex items-center gap-1 text-sm font-medium ${
+                change24h >= 0 ? "text-green-500" : "text-red-500"
+              }`}
             >
               <TrendingUp className="w-3 h-3" />
-              {wallet.change24h >= 0 ? "+" : ""}
-              {wallet.change24h.toFixed(2)}%
-            </Badge>
+              {change24h >= 0 ? "+" : ""}
+              {change24h.toFixed(2)}%
+              <span className="ml-1 text-[10px] opacity-75">24 h</span>
+            </div>
           )}
         </div>
 
+        {/* Balance */}
         <div className="space-y-3">
-          <div>
-            <p className="text-2xl font-bold text-foreground">
-              {formatBalance(balance)} {wallet_type}
-            </p>
-          </div>
+          <p className="text-2xl font-bold text-foreground">
+            {formatBalance(balance)} {wallet_type}
+          </p>
 
+          {/* Address + copy button */}
           {address && (
             <div className="flex items-center justify-between border rounded-lg p-3">
               <div>
@@ -104,22 +102,12 @@ export const WalletCard = ({ wallet }: WalletCardProps) => {
             </div>
           )}
 
+          {/* Deposit & Withdraw actions */}
           <div className="flex gap-3 pt-2">
-            {/* ✅ Deposit Dialog */}
-            {/* <DepositeDialogue> */}
-            {/* <DialogTrigger asChild> */}
-
-            {/* </DialogTrigger> */}
-            {/* </DepositeDialogue> */}
-
             <DepositDialog
               wallet={wallet}
               icon={
-                <img
-                  src={icon} // <-- WalletData should provide a valid URL
-                  alt={wallet_type}
-                  className="h-4 w-4 mr-2"
-                />
+                <img src={icon} alt={wallet_type} className="h-4 w-4 mr-2" />
               }
             >
               <DialogTrigger asChild>
@@ -132,16 +120,9 @@ export const WalletCard = ({ wallet }: WalletCardProps) => {
               </DialogTrigger>
             </DepositDialog>
 
-            {/* ✅ Withdraw Dialog */}
             <WithdrawDialog
               wallet={wallet}
-              icon={
-                <img
-                  src={icon} // <-- make sure your WalletData has a valid image URL here
-                  alt={wallet_type}
-                  className="h-4 w-4"
-                />
-              }
+              icon={<img src={icon} alt={wallet_type} className="h-4 w-4" />}
             >
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="flex-1">

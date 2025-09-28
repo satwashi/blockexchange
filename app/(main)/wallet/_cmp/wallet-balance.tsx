@@ -14,22 +14,21 @@ export const WalletBalance = ({ userId }: WalletBalanceProps) => {
   if (isLoading) return <WalletBalanceSkeleton />;
   if (error) return <>Error</>;
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
-  };
 
-  if (totalAssets === 0) return;
+  if (totalAssets === 0) return null;
 
   return (
-    <Card className="bg-secondary border-0  mb-8">
+    <Card className="bg-secondary border-0 mb-8">
       <CardContent className="p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-full  flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center">
             <Wallet className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
@@ -39,18 +38,14 @@ export const WalletBalance = ({ userId }: WalletBalanceProps) => {
         </div>
 
         <div className="space-y-4">
-          <div>
-            <p className="text-4xl md:text-5xl font-bold">
-              {formatCurrency(totalBalance!)}
-            </p>
-          </div>
+          <p className="text-4xl md:text-5xl font-bold">
+            {formatCurrency(totalBalance!)}
+          </p>
 
           <div className="flex items-center gap-2">
             <div
-              className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-                totalChange24h >= 0
-                  ? "bg-success/20 text-success-foreground"
-                  : "bg-destructive/20 text-destructive-foreground"
+              className={`flex items-center gap-1 text-sm font-medium ${
+                totalChange24h >= 0 ? "text-green-500" : "text-red-500"
               }`}
             >
               <TrendingUp className="w-4 h-4" />

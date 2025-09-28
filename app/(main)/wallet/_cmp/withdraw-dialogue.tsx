@@ -57,10 +57,6 @@ export default function WithdrawDialog({
 
   const form = useForm<WithdrawSchema>({
     resolver: zodResolver(withdrawSchema),
-    defaultValues: {
-      amount: "1",
-      address: "0xA1b2C3d4E5f678901234567890abcdef12345678",
-    },
   });
 
   const handleSubmit = (values: WithdrawSchema) => {
