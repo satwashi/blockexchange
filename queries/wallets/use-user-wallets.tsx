@@ -23,6 +23,7 @@ export const useUserWallets = (userId: string) => {
 
   useEffect(() => {
     if (!userId) return;
+
     const channel = supabase
       .channel("wallets-realtime")
       .on(
@@ -38,7 +39,12 @@ export const useUserWallets = (userId: string) => {
         }
       )
       .subscribe();
-    return () => supabase.removeChannel(channel);
+
+    // ✅ return a normal function; handle async inside
+    return () => {
+      // we can ignore the returned promise or log it
+      supabase.removeChannel(channel).catch(console.error);
+    };
   }, [userId, queryClient]);
 
   const walletList = wallets ?? [];
