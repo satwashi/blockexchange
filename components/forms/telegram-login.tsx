@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { CreateUserPayload } from "@/types/user";
 import { signInwithTelegram } from "@/server/user/signin-with-telegram";
 import TelegramCustomLogin from "@/components/telegram-custom-login";
+import TelegramLoginBtn from "../TelegramLoginBtn";
 
 interface TelegramLoginProps {
   /**
@@ -34,10 +35,9 @@ export default function TelegramLogin({
     <div className="space-y-6 text-center px-4 sm:px-6">
       <div className="flex items-center justify-center h-14 btn-elegant group relative overflow-hidden">
         {!isProcessing ? (
-          <TelegramCustomLogin
-            botUsername={process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || ""}
+          <TelegramLoginBtn
             onAuth={handleAuthCallback}
-            className={className}
+            // className={className}
           />
         ) : (
           <AuthProcessing />

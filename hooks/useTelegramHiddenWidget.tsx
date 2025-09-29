@@ -15,10 +15,6 @@ interface UseTelegramHiddenWidgetProps {
   requestAccess?: "read" | "write";
 }
 
-/**
- * Loads the Telegram auth widget in a hidden container
- * and exposes a trigger function to start the login flow.
- */
 export function useTelegramHiddenWidget({
   botUsername,
   onAuth,
@@ -37,23 +33,26 @@ export function useTelegramHiddenWidget({
     script.setAttribute("data-onauth", "onTelegramAuth(user)");
     script.setAttribute("data-request-access", requestAccess);
 
-    const container = containerRef.current; // ✅ capture current value
-    if (container) {
-      container.appendChild(script);
-    }
+    const container = containerRef.current;
+    if (container) container.appendChild(script);
 
     return () => {
-      if (container) container.innerHTML = ""; // ✅ use captured variable
+      if (container) container.innerHTML = "";
     };
   }, [botUsername, onAuth, requestAccess]);
 
-  /**
-   * Call this to simulate a click on the hidden Telegram button
-   * so the Telegram OAuth flow begins.
-   */
+  /** 🔑 Updated trigger */
   const triggerAuth = () => {
-    const btn = containerRef.current?.querySelector("button");
-    btn?.click();
+    const iframe = containerRef.current?.querySelector(
+      "iframe"
+    ) as HTMLIFrameElement | null;
+
+    console.log("iframe", iframe);
+    if (!iframe) {
+      console.warn("Telegram iframe not found yet");
+      return;
+    }
+    iframe.contentWindow?.postMessage("login", "*");
   };
 
   return { containerRef, triggerAuth };
