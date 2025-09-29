@@ -2,21 +2,15 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Logo from "../shared/header/logo";
 import Link from "next/link";
-import { signIn } from "@/utils/auth-client";
-import { TelegramLogin } from "./telegram-login";
+import TelegramLogin from "./telegram-login";
 // import { signInServer } from "@/server/user/users";
 import GoogleLoging from "./google-loging";
+import GoogleLogin from "./google-loging";
 
 export function LoginForm({
   className,
@@ -35,7 +29,6 @@ export function LoginForm({
           <CardTitle className="text-xl flex justify-center">
             <Logo />
           </CardTitle>
-          <CardDescription>Login with your Google account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -70,12 +63,12 @@ export function LoginForm({
                   Or continue with
                 </span>
               </div>
-
-              <div className="flex flex-col gap-4">
-                <TelegramLogin />
-
-                <GoogleLoging />
-              </div>
+              <section className="flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <TelegramLogin className="w-[300px] flex items-center justify-center gap-2" />
+                  <GoogleLogin className="w-[300px] flex items-center justify-center gap-2" />
+                </div>
+              </section>
 
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}

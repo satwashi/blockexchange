@@ -1,9 +1,21 @@
-import { useState } from "react";
-import { CreateUserPayload } from "@/types/user";
-import { signInwithTelegram } from "@/server/user/signin-with-telegram";
-import TelegramLoginBtn from "../TelegramLoginBtn";
+"use client";
 
-export function TelegramLogin() {
+import { useState } from "react";
+import type { CreateUserPayload } from "@/types/user";
+import { signInwithTelegram } from "@/server/user/signin-with-telegram";
+import TelegramCustomLogin from "@/components/telegram-custom-login";
+
+interface TelegramLoginProps {
+  /**
+   * Optional Tailwind (or other) classes for styling the outer button.
+   * Defaults to the same layout as the GoogleLogin button.
+   */
+  className?: string;
+}
+
+export default function TelegramLogin({
+  className = "w-full flex items-center justify-center gap-2",
+}: TelegramLoginProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleAuthCallback = async (data: CreateUserPayload) => {
@@ -13,6 +25,7 @@ export function TelegramLogin() {
     } catch (error) {
       console.error("Telegram login error:", error);
     } finally {
+      // If you want the spinner to disappear after backend completes:
       // setIsProcessing(false);
     }
   };
@@ -21,7 +34,11 @@ export function TelegramLogin() {
     <div className="space-y-6 text-center px-4 sm:px-6">
       <div className="flex items-center justify-center h-14 btn-elegant group relative overflow-hidden">
         {!isProcessing ? (
-          <TelegramLoginBtn onAuth={handleAuthCallback} />
+          <TelegramCustomLogin
+            botUsername={process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || ""}
+            onAuth={handleAuthCallback}
+            className={className}
+          />
         ) : (
           <AuthProcessing />
         )}
@@ -35,25 +52,7 @@ export function AuthProcessing() {
     <div className="flex items-center justify-center h-14 btn-elegant group relative overflow-hidden">
       {/* Dual-ring spinner */}
       <div className="w-6 h-6 border-4 border-t-blue-500 border-b-blue-300 border-l-transparent border-r-transparent rounded-full animate-spin"></div>
-
-      {/* Text */}
-      <span className="text-sm font-medium ">Authenticating...</span>
+      <span className="ml-2 text-sm font-medium">Authenticating...</span>
     </div>
-  );
-}
-
-export default function TelegramLoginRedirect() {
-  const handleLogin = () => {
-    const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
-    const origin = encodeURIComponent(window.location.origin);
-    const returnTo = encodeURIComponent(window.location.origin);
-
-    window.location.href = `https://oauth.telegram.org/auth?bot_id=${botUsername}&origin=${origin}&embed=0&request_access=write&return_to=${returnTo}/api/auth/telegram/callback`;
-  };
-
-  return (
-    <button className="btn btn-primary" onClick={handleLogin}>
-      Login with Telegram
-    </button>
   );
 }
