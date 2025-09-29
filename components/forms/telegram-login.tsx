@@ -24,10 +24,11 @@ export default function TelegramLogin({
       setIsProcessing(true);
       await signInwithTelegram(data);
     } catch (error) {
+      setIsProcessing(false);
       console.error("Telegram login error:", error);
     } finally {
       // If you want the spinner to disappear after backend completes:
-      // setIsProcessing(false);
+      setIsProcessing(false);
     }
   };
 
