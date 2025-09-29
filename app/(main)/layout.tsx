@@ -1,5 +1,6 @@
 import { Header } from "@/components/shared/header/Header";
 import UserChat from "@/components/chat/user-chat";
+import SiteFooter from "@/components/shared/footer/site-footer";
 
 export default function layout({
   children,
@@ -14,6 +15,7 @@ export default function layout({
         {/* <UserChat /> */}
         <div className="h-16 md:hidden" />
       </div>
+      <SiteFooter />
     </>
   );
 }

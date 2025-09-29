@@ -6,7 +6,7 @@ import { WalletBalance } from "./_cmp/wallet-balance";
 import { WalletBalanceSkeleton } from "./_cmp/skeletons/wallet-balance";
 import { WalletCardSkeleton } from "./_cmp/skeletons/wallets-card-skeleton";
 
-const Index = () => {
+export default function WalletPage() {
   const { id, isLoading, error } = useSession();
 
   if (isLoading)
@@ -30,6 +30,4 @@ const Index = () => {
       </div>
     </div>
   );
-};
-
-export default Index;
+}
