@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 
 import { Toaster } from "@/components/ui/sonner";
+import { getWebsiteUrl } from "@/lib/site";
 import { MobileBottomNav } from "@/components/shared/MobileBottomNav";
 import QueryProvider from "@/providers/query-provider";
 import { ImpersonationProvider } from "@/providers/impersonate-provider";
@@ -25,14 +26,13 @@ export const metadata: Metadata = {
     "Blockechange is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.",
   openGraph: {
     type: "website",
-    url: "https://blockechange.com",
+    url: getWebsiteUrl(),
     title: "Blockechange – Secure & Simple Digital Asset Exchange",
     description:
       "Blockechange is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.",
     images: [
       {
-        // ✅ absolute URL
-        url: "https://www.blockechange.com/og-image.png",
+        url: `${getWebsiteUrl().replace(/\/$/, "")}/og-image.png`,
         width: 1200,
         height: 630,
         alt: "Blockechange logo",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     title: "Blockechange – Secure & Simple Digital Asset Exchange",
     description:
       "Blockechange is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.",
-    images: ["https://www.blockechange.com/og-image.png"], // ✅ absolute URL
+    images: [`${getWebsiteUrl().replace(/\/$/, "")}/og-image.png`],
   },
 };
 

@@ -15,17 +15,12 @@ export default function Home() {
 }
 
 async function SessionAwareLanding() {
-  const sessionResult = await getServerSession();
-  const isLoggedIn = Boolean((sessionResult as any)?.session);
-
   return (
     <>
       <HeroSection />
-      {/* Show news prominently for all users */}
       <NewsSection />
-      {/* FAQ is helpful for guests; logged-in users can still benefit */}
-      <ExchangeFAQ />
       <TrustAndSocialProf />
+      <ExchangeFAQ />
     </>
   );
 }

@@ -6,7 +6,7 @@ interface GoogleLoginProps {
 }
 
 export default function GoogleLogin({
-  className = "w-full flex items-center justify-center gap-2",
+  className = "w-[220px] md:w-[260px] flex items-center justify-center gap-2",
 }: GoogleLoginProps) {
   const handleGoogleLogin = async () => {
     await signIn.social({
@@ -19,7 +19,10 @@ export default function GoogleLogin({
     <Button
       onClick={handleGoogleLogin}
       variant="outline"
-      className={className}
+      className={
+        className +
+        " rounded-full border-2 hover:border-primary/40 shadow-sm hover:shadow"
+      }
       type="button"
     >
       {/* Full-color Google "G" */}
@@ -47,7 +50,7 @@ export default function GoogleLogin({
         <path fill="none" d="M0 0h48v48H0z" />
       </svg>
 
-      <span className="font-medium">Login with Google</span>
+      <span className="font-medium">Continue with Google</span>
     </Button>
   );
 }

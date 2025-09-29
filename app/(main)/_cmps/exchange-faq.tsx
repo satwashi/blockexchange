@@ -4,7 +4,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Card } from "@/components/ui/card";
 
 const faqData = [
   {
@@ -42,42 +41,48 @@ const faqData = [
 
 export default function ExchangeFAQ() {
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 py-8 md:px-6 md:py-16">
-      <div className="text-center mb-8 md:mb-16">
-        <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-foreground mb-2">
-          Frequently Asked Questions
-        </h1>
-      </div>
+    <section className="py-14 md:py-20">
+      <div className="max-w-4xl mx-auto px-4 md:px-6">
+        <div className="text-center mb-10 md:mb-14">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-muted-foreground mt-2">
+            Quick answers to common questions about getting started and using
+            the exchange.
+          </p>
+        </div>
 
-      <div className="space-y-0">
-        <Accordion type="single" collapsible>
-          {faqData.map((faq, index) => (
-            <AccordionItem
-              key={index}
-              value={`item-${index}`}
-              className="border-b border-border last:border-b-0"
-            >
-              <AccordionTrigger className="text-left py-6 hover:no-underline group">
-                <div className="flex items-start gap-4 w-full pr-4">
-                  <span className="text-lg md:text-xl font-medium text-muted-foreground flex-shrink-0 mt-0.5">
-                    {index + 1}
-                  </span>
-                  <span className="text-base md:text-lg font-medium text-foreground text-left leading-relaxed">
-                    {faq.question}
-                  </span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-6">
-                <div className="ml-8 md:ml-10">
-                  <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
-                    {faq.answer}
-                  </p>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-3 md:p-5">
+          <Accordion type="single" collapsible>
+            {faqData.map((faq, index) => (
+              <AccordionItem
+                key={index}
+                value={`item-${index}`}
+                className="border-b border-border last:border-b-0"
+              >
+                <AccordionTrigger className="text-left py-6 md:py-7 px-2 md:px-3 hover:no-underline group">
+                  <div className="flex items-start gap-4 w-full pr-4">
+                    <span className="text-lg md:text-xl font-medium text-muted-foreground flex-shrink-0 mt-0.5">
+                      {index + 1}
+                    </span>
+                    <span className="text-base md:text-lg font-medium text-foreground text-left leading-relaxed">
+                      {faq.question}
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pb-6 md:pb-7 px-2 md:px-3">
+                  <div className="ml-8 md:ml-10">
+                    <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

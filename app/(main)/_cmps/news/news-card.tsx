@@ -29,18 +29,26 @@ export function NewsCard({ article }: NewsCardProps) {
   };
 
   return (
-    <Card className="group relative overflow-hidden bg-gradient-card border-border/50 shadow-card hover:shadow-card-hover transition-smooth hover:scale-[1.02] w-[350px]">
-      <div className="absolute inset-0 bg-gradient-accent opacity-0 group-hover:opacity-100 transition-smooth" />
+    <Card
+      className="
+    group relative overflow-hidden border border-border/50 shadow-card 
+    hover:shadow-lg hover:border-border transition-all duration-300 
+    hover:-translate-y-[2px] 
+    h-full flex flex-col
+  "
+    >
+      {/* gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <CardContent className="relative p-0">
-        {/* Image Section */}
-        <div className="relative h-48 w-[350px] overflow-hidden mx-auto">
+      <CardContent className="relative p-0 flex flex-col h-full">
+        {/* 🖼️ Image */}
+        <div className="relative h-48 w-full overflow-hidden">
           <Image
             src={article.imageurl}
             alt={article.title}
-            width={350}
+            width={400}
             height={192}
-            className="w-[350px] h-full object-cover transition-smooth group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src =
@@ -49,7 +57,7 @@ export function NewsCard({ article }: NewsCardProps) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-          {/* Source info overlay */}
+          {/* 🔗 Source overlay */}
           <div className="absolute bottom-3 left-3 flex items-center gap-2">
             <Image
               src={article.source_info.img}
@@ -68,8 +76,8 @@ export function NewsCard({ article }: NewsCardProps) {
           </div>
         </div>
 
-        {/* Content Section */}
-        <div className="p-6 space-y-4">
+        {/* 📄 Content */}
+        <div className="p-6 flex flex-col flex-1 space-y-4">
           {/* Categories */}
           <div className="flex flex-wrap gap-2">
             {formatCategories(article.categories).map((category, index) => (
@@ -84,7 +92,7 @@ export function NewsCard({ article }: NewsCardProps) {
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-bold text-foreground leading-tight group-hover:text-crypto-purple transition-smooth line-clamp-2">
+          <h3 className="text-xl font-bold text-foreground leading-tight group-hover:text-crypto-purple transition-colors duration-300 line-clamp-2">
             {article.title}
           </h3>
 
@@ -106,15 +114,15 @@ export function NewsCard({ article }: NewsCardProps) {
             ))}
           </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t border-border/50">
+          {/* 📅 Footer */}
+          <div className="flex items-center justify-between pt-4 border-t border-border/50 mt-auto">
             {/* Date */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="w-4 h-4" />
               <span>{formatDate(article.published_on)}</span>
             </div>
 
-            {/* Voting and Action */}
+            {/* Votes + Read */}
             <div className="flex items-center gap-4">
               {/* Voting */}
               <div className="flex items-center gap-3">
@@ -130,7 +138,7 @@ export function NewsCard({ article }: NewsCardProps) {
                 </div>
               </div>
 
-              {/* Read More Button */}
+              {/* Read Button */}
               <Button
                 variant="ghost"
                 size="sm"
