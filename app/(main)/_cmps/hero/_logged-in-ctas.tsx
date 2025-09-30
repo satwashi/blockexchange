@@ -74,6 +74,18 @@ const LoggedInCta = ({ userVerified }: { userVerified: boolean }) => {
     }
   };
 
+  // Stronger contrast for tiny step indicator dots (mobile)
+  const getDotClasses = (status: ProgressStep["status"]) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-500";
+      case "current":
+        return "bg-yellow-500";
+      case "pending":
+        return "bg-gray-400";
+    }
+  };
+
   if (!isVisible || steps.every((s) => s.status === "completed")) return null;
 
   const currentStep = steps.find((s) => s.status === "current");
@@ -84,10 +96,10 @@ const LoggedInCta = ({ userVerified }: { userVerified: boolean }) => {
       w-[95%] sm:w-[90%] md:w-[85%] lg:w-[80%] xl:w-[75%] 2xl:w-[70%] 
       px-4 animate-slideDown"
     >
-      <Card className="bg-card/95 backdrop-blur-md border border-border/50 shadow-notification">
-        <div className="flex items-center justify-between p-4">
+      <Card className="bg-card/60 backdrop-blur-md border border-border/50 shadow-notification">
+        <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 pr-14 sm:p-6 gap-4">
           {/* Left section */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0 sm:flex-1">
             <div className="p-2 rounded-lg bg-blue-500">
               <Shield className="w-5 h-5 text-white" />
             </div>
@@ -158,7 +170,7 @@ const LoggedInCta = ({ userVerified }: { userVerified: boolean }) => {
 
           {/* Mobile progress */}
           <div className="sm:hidden flex flex-col gap-3 min-w-0 flex-1">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-start gap-2 flex-wrap">
               <div className="flex items-center gap-2 min-w-0">
                 <div
                   className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-300 ${getStepBadgeClasses(
@@ -178,7 +190,7 @@ const LoggedInCta = ({ userVerified }: { userVerified: boolean }) => {
               {currentStep?.href && (
                 <Link
                   href={currentStep.href}
-                  className="px-3 py-1.5 bg-gradient-primary text-primary-foreground text-xs font-medium rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
+                  className="px-3 py-1.5 bg-gradient-primary text-primary-foreground text-xs font-medium rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 shrink-0"
                 >
                   Continue
                 </Link>
@@ -206,13 +218,13 @@ const LoggedInCta = ({ userVerified }: { userVerified: boolean }) => {
             </div>
 
             {/* Step indicators */}
-            <div className="flex justify-center gap-1.5">
+            <div className="flex justify-center gap-2">
               {steps.map((step, index) => (
                 <div
                   key={step.id}
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ring-2 ring-white/70 dark:ring-black/40 ${
                     step.status === "current" ? "animate-pulse scale-125" : ""
-                  } ${getStepBadgeClasses(step.status)}`}
+                  } ${getDotClasses(step.status)}`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 />
               ))}
@@ -222,7 +234,7 @@ const LoggedInCta = ({ userVerified }: { userVerified: boolean }) => {
           {/* Close button */}
           <button
             onClick={() => setIsVisible(false)}
-            className="ml-4 p-1 rounded-md hover:bg-muted transition-colors duration-200 flex-shrink-0"
+            className="absolute right-2 top-2 p-1 rounded-md hover:bg-muted transition-colors duration-200"
             aria-label="Dismiss notification"
           >
             <X className="w-4 h-4 text-muted-foreground hover:text-foreground" />
