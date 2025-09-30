@@ -21,7 +21,7 @@ import { LucideIcon } from "lucide-react";
 import { UserType } from "@/types/user";
 import menuItemsDefault from "./user-menu-items";
 import UserInfo from "./user-info";
-import { Card, CardTitle, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 export interface UserMenuItem {
   label: string;
@@ -86,7 +86,8 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
                 <Button
                   key={index}
                   variant="ghost"
-                  className={`w-full justify-start gap-3 ${
+                  size="sm"
+                  className={`w-full justify-start p-2 gap-2 ${
                     item.variant === "destructive"
                       ? "text-destructive hover:text-destructive hover:bg-destructive/10"
                       : ""

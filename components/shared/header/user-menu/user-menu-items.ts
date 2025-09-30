@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { UserMenuItem } from "./UserMenu";
+import { queryClient } from "@/providers/query-provider";
+import { signOut } from "@/utils/auth-client";
 
 const menuItems: UserMenuItem[] = [
   {
@@ -47,7 +49,21 @@ const menuItems: UserMenuItem[] = [
   {
     label: "Log out",
     icon: LogOut,
-    onClick: () => toast.success("Logging out..."),
+    onClick: async () => {
+      await signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            try {
+              localStorage.removeItem("impersonatedUserId");
+            } catch {}
+            queryClient.invalidateQueries({ queryKey: ["session"] });
+            if (typeof window !== "undefined") {
+              window.location.href = "/";
+            }
+          },
+        },
+      });
+    },
     variant: "destructive" as const,
   },
 ];
