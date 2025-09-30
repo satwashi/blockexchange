@@ -21,6 +21,7 @@ import { LucideIcon } from "lucide-react";
 import { UserType } from "@/types/user";
 import menuItemsDefault from "./user-menu-items";
 import UserInfo from "./user-info";
+import { Card, CardTitle, CardHeader } from "@/components/ui/card";
 
 export interface UserMenuItem {
   label: string;
@@ -80,7 +81,7 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
           <SheetTitle className="sr-only">Account</SheetTitle>
           <div className="mt-0 space-y-0">
             <UserInfo user={user} />
-            <div className="pt-2">
+            <Card className="p-2 mt-4">
               {menuItems.map((item, index) => (
                 <Button
                   key={index}
@@ -96,7 +97,7 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
                   {item.label}
                 </Button>
               ))}
-            </div>
+            </Card>
           </div>
         </SheetContent>
       </Sheet>
