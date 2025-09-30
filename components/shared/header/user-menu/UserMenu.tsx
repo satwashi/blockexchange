@@ -23,16 +23,22 @@ import menuItemsDefault from "./user-menu-items";
 import UserInfo from "./user-info";
 import { Card } from "@/components/ui/card";
 
-export interface UserMenuItem {
-  label: string;
-  icon: LucideIcon;
-  onClick: () => void;
-  variant?: "default" | "destructive";
-}
+export type UserMenuEntry =
+  | {
+      type?: "item";
+      label: string;
+      icon: LucideIcon;
+      onClick: () => void;
+      variant?: "default" | "destructive";
+    }
+  | {
+      type: "component";
+      component: React.ReactNode;
+    };
 
 interface UserMenuProps {
   user: UserType;
-  items?: UserMenuItem[];
+  items?: UserMenuEntry[];
 }
 
 // kept for potential future badge theming
@@ -50,13 +56,17 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
     .toUpperCase()
     .slice(0, 2);
 
-  const menuItems = sourceItems.map((item) => ({
-    ...item,
-    onClick: () => {
-      item.onClick();
-      if (isMobile) setSheetOpen(false);
-    },
-  }));
+  const menuItems = sourceItems.map((item) => {
+    if ((item as any).type === "component") return item;
+    const it = item as Extract<UserMenuEntry, { type?: "item" }>;
+    return {
+      ...it,
+      onClick: () => {
+        it.onClick();
+        if (isMobile) setSheetOpen(false);
+      },
+    } as UserMenuEntry;
+  });
 
   if (isMobile) {
     return (
@@ -82,22 +92,28 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
           <div className="mt-0 space-y-0">
             <UserInfo user={user} />
             <Card className="p-2 mt-4">
-              {menuItems.map((item, index) => (
-                <Button
-                  key={index}
-                  variant="ghost"
-                  size="sm"
-                  className={`w-full justify-start p-2 gap-2 ${
-                    item.variant === "destructive"
-                      ? "text-destructive hover:text-destructive hover:bg-destructive/10"
-                      : ""
-                  }`}
-                  onClick={item.onClick}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
-                </Button>
-              ))}
+              {menuItems.map((item, index) => {
+                if ((item as any).type === "component") {
+                  return <div key={index}>{(item as any).component}</div>;
+                }
+                const it = item as Extract<UserMenuEntry, { type?: "item" }>;
+                return (
+                  <Button
+                    key={index}
+                    variant="ghost"
+                    size="sm"
+                    className={`w-full justify-start p-2 gap-2 ${
+                      it.variant === "destructive"
+                        ? "text-destructive hover:text-destructive hover:bg-destructive/10"
+                        : ""
+                    }`}
+                    onClick={it.onClick}
+                  >
+                    <it.icon className="h-4 w-4" />
+                    {it.label}
+                  </Button>
+                );
+              })}
             </Card>
           </div>
         </SheetContent>
@@ -122,20 +138,26 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
           <UserInfo user={user} />
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {menuItems.map((item, index) => (
-          <DropdownMenuItem
-            key={index}
-            onClick={item.onClick}
-            className={`gap-3 cursor-pointer ${
-              item.variant === "destructive"
-                ? "text-destructive focus:text-destructive focus:bg-destructive/10"
-                : ""
-            }`}
-          >
-            <item.icon className="h-4 w-4" />
-            {item.label}
-          </DropdownMenuItem>
-        ))}
+        {menuItems.map((item, index) => {
+          if ((item as any).type === "component") {
+            return <div key={index}>{(item as any).component}</div>;
+          }
+          const it = item as Extract<UserMenuEntry, { type?: "item" }>;
+          return (
+            <DropdownMenuItem
+              key={index}
+              onClick={it.onClick}
+              className={`gap-3 cursor-pointer ${
+                it.variant === "destructive"
+                  ? "text-destructive focus:text-destructive focus:bg-destructive/10"
+                  : ""
+              }`}
+            >
+              <it.icon className="h-4 w-4" />
+              {it.label}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

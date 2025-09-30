@@ -33,7 +33,7 @@ interface ProgressStep {
   href?: string;
 }
 
-const LoggedInCta = ({ userVerified }: { userVerified: boolean }) => {
+const LoggedInCta = ({ userVerified }: { userVerified: boolean | string }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   const steps: ProgressStep[] = [
@@ -86,7 +86,13 @@ const LoggedInCta = ({ userVerified }: { userVerified: boolean }) => {
     }
   };
 
-  if (!isVisible || steps.every((s) => s.status === "completed")) return null;
+  // Only show when the user is NOT verified
+  const isVerified =
+    userVerified === true ||
+    userVerified === "true" ||
+    userVerified === "verified";
+
+  if (isVerified || !isVisible) return null;
 
   const currentStep = steps.find((s) => s.status === "current");
 

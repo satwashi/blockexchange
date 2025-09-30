@@ -12,7 +12,12 @@ export async function HeroSection() {
   const sessionResult = await getServerSession();
   const session = (sessionResult as any)?.session;
   const isLoggedIn = Boolean(session);
-  const userVerified = Boolean(session?.user?.verified);
+  const userVerified = Boolean(
+    session?.user?.verified === "verified" ||
+      session?.user?.verified === true ||
+      session?.user?.kyc_status === "verified" ||
+      session?.user?.kyc_status === "approved"
+  );
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-crypto-dark via-crypto-card to-crypto-dark" />

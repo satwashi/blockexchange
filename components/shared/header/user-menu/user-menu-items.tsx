@@ -6,13 +6,15 @@ import {
   User,
   HelpCircle,
   LogOut,
+  Home,
 } from "lucide-react";
 import { toast } from "sonner";
-import { UserMenuItem } from "./UserMenu";
+import { UserMenuEntry } from "./UserMenu";
 import { queryClient } from "@/providers/query-provider";
 import { signOut } from "@/utils/auth-client";
+import { Button } from "@/components/ui/button";
 
-const menuItems: UserMenuItem[] = [
+const menuItems: UserMenuEntry[] = [
   {
     label: "Profile",
     icon: User,
@@ -65,6 +67,20 @@ const menuItems: UserMenuItem[] = [
       });
     },
     variant: "destructive" as const,
+  },
+  {
+    type: "component",
+    component: (
+      <Button
+        variant="ghost"
+        size="sm"
+        className={`w-full justify-start p-2 gap-2  
+        }`}
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Button>
+    ),
   },
 ];
 

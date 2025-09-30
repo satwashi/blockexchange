@@ -2,6 +2,8 @@
 
 import { getServerSession } from "../user/users";
 import supabaseAdmin from "@/lib/supabaseAdmin";
+import { headers } from "next/headers";
+import { auth } from "@/utils/auth";
 
 export interface SubmitKYCParams {
   fullName: string;
@@ -64,6 +66,13 @@ export async function submitKYC({
       .single();
 
     if (error) throw error;
+
+    await auth.api.updateUser({
+      body: {
+        kyc_status: "pending",
+      },
+      headers: await headers(),
+    });
 
     return { success: true, kyc: data };
   } catch (err: any) {
