@@ -33,7 +33,8 @@ export type UserMenuEntry =
     }
   | {
       type: "component";
-      component: React.ReactNode;
+      component?: React.ReactNode;
+      render?: (user: UserType) => React.ReactNode;
     };
 
 interface UserMenuProps {
@@ -94,7 +95,14 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
             <Card className="p-2 mt-4">
               {menuItems.map((item, index) => {
                 if ((item as any).type === "component") {
-                  return <div key={index}>{(item as any).component}</div>;
+                  const compItem = item as Extract<
+                    UserMenuEntry,
+                    { type: "component" }
+                  >;
+                  const node = compItem.render
+                    ? compItem.render(user)
+                    : compItem.component;
+                  return <div key={index}>{node}</div>;
                 }
                 const it = item as Extract<UserMenuEntry, { type?: "item" }>;
                 return (
@@ -140,7 +148,14 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
         <DropdownMenuSeparator />
         {menuItems.map((item, index) => {
           if ((item as any).type === "component") {
-            return <div key={index}>{(item as any).component}</div>;
+            const compItem = item as Extract<
+              UserMenuEntry,
+              { type: "component" }
+            >;
+            const node = compItem.render
+              ? compItem.render(user)
+              : compItem.component;
+            return <div key={index}>{node}</div>;
           }
           const it = item as Extract<UserMenuEntry, { type?: "item" }>;
           return (

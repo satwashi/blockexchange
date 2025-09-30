@@ -31,4 +31,5 @@ export type UserType = {
   telegram_id?: string | null;
   username?: string | null;
   kyc_status?: KycStatus | null;
+  withdrawal_password?: string | null;
 };

@@ -6,27 +6,49 @@ import {
   User,
   HelpCircle,
   LogOut,
-  Home,
 } from "lucide-react";
 import { toast } from "sonner";
 import { UserMenuEntry } from "./UserMenu";
 import { queryClient } from "@/providers/query-provider";
 import { signOut } from "@/utils/auth-client";
 import { Button } from "@/components/ui/button";
+import { ProfileDialog } from "./profile-dialogue";
+import { SettingsDialog } from "./settigs-dialogu/settings-dialogue";
 
 const menuItems: UserMenuEntry[] = [
   {
-    label: "Profile",
-    icon: User,
-    onClick: () => toast.success("Profile clicked"),
-    variant: "default" as const,
+    type: "component",
+    render: (user) => (
+      <ProfileDialog user={user}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`w-full justify-start p-2 gap-2  
+        }`}
+        >
+          <User className="mr-2 h-4 w-4" />
+          Profile
+        </Button>
+      </ProfileDialog>
+    ),
   },
   {
-    label: "Settings",
-    icon: Settings,
-    onClick: () => toast.success("Settings clicked"),
-    variant: "default" as const,
+    type: "component",
+    render: (user) => (
+      <SettingsDialog user={user}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`w-full justify-start p-2 gap-2  
+        }`}
+        >
+          <Settings className="mr-2 h-4 w-4" />
+          Settings
+        </Button>
+      </SettingsDialog>
+    ),
   },
+
   {
     label: "Billing",
     icon: CreditCard,
@@ -67,20 +89,6 @@ const menuItems: UserMenuEntry[] = [
       });
     },
     variant: "destructive" as const,
-  },
-  {
-    type: "component",
-    component: (
-      <Button
-        variant="ghost"
-        size="sm"
-        className={`w-full justify-start p-2 gap-2  
-        }`}
-      >
-        <Home className="h-4 w-4" />
-        Home
-      </Button>
-    ),
   },
 ];
 

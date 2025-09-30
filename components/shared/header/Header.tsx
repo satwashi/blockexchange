@@ -5,7 +5,7 @@ import { auth } from "@/utils/auth";
 import { headers } from "next/headers";
 
 import DashboardBtn from "./dashboard-btn";
-import { UserMenu } from "./user-menu/UserMenu";
+import { UserMenu } from "../../user-menu/UserMenu";
 import { KycStatus } from "@/types/kyc/kyc";
 
 export async function Header() {
