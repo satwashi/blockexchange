@@ -227,7 +227,7 @@
 //   );
 // }
 
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import type { UserType } from "@/types/user";
 import {
   Dialog,
@@ -237,22 +237,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  // Settings,
-  User,
-  Lock,
-  ShieldCheck,
-  FileText,
-  Bell,
-  Mail,
-  Smartphone,
-  Palette,
-  HelpCircle,
-  FileCheck,
-  ChevronRight,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import UserInfo from "../user-info";
+import { createSettingsSections } from "./sections";
 
 interface SettingsItemProps {
   icon: React.ReactNode;
@@ -271,144 +258,46 @@ const SettingsItem = ({
 }: SettingsItemProps) => (
   <button
     onClick={onClick}
-    className="w-full flex items-center gap-4 px-6 py-3.5 transition-all duration-200 hover:bg-secondary/30"
+    className="w-full flex items-center justify-between px-6 hover:bg-muted/50 transition-colors"
   >
-    <div className="text-muted-foreground">{icon}</div>
-    <div className="flex-1 text-left">
-      <span className="text-[15px] text-foreground">{title}</span>
+    <div className="flex items-center gap-3">
+      <div className="text-muted-foreground">{icon}</div>
+      <span className="text-sm font-medium text-foreground">{title}</span>
     </div>
-    {trailing}
-    {!trailing && showChevron && (
-      <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
-    )}
+    <div className="flex items-center gap-2">
+      {trailing}
+      {!trailing && showChevron && (
+        <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+      )}
+    </div>
   </button>
 );
 
-export const SettingsDialog = ({
-  children,
-  user: _user,
-}: {
-  children: ReactNode;
-  user?: UserType;
-}) => {
-  const [emailAlerts, setEmailAlerts] = useState(true);
-  const [smsAlerts, setSmsAlerts] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
-
-  const sections: Array<{
-    key: string;
-    items: Array<{
-      key: string;
+type DialogListItem =
+  | {
+      type?: "item";
       icon: React.ReactNode;
       title: string;
       onClick?: () => void;
       trailing?: React.ReactNode;
       showChevron?: boolean;
-    }>;
-  }> = [
-    {
-      key: "account",
-      items: [
-        {
-          key: "my-account",
-          icon: <User className="w-5 h-5" />,
-          title: "My Account",
-          onClick: () => console.log("My Account"),
-        },
-        {
-          key: "notifications",
-          icon: <Bell className="w-5 h-5" />,
-          title: "Notifications and Sounds",
-          onClick: () => console.log("Notifications"),
-        },
-        {
-          key: "privacy",
-          icon: <Lock className="w-5 h-5" />,
-          title: "Privacy and Security",
-          onClick: () => console.log("Privacy"),
-        },
-      ],
-    },
-    {
-      key: "identity",
-      items: [
-        {
-          key: "verification-status",
-          icon: <ShieldCheck className="w-5 h-5" />,
-          title: "Verification Status",
-          onClick: () => console.log("Verification Status"),
-        },
-        {
-          key: "upload-docs",
-          icon: <FileText className="w-5 h-5" />,
-          title: "Upload Documents",
-          onClick: () => console.log("Upload Documents"),
-        },
-      ],
-    },
-    {
-      key: "preferences",
-      items: [
-        {
-          key: "email-alerts",
-          icon: <Mail className="w-5 h-5" />,
-          title: "Email Alerts",
-          onClick: () => setEmailAlerts(!emailAlerts),
-          trailing: (
-            <Switch
-              checked={emailAlerts}
-              onCheckedChange={setEmailAlerts}
-              onClick={(e) => e.stopPropagation()}
-            />
-          ),
-          showChevron: false,
-        },
-        {
-          key: "sms-alerts",
-          icon: <Smartphone className="w-5 h-5" />,
-          title: "SMS Alerts",
-          onClick: () => setSmsAlerts(!smsAlerts),
-          trailing: (
-            <Switch
-              checked={smsAlerts}
-              onCheckedChange={setSmsAlerts}
-              onClick={(e) => e.stopPropagation()}
-            />
-          ),
-          showChevron: false,
-        },
-        {
-          key: "theme",
-          icon: <Palette className="w-5 h-5" />,
-          title: "Theme",
-          onClick: () => setDarkMode(!darkMode),
-          trailing: (
-            <span className="text-sm text-accent">
-              {darkMode ? "Dark" : "Light"}
-            </span>
-          ),
-          showChevron: false,
-        },
-      ],
-    },
-    {
-      key: "help",
-      items: [
-        {
-          key: "support",
-          icon: <HelpCircle className="w-5 h-5" />,
-          title: "Contact Support",
-          onClick: () => console.log("Contact Support"),
-        },
-        {
-          key: "terms",
-          icon: <FileCheck className="w-5 h-5" />,
-          title: "Terms & Conditions",
-          onClick: () => console.log("Terms & Conditions"),
-        },
-      ],
-    },
-  ];
+    }
+  | {
+      type: "component";
+      component?: ReactNode;
+      render?: (user?: UserType) => ReactNode;
+    };
+
+export const SettingsDialog = ({
+  children,
+  user: _user,
+  extraTopItems,
+}: {
+  children: ReactNode;
+  user?: UserType;
+  extraTopItems?: DialogListItem[];
+}) => {
+  const sections = createSettingsSections();
 
   return (
     <Dialog>
@@ -418,36 +307,77 @@ export const SettingsDialog = ({
           <DialogTitle className="text-xl font-semibold text-foreground">
             Settings
           </DialogTitle>
-
           {/* User Profile Section */}
-          <div className="flex items-center gap-3 pt-2 pb-2">
-            <Avatar className="w-12 h-12 border-2 border-primary/20">
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-semibold">
-                JD
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <div className="font-medium text-foreground">John Doe</div>
-              <div className="text-sm text-muted-foreground">@johndoe</div>
-            </div>
-          </div>
+          <UserInfo user={_user} />
         </DialogHeader>
 
         <Separator className="bg-border/30" />
 
         <div className="overflow-y-auto max-h-[calc(85vh-140px)]">
+          {/* Optional consumer-provided items at the very top */}
+          {extraTopItems && extraTopItems.length > 0 && (
+            <div className="py-2">
+              {extraTopItems.map((it, idx) => {
+                if ((it as any).type === "component") {
+                  const comp = it as Extract<
+                    DialogListItem,
+                    { type: "component" }
+                  >;
+                  const node = comp.render
+                    ? comp.render(_user)
+                    : comp.component;
+                  return (
+                    <div key={`extra-${idx}`} className="px-6 py-3">
+                      {node}
+                    </div>
+                  );
+                }
+                const row = it as Extract<DialogListItem, { type?: "item" }>;
+                return (
+                  <SettingsItem
+                    key={`extra-${idx}`}
+                    icon={(row as any).icon}
+                    title={(row as any).title}
+                    onClick={row.onClick}
+                    trailing={row.trailing}
+                    showChevron={row.showChevron}
+                  />
+                );
+              })}
+              <Separator className="bg-border/30" />
+            </div>
+          )}
           {sections.map((section, idx) => (
             <div key={section.key} className="py-2">
-              {section.items.map((it) => (
-                <SettingsItem
-                  key={it.key}
-                  icon={it.icon}
-                  title={it.title}
-                  onClick={it.onClick}
-                  trailing={it.trailing}
-                  showChevron={it.showChevron}
-                />
-              ))}
+              {section.items.map((it) => {
+                if ((it as any).type === "component") {
+                  const comp = it as Extract<
+                    DialogListItem,
+                    { type: "component" }
+                  > & { key: string };
+                  const node = comp.render
+                    ? comp.render(_user)
+                    : comp.component;
+                  return (
+                    <div key={comp.key} className="px-6 py-3">
+                      {node}
+                    </div>
+                  );
+                }
+                const row = it as Extract<DialogListItem, { type?: "item" }> & {
+                  key: string;
+                };
+                return (
+                  <SettingsItem
+                    key={(row as any).key}
+                    icon={(row as any).icon}
+                    title={(row as any).title}
+                    onClick={row.onClick}
+                    trailing={row.trailing}
+                    showChevron={row.showChevron}
+                  />
+                );
+              })}
               {idx < sections.length - 1 && (
                 <Separator className="bg-border/30" />
               )}
