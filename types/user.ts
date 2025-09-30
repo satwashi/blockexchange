@@ -1,5 +1,6 @@
 import { TelegramBodySchema } from "@/telegram-oauth";
 import z from "zod";
+import { KycStatus } from "@/types/kyc/kyc";
 
 export type CreateUserPayload = {
   id: string | number;
@@ -29,4 +30,5 @@ export type UserType = {
   ban_expires?: Date;
   telegram_id?: string | null;
   username?: string | null;
+  kyc_status?: KycStatus | null;
 };

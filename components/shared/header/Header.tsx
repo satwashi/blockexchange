@@ -5,8 +5,8 @@ import { auth } from "@/utils/auth";
 import { headers } from "next/headers";
 
 import DashboardBtn from "./dashboard-btn";
-
-import UserDropDown from "./user-drop-down";
+import { UserMenu } from "./user-menu/UserMenu";
+import { KycStatus } from "@/types/kyc/kyc";
 
 export async function Header() {
   const session = await auth.api.getSession({
@@ -27,13 +27,14 @@ export async function Header() {
           {!session && <NavbarAuth />}
           {hasDashboardAccess && <DashboardBtn />}
           {user && (
-            <UserDropDown
-              email={user.email}
-              id={user.id}
-              image={user.image}
-              name={user.name}
-              username={user.username}
-              hasDashboardAccess={hasDashboardAccess}
+            <UserMenu
+              user={{
+                ...user,
+                kyc_status: ((s: any) =>
+                  s === "verified" || s === "pending" || s === "rejected"
+                    ? (s as KycStatus)
+                    : null)(user.kyc_status),
+              }}
             />
           )}
         </div>
