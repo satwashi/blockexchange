@@ -1,9 +1,12 @@
 import TrustIndicators from "./trust-indicators";
-import HeroLogin from "./hero-login";
+
 import CoinShowCase from "./coin-showcase/coin-show-case";
 import { Button } from "@/components/ui/button";
 import { getServerSession } from "@/server/user/users";
-import LoggedInCtas from "@/app/(main)/_cmps/hero/_logged-in-ctas";
+
+import GoogleLoging from "@/components/forms/google-loging";
+import Link from "next/link";
+import LoggedInCta from "./hero/_logged-in-ctas";
 
 export async function HeroSection() {
   const sessionResult = await getServerSession();
@@ -26,19 +29,23 @@ export async function HeroSection() {
                 Join Blockechange and start your journey today.
               </p>
               {isLoggedIn ? (
-                <LoggedInCtas userVerified={userVerified} />
+                <LoggedInCta userVerified={userVerified} />
               ) : (
                 <div className="flex flex-wrap gap-3">
                   <Button asChild>
-                    <a href="/signup">Create free account</a>
+                    <Link href="/signup">Create free account</Link>
                   </Button>
+                  <GoogleLoging
+                    className="flex items-center justify-center gap-2 p-1"
+                    text="Sign In"
+                  />
                   <Button variant="outline" asChild>
-                    <a href="/market">Explore markets</a>
+                    <Link href="/market">Explore markets</Link>
                   </Button>
                 </div>
               )}
             </div>
-            {!isLoggedIn && <HeroLogin />}
+
             <TrustIndicators />
           </div>
 

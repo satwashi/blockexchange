@@ -1,12 +1,15 @@
+"use client";
 import { signIn } from "@/utils/auth-client";
 import { Button } from "../ui/button";
 
 interface GoogleLoginProps {
   className?: string;
+  text?: string;
 }
 
 export default function GoogleLogin({
   className = "w-[220px] md:w-[260px] flex items-center justify-center gap-2",
+  text,
 }: GoogleLoginProps) {
   const handleGoogleLogin = async () => {
     await signIn.social({
@@ -50,7 +53,7 @@ export default function GoogleLogin({
         <path fill="none" d="M0 0h48v48H0z" />
       </svg>
 
-      <span className="font-medium">Continue with Google</span>
+      <span className="font-medium">{text || "Continue with Google"}</span>
     </Button>
   );
 }
