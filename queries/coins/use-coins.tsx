@@ -99,52 +99,106 @@ export const useCoins = () => {
   useEffect(() => {
     if (typeof window === "undefined") return; // SSR safety
 
-    const ws = new WebSocket(
-      "wss://stream.binance.com:9443/stream?streams=!ticker@arr"
-    );
+    let ws: WebSocket | null = null;
+    let reconnectTimeout: NodeJS.Timeout | null = null;
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 5;
 
-    ws.onopen = () => console.log("✅ Binance WebSocket connected");
-
-    ws.onmessage = (event) => {
+    const connectWebSocket = () => {
       try {
-        const parsed = JSON.parse(event.data);
-        const data = parsed.data || parsed; // Binance wraps in { stream, data }
+        ws = new WebSocket(
+          "wss://stream.binance.com:9443/stream?streams=!ticker@arr"
+        );
 
-        const updated: CryptoData[] = data
-          .filter(
-            (coin: any) =>
-              coin.s.endsWith("USDT") &&
-              !coin.s.includes("DOWN") &&
-              !coin.s.includes("UP") &&
-              !coin.s.includes("BEAR") &&
-              !coin.s.includes("BULL")
-          )
-          .map((c: any, index: number) => ({
-            symbol: c.s.replace("USDT", ""),
-            price: parseFloat(c.c),
-            change1h: parseFloat(c.P) * 0.3,
-            change24h: parseFloat(c.P),
-            change7d: parseFloat(c.P) * 1.2,
-            volume24h: parseFloat(c.v) * parseFloat(c.c),
-            marketCap: parseFloat(c.v) * parseFloat(c.c) * (100 - index * 2),
-            priceHistory: generateMockPriceHistory(
-              parseFloat(c.c),
-              parseFloat(c.P)
-            ),
-          }))
-          .sort((a, b) => b.volume24h - a.volume24h)
-          .slice(0, 100);
+        ws.onopen = () => {
+          console.log("✅ Binance WebSocket connected");
+          reconnectAttempts = 0; // Reset on successful connection
+        };
 
-        queryClient.setQueryData(["coins"], updated);
+        ws.onmessage = (event) => {
+          try {
+            const parsed = JSON.parse(event.data);
+            const data = parsed.data || parsed; // Binance wraps in { stream, data }
+
+            const updated: CryptoData[] = data
+              .filter(
+                (coin: any) =>
+                  coin.s.endsWith("USDT") &&
+                  !coin.s.includes("DOWN") &&
+                  !coin.s.includes("UP") &&
+                  !coin.s.includes("BEAR") &&
+                  !coin.s.includes("BULL")
+              )
+              .map((c: any, index: number) => ({
+                symbol: c.s.replace("USDT", ""),
+                price: parseFloat(c.c),
+                change1h: parseFloat(c.P) * 0.3,
+                change24h: parseFloat(c.P),
+                change7d: parseFloat(c.P) * 1.2,
+                volume24h: parseFloat(c.v) * parseFloat(c.c),
+                marketCap:
+                  parseFloat(c.v) * parseFloat(c.c) * (100 - index * 2),
+                priceHistory: generateMockPriceHistory(
+                  parseFloat(c.c),
+                  parseFloat(c.P)
+                ),
+              }))
+              .sort((a, b) => b.volume24h - a.volume24h)
+              .slice(0, 100);
+
+            queryClient.setQueryData(["coins"], updated);
+          } catch (err) {
+            console.error("❌ WebSocket parse error:", err);
+          }
+        };
+
+        ws.onerror = (err) => {
+          console.warn(
+            "⚠️ WebSocket connection error (this is normal in some environments):",
+            err
+          );
+          // Don't log the full error object to avoid console spam
+        };
+
+        ws.onclose = (event) => {
+          console.log("🔌 Binance WebSocket closed", event.code, event.reason);
+
+          // Attempt to reconnect if not a normal closure
+          if (event.code !== 1000 && reconnectAttempts < maxReconnectAttempts) {
+            reconnectAttempts++;
+            const delay = Math.min(
+              1000 * Math.pow(2, reconnectAttempts),
+              30000
+            ); // Exponential backoff, max 30s
+            console.log(
+              `🔄 Attempting to reconnect in ${delay}ms (attempt ${reconnectAttempts}/${maxReconnectAttempts})`
+            );
+
+            reconnectTimeout = setTimeout(() => {
+              connectWebSocket();
+            }, delay);
+          } else if (reconnectAttempts >= maxReconnectAttempts) {
+            console.log(
+              "❌ Max reconnection attempts reached. Falling back to REST API only."
+            );
+          }
+        };
       } catch (err) {
-        console.error("❌ WebSocket parse error:", err);
+        console.error("❌ Failed to create WebSocket connection:", err);
       }
     };
 
-    ws.onerror = (err) => console.error("❌ WebSocket error:", err);
-    ws.onclose = () => console.log("🔌 Binance WebSocket closed");
+    // Start the connection
+    connectWebSocket();
 
-    return () => ws.close();
+    return () => {
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+      }
+      if (ws) {
+        ws.close(1000, "Component unmounting");
+      }
+    };
   }, [queryClient]);
 
   // ✅ Derived data
