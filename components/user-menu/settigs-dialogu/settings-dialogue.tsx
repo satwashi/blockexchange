@@ -302,7 +302,7 @@ export const SettingsDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-md max-h-[85vh] p-0 overflow-hidden bg-card border-border/50 shadow-2xl animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-8 duration-300">
+      <DialogContent className="max-w-md max-h-[85vh] p-0 pb-4 overflow-y-scroll bg-card border-border/50 shadow-2xl animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-8 duration-300">
         <DialogHeader className="px-6 pt-6 pb-4 space-y-4">
           <DialogTitle className="text-xl font-semibold text-foreground">
             Settings
@@ -313,10 +313,16 @@ export const SettingsDialog = ({
 
         <Separator className="bg-border/30" />
 
-        <div className="overflow-y-auto max-h-[calc(85vh-140px)]">
+        <div
+          className="overflow-y-auto max-h-[calc(85vh-140px)] custom-scrollbar"
+          style={{
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(156, 163, 175, 0.3) transparent",
+          }}
+        >
           {/* Optional consumer-provided items at the very top */}
           {extraTopItems && extraTopItems.length > 0 && (
-            <div className="py-2">
+            <div>
               {extraTopItems.map((it, idx) => {
                 if ((it as any).type === "component") {
                   const comp = it as Extract<
@@ -326,11 +332,7 @@ export const SettingsDialog = ({
                   const node = comp.render
                     ? comp.render(_user)
                     : comp.component;
-                  return (
-                    <div key={`extra-${idx}`} className="px-6 py-3">
-                      {node}
-                    </div>
-                  );
+                  return <div key={`extra-${idx}`}>{node}</div>;
                 }
                 const row = it as Extract<DialogListItem, { type?: "item" }>;
                 return (
@@ -348,7 +350,19 @@ export const SettingsDialog = ({
             </div>
           )}
           {sections.map((section, idx) => (
-            <div key={section.key} className="py-2">
+            <div
+              key={section.key}
+              className={idx < sections.length - 1 ? "mb-4" : ""}
+            >
+              {/* Section Header */}
+              <div className="px-6 py-2">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  {section.key === "account" && "Account"}
+                  {section.key === "identity" && "Identity & Verification"}
+                  {section.key === "preferences" && "Preferences"}
+                  {section.key === "help" && "Help & Support"}
+                </h3>
+              </div>
               {section.items.map((it) => {
                 if ((it as any).type === "component") {
                   const comp = it as Extract<
@@ -358,11 +372,7 @@ export const SettingsDialog = ({
                   const node = comp.render
                     ? comp.render(_user)
                     : comp.component;
-                  return (
-                    <div key={comp.key} className="px-6 py-3">
-                      {node}
-                    </div>
-                  );
+                  return <div key={comp.key}>{node}</div>;
                 }
                 const row = it as Extract<DialogListItem, { type?: "item" }> & {
                   key: string;

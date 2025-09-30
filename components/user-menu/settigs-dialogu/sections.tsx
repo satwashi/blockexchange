@@ -73,21 +73,21 @@ export function createSettingsSections(): Array<{
         },
       ],
     },
-    {
-      key: "help",
-      items: [
-        {
-          key: "support",
-          type: "component",
-          render: () => <ContactSupportSetting />,
-        },
-        {
-          key: "terms",
-          icon: <FileCheck className="w-5 h-5" />,
-          title: "Terms & Conditions",
-          onClick: () => console.log("Terms & Conditions"),
-        },
-      ],
-    },
+    // {
+    //   key: "help",
+    //   items: [
+    //     {
+    //       key: "support",
+    //       type: "component",
+    //       render: () => <ContactSupportSetting />,
+    //     },
+    //     {
+    //       key: "terms",
+    //       icon: <FileCheck className="w-5 h-5" />,
+    //       title: "Terms & Conditions",
+    //       onClick: () => console.log("Terms & Conditions"),
+    //     },
+    //   ],
+    // },
   ];
 }
