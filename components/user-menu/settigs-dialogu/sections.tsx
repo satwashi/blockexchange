@@ -1,13 +1,10 @@
 import type { ReactNode } from "react";
 import type { UserType } from "@/types/user";
 import { Palette, FileCheck } from "lucide-react";
-import { ModeToggle } from "@/components/theme/theme-togle";
-import { Button } from "@/components/ui/button";
+
 import EditProfileSetting from "./sections_cmps/EditProfileSetting";
 import ChangePasswordSetting from "./sections_cmps/changePassword";
-import PrivacySecuritySetting from "./sections_cmps/PrivacySecuritySetting";
-import VerificationStatusSetting from "./sections_cmps/VerificationStatusSetting";
-import UploadDocumentsSetting from "./sections_cmps/UploadDocumentsSetting";
+
 import EmailAlertsSetting from "./sections_cmps/EmailAlertsSetting";
 import SMSAlertsSetting from "./sections_cmps/SMSAlertsSetting";
 import ContactSupportSetting from "./sections_cmps/ContactSupportSetting";
