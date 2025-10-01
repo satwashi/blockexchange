@@ -4,9 +4,6 @@ import {
   ArrowDownCircle,
   ArrowUpCircle,
   List,
-  BookOpenText,
-  Newspaper,
-  Info,
   BriefcaseBusiness,
   LogOut,
   Settings,
@@ -75,7 +72,7 @@ const menuItems: UserMenuEntry[] = [
   {
     type: "component",
     render: () => (
-      <Link href="/deposits">
+      <Link href="/transactions?transaction=deposit">
         <Button
           variant="outline"
           size="lg"
@@ -90,7 +87,7 @@ const menuItems: UserMenuEntry[] = [
   {
     type: "component",
     render: () => (
-      <Link href="/withdrawals">
+      <Link href="/transactions?transaction=withdraw">
         <Button
           variant="outline"
           size="lg"
