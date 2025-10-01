@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { signUp } from "@/utils/auth-client";
+import { useSignUp } from "@/queries/auth/use-sign-up";
 
 import { z } from "zod";
 import { toast } from "sonner";
@@ -30,6 +30,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import Logo from "../shared/header/logo";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   username: z.string().min(3),
@@ -42,6 +43,8 @@ export default function SignupForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
+  const [agree, setAgree] = useState(false);
+  const { mutate: signUpMutation, isPending } = useSignUp();
 
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,22 +65,33 @@ export default function SignupForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    if (!agree) {
+      toast.error("You must agree to the Terms and Privacy Policy.");
+      setIsLoading(false);
+      return;
+    }
 
-    try {
-      await signUp.email({
+    signUpMutation(
+      {
         email: values.email,
         password: values.password,
-        name: values.username,
-      });
-
-      toast.success(
-        "Signed up successfully. Please check your email for verification."
-      );
-      router.push("/dashboard");
-    } catch (error) {
-      const e = error as Error;
-      toast.error(e.message || "An unknown error occurred.");
-    }
+        username: values.username,
+      },
+      {
+        onSuccess: (res) => {
+          if (res?.success) {
+            toast.success(res.message || "Signed up successfully.");
+            router.push("/");
+          } else {
+            toast.error(res?.message || "Sign up failed.");
+          }
+        },
+        onError: (e) => {
+          toast.error(e.message || "An unknown error occurred.");
+        },
+        onSettled: () => setIsLoading(false),
+      }
+    );
 
     setIsLoading(false);
   }
@@ -125,7 +139,7 @@ export default function SignupForm({
                         <FormItem>
                           <FormLabel>Username</FormLabel>
                           <FormControl>
-                            <Input placeholder="shadcn" {...field} />
+                            <Input placeholder="john doe" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -165,17 +179,43 @@ export default function SignupForm({
                           </FormItem>
                         )}
                       />
-                      <Link
+                      {/* <Link
                         href="/forgot-password"
                         className="ml-auto text-sm underline-offset-4 hover:underline"
                       >
                         Forgot your password?
-                      </Link>
+                      </Link> */}
                     </div>
                   </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? (
-                      <Loader2 className="size-4 animate-spin" />
+                  <div className="grid gap-3">
+                    <label className="flex items-center gap-2 text-sm">
+                      <Checkbox
+                        id="agree"
+                        checked={agree}
+                        onCheckedChange={(v) => setAgree(Boolean(v))}
+                      />
+                      <span>
+                        I agree to the
+                        <a href="/terms" className="underline mx-1">
+                          Terms
+                        </a>
+                        and
+                        <a href="/privacy" className="underline mx-1">
+                          Privacy Policy
+                        </a>
+                      </span>
+                    </label>
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={!agree || isLoading || isPending}
+                  >
+                    {isLoading || isPending ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="size-4 animate-spin" />
+                        Signing up...
+                      </span>
                     ) : (
                       "Signup"
                     )}

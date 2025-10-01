@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Dialog,
   DialogContent,
@@ -12,13 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-
 import {
   Mail,
   Shield,
   Calendar,
   AlertTriangle,
-  CheckCircle2,
   Clock,
   MessageSquare,
 } from "lucide-react";

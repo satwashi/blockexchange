@@ -150,33 +150,35 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
           <UserInfo user={user} />
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {menuItems.map((item, index) => {
-          if ((item as any).type === "component") {
-            const compItem = item as Extract<
-              UserMenuEntry,
-              { type: "component" }
-            >;
-            const node = compItem.render
-              ? compItem.render(user)
-              : compItem.component;
-            return <div key={index}>{node}</div>;
-          }
-          const it = item as Extract<UserMenuEntry, { type?: "item" }>;
-          return (
-            <DropdownMenuItem
-              key={index}
-              onClick={it.onClick}
-              className={`gap-3 cursor-pointer ${
-                it.variant === "destructive"
-                  ? "text-destructive focus:text-destructive focus:bg-destructive/10"
-                  : ""
-              }`}
-            >
-              <it.icon className="h-4 w-4" />
-              {it.label}
-            </DropdownMenuItem>
-          );
-        })}
+        <div className="flex flex-col gap-2">
+          {menuItems.map((item, index) => {
+            if ((item as any).type === "component") {
+              const compItem = item as Extract<
+                UserMenuEntry,
+                { type: "component" }
+              >;
+              const node = compItem.render
+                ? compItem.render(user)
+                : compItem.component;
+              return <div key={index}>{node}</div>;
+            }
+            const it = item as Extract<UserMenuEntry, { type?: "item" }>;
+            return (
+              <DropdownMenuItem
+                key={index}
+                onClick={it.onClick}
+                className={`gap-3  cursor-pointer ${
+                  it.variant === "destructive"
+                    ? "text-destructive focus:text-destructive focus:bg-destructive/10"
+                    : ""
+                }`}
+              >
+                <it.icon className="h-4 w-4" />
+                {it.label}
+              </DropdownMenuItem>
+            );
+          })}
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

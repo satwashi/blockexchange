@@ -8,6 +8,9 @@ import { telegramOAuth } from "../telegram-oauth/index";
 import syncUser from "@/server/user/sync-user";
 const botToken = process.env.TELEGRAM_BOT_TOKEN!;
 export const auth = betterAuth({
+  emailAndPassword: {
+    enabled: true,
+  },
   baseURL: process.env.NEXT_PUBLIC_APP_URL,
   database: drizzleAdapter(db, {
     provider: "pg",

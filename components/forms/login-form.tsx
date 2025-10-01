@@ -8,6 +8,10 @@ import { Label } from "@/components/ui/label";
 import Logo from "../shared/header/logo";
 import Link from "next/link";
 import TelegramLogin from "./telegram-login";
+import { useState } from "react";
+import { useSignIn } from "@/queries/auth/use-sign-in";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import GoogleLogin from "./google-loging";
 
@@ -15,10 +19,26 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const { mutate: signIn, isPending } = useSignIn();
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Your own email/password sign-in logic
-    // await signInServer();
+    signIn(
+      { email, password },
+      {
+        onSuccess: (res) => {
+          if (res?.success) {
+            router.push("/");
+          } else {
+            toast.error(res?.message || "Login failed.");
+          }
+        },
+        onError: (err) => toast.error(err.message || "Login failed."),
+      }
+    );
   };
 
   return (
@@ -40,6 +60,8 @@ export function LoginForm({
                     type="email"
                     placeholder="m@example.com"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="grid gap-3">
@@ -49,9 +71,11 @@ export function LoginForm({
                     type="password"
                     placeholder="your password"
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={isPending}>
                   Login
                 </Button>
               </div>
