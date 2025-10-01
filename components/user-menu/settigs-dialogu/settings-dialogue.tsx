@@ -227,6 +227,8 @@
 //   );
 // }
 
+"use client";
+
 import { type ReactNode } from "react";
 import type { UserType } from "@/types/user";
 import {

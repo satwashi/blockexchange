@@ -26,9 +26,9 @@ const menuItems: UserMenuEntry[] = [
     render: (user) => (
       <ProfileDialog user={user}>
         <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start p-2 gap-2"
+          variant="outline"
+          size="lg"
+          className="w-full justify-start p-6 gap-2"
         >
           <User className="mr-2 h-4 w-4" />
           Profile
@@ -43,8 +43,8 @@ const menuItems: UserMenuEntry[] = [
     render: (user) => (
       <SettingsDialog user={user}>
         <Button
-          variant="ghost"
-          size="sm"
+          variant="outline"
+          size="lg"
           className="w-full justify-start p-2 gap-2"
         >
           <Settings className="mr-2 h-4 w-4" />
@@ -60,8 +60,8 @@ const menuItems: UserMenuEntry[] = [
     render: () => (
       <Link href="/">
         <Button
-          variant="ghost"
-          size="sm"
+          variant="outline"
+          size="lg"
           className="w-full justify-start p-2 gap-2"
         >
           <Home className="mr-2 h-4 w-4" />
@@ -77,8 +77,8 @@ const menuItems: UserMenuEntry[] = [
     render: () => (
       <Link href="/deposits">
         <Button
-          variant="ghost"
-          size="sm"
+          variant="outline"
+          size="lg"
           className="w-full justify-start p-2 gap-2"
         >
           <ArrowDownCircle className="mr-2 h-4 w-4 text-green-500" />
@@ -92,8 +92,8 @@ const menuItems: UserMenuEntry[] = [
     render: () => (
       <Link href="/withdrawals">
         <Button
-          variant="ghost"
-          size="sm"
+          variant="outline"
+          size="lg"
           className="w-full justify-start p-2 gap-2"
         >
           <ArrowUpCircle className="mr-2 h-4 w-4 text-red-500" />
@@ -107,8 +107,8 @@ const menuItems: UserMenuEntry[] = [
     render: () => (
       <Link href="/orders">
         <Button
-          variant="ghost"
-          size="sm"
+          variant="outline"
+          size="lg"
           className="w-full justify-start p-2 gap-2"
         >
           <List className="mr-2 h-4 w-4" />
@@ -118,61 +118,61 @@ const menuItems: UserMenuEntry[] = [
     ),
   },
 
-  // Content
-  {
-    type: "component",
-    render: () => (
-      <Link href="/blog">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start p-2 gap-2"
-        >
-          <BookOpenText className="mr-2 h-4 w-4" />
-          Blog
-        </Button>
-      </Link>
-    ),
-  },
-  {
-    type: "component",
-    render: () => (
-      <Link href="/news">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start p-2 gap-2"
-        >
-          <Newspaper className="mr-2 h-4 w-4" />
-          News
-        </Button>
-      </Link>
-    ),
-  },
+  // // Content
+  // {
+  //   type: "component",
+  //   render: () => (
+  //     <Link href="/blog">
+  //       <Button
+  //         variant="outline"
+  //         size="lg"
+  //         className="w-full justify-start p-2 gap-2"
+  //       >
+  //         <BookOpenText className="mr-2 h-4 w-4" />
+  //         Blog
+  //       </Button>
+  //     </Link>
+  //   ),
+  // },
+  // {
+  //   type: "component",
+  //   render: () => (
+  //     <Link href="/news">
+  //       <Button
+  //         variant="outline"
+  //         size="lg"
+  //         className="w-full justify-start p-2 gap-2"
+  //       >
+  //         <Newspaper className="mr-2 h-4 w-4" />
+  //         News
+  //       </Button>
+  //     </Link>
+  //   ),
+  // },
 
-  // Company
-  {
-    type: "component",
-    render: () => (
-      <Link href="/about">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start p-2 gap-2"
-        >
-          <Info className="mr-2 h-4 w-4" />
-          About Us
-        </Button>
-      </Link>
-    ),
-  },
+  // // Company
+  // {
+  //   type: "component",
+  //   render: () => (
+  //     <Link href="/about">
+  //       <Button
+  //         variant="outline"
+  //         size="lg"
+  //         className="w-full justify-start p-2 gap-2"
+  //       >
+  //         <Info className="mr-2 h-4 w-4" />
+  //         About Us
+  //       </Button>
+  //     </Link>
+  //   ),
+  // },
   {
     type: "component",
     render: () => (
       <Link href="/careers">
         <Button
-          variant="ghost"
-          size="sm"
+          variant="outline"
+          size="lg"
           className="w-full justify-start p-2 gap-2"
         >
           <BriefcaseBusiness className="mr-2 h-4 w-4" />

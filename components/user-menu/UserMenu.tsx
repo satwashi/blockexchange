@@ -111,9 +111,9 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
                   return (
                     <Button
                       key={index}
-                      variant="ghost"
-                      size="sm"
-                      className={`w-full justify-start py-2 px-2 gap-2 m-0 rounded-md ${
+                      variant="outline"
+                      size="lg"
+                      className={`w-full justify-start py-6 px-2 gap-2 m-0 rounded-md ${
                         it.variant === "destructive"
                           ? "text-destructive hover:text-destructive hover:bg-destructive/10"
                           : ""
