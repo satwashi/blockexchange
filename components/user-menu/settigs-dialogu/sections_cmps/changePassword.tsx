@@ -8,15 +8,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Save } from "lucide-react";
+import { Eye, EyeOff, Save, Loader2 } from "lucide-react";
 import { UserType } from "@/types/user";
+import { Button } from "@/components/ui/button";
+import { useUpdateUser } from "@/queries/user/useUpdateUser";
+import { toast } from "sonner";
 
 type PasswordDialogProps = {
   user: UserType;
   children: ReactNode;
 };
-
-import { Button } from "@/components/ui/button";
 
 export default function ChangePasswordSetting({ user }: { user: UserType }) {
   return (
@@ -32,6 +33,9 @@ export default function ChangePasswordSetting({ user }: { user: UserType }) {
 }
 
 function ChangePasswordDialog({ user, children }: PasswordDialogProps) {
+  const { updatePassword, updateWithdrawalPassword, isUpdating } =
+    useUpdateUser();
+
   // State for login password form
   const [newLoginPassword, setNewLoginPassword] = useState("");
   const [confirmLoginPassword, setConfirmLoginPassword] = useState("");
@@ -44,15 +48,35 @@ function ChangePasswordDialog({ user, children }: PasswordDialogProps) {
   const [showWithdrawal, setShowWithdrawal] = useState(false);
   const [editingWithdrawal, setEditingWithdrawal] = useState(false);
 
-  const handleSave = () => {
-    console.log("New Login Password:", newLoginPassword);
-    console.log("Confirm Login Password:", confirmLoginPassword);
+  const handleSave = async () => {
+    try {
+      // Validate login password
+      if (newLoginPassword && confirmLoginPassword) {
+        if (newLoginPassword !== confirmLoginPassword) {
+          toast.error("Passwords don't match");
+          return;
+        }
+        if (newLoginPassword.length < 8) {
+          toast.error("Password must be at least 8 characters");
+          return;
+        }
+        await updatePassword(newLoginPassword);
+        // Clear login password fields
+        setNewLoginPassword("");
+        setConfirmLoginPassword("");
+      }
 
-    if (user.withdrawal_password !== undefined) {
-      console.log("Updated Withdrawal Password:", withdrawalPassword);
+      // Update withdrawal password if changed
+      if (
+        user.withdrawal_password !== undefined &&
+        withdrawalPassword !== user.withdrawal_password
+      ) {
+        await updateWithdrawalPassword(withdrawalPassword);
+        setEditingWithdrawal(false);
+      }
+    } catch (error) {
+      console.error("Failed to update passwords:", error);
     }
-
-    setEditingWithdrawal(false);
   };
 
   return (
@@ -140,8 +164,22 @@ function ChangePasswordDialog({ user, children }: PasswordDialogProps) {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button onClick={handleSave} className="rounded-xl px-6">
-            Save Changes
+          <Button
+            onClick={handleSave}
+            className="rounded-xl px-6"
+            disabled={isUpdating}
+          >
+            {isUpdating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Save Changes
+              </>
+            )}
           </Button>
         </div>
       </DialogContent>

@@ -108,15 +108,6 @@ export function ProfileDialog({
                     {user.role}
                   </Badge>
                 )}
-                {emailVerified && (
-                  <Badge
-                    variant="default"
-                    className="bg-success hover:bg-success/90"
-                  >
-                    <CheckCircle2 className="mr-1 h-3 w-3" />
-                    Verified
-                  </Badge>
-                )}
                 {user.kyc_status && (
                   <Badge
                     variant={getKycBadgeVariant(user.kyc_status)}

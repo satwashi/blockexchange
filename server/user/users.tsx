@@ -76,3 +76,29 @@ export const getServerSession = async () => {
     };
   }
 };
+
+export const updateUserServer = async (userData: {
+  name?: string;
+  withdrawal_password?: string;
+  password?: string;
+}) => {
+  try {
+    const response = await auth.api.updateUser({
+      body: userData,
+      headers: await headers(),
+    });
+
+    return {
+      success: true,
+      message: "User updated successfully.",
+      data: response,
+    };
+  } catch (error) {
+    const e = error as Error;
+
+    return {
+      success: false,
+      message: e.message || "Failed to update user.",
+    };
+  }
+};

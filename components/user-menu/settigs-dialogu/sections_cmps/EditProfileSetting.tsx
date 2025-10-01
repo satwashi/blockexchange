@@ -1,4 +1,4 @@
-import { User } from "lucide-react";
+import { User, Save, Loader2 } from "lucide-react";
 import { ReactNode } from "react";
 import { useState } from "react";
 import {
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { UserType } from "@/types/user";
+import { useUpdateUser } from "@/queries/user/useUpdateUser";
 export default function EditProfileSetting({ user }: { user: UserType }) {
   return (
     <UserDialog user={user}>
@@ -32,10 +33,38 @@ type UserDialogProps = {
 };
 
 function UserDialog({ user, children }: UserDialogProps) {
+  const { updateName, isUpdating } = useUpdateUser();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user.name);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const shortId = user.id.slice(0, 5); // Pay ID: first 5 letters of ID
+
+  const handleSave = async () => {
+    if (!hasChanges) {
+      setEditing(false);
+      return;
+    }
+
+    try {
+      await updateName(name); // Now updating the actual name field
+      setEditing(false);
+      setHasChanges(false);
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+    }
+  };
+
+  const handleNameChange = (newName: string) => {
+    setName(newName);
+    setHasChanges(newName !== user.name);
+  };
+
+  const handleCancel = () => {
+    setName(user.name);
+    setEditing(false);
+    setHasChanges(false);
+  };
 
   return (
     <Dialog>
@@ -64,24 +93,46 @@ function UserDialog({ user, children }: UserDialogProps) {
 
           <div className="flex flex-col space-y-2">
             {/* Editable Name */}
-            <div
-              className="relative group"
-              onMouseEnter={() => setEditing(true)}
-              onMouseLeave={() => setEditing(false)}
-            >
+            <div className="relative group">
               {editing ? (
                 <div className="flex items-center gap-2">
                   <Input
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => handleNameChange(e.target.value)}
                     className="w-48 border border-gray-300"
+                    placeholder="Enter name"
                   />
-                  <Pencil className="w-4 h-4 text-gray-500" />
+                  <div className="flex gap-1">
+                    <Button
+                      size="sm"
+                      onClick={handleSave}
+                      disabled={isUpdating || !hasChanges}
+                      className="h-8 px-2"
+                    >
+                      {isUpdating ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Save className="w-3 h-3" />
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleCancel}
+                      disabled={isUpdating}
+                      className="h-8 px-2"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-1">
+                <div
+                  className="flex items-center gap-1 cursor-pointer"
+                  onClick={() => setEditing(true)}
+                >
                   <span className="text-lg font-medium">{name}</span>
-                  <Pencil className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" />
+                  <Pencil className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               )}
             </div>

@@ -51,6 +51,7 @@ const UserInfo = ({ user }: { user: UserType }) => {
                 kycColors[user.kyc_status] || "bg-gray-100 text-gray-600"
               }`}
             >
+              {" "}
               {getKycStatusLabel(user.kyc_status)}
             </Badge>
           )}
