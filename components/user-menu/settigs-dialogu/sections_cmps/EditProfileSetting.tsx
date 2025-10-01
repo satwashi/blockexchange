@@ -1,6 +1,7 @@
-import { User, Save, Loader2 } from "lucide-react";
-import { ReactNode } from "react";
-import { useState } from "react";
+"use client";
+
+import { User, Save, Loader2, Pencil, X, ChevronRight } from "lucide-react";
+import { ReactNode, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,18 +11,22 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { UserType } from "@/types/user";
 import { useUpdateUser } from "@/queries/user/useUpdateUser";
+
 export default function EditProfileSetting({ user }: { user: UserType }) {
   return (
     <UserDialog user={user}>
-      <Button variant="ghost" className="w-full justify-start px-6 py-2 m-0">
+      <Button
+        variant="ghost"
+        className="w-full justify-between px-6 py-2 m-0 rounded-lg"
+      >
         <div className="flex items-center gap-3">
           <User className="w-5 h-5 text-muted-foreground" />
           <span className="text-sm font-medium">Edit Profile</span>
         </div>
+        <ChevronRight className="w-4 h-4 text-muted-foreground" />
       </Button>
     </UserDialog>
   );
@@ -38,7 +43,7 @@ function UserDialog({ user, children }: UserDialogProps) {
   const [name, setName] = useState(user.name);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const shortId = user.id.slice(0, 5); // Pay ID: first 5 letters of ID
+  const shortId = user.id.slice(0, 5);
 
   const handleSave = async () => {
     if (!hasChanges) {
@@ -47,7 +52,7 @@ function UserDialog({ user, children }: UserDialogProps) {
     }
 
     try {
-      await updateName(name); // Now updating the actual name field
+      await updateName(name);
       setEditing(false);
       setHasChanges(false);
     } catch (error) {
@@ -76,7 +81,7 @@ function UserDialog({ user, children }: UserDialogProps) {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
           {user.image ? (
             <Image
               src={user.image}
@@ -91,28 +96,28 @@ function UserDialog({ user, children }: UserDialogProps) {
             </div>
           )}
 
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2 w-full">
             {/* Editable Name */}
-            <div className="relative group">
+            <div className="relative group w-full">
               {editing ? (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-center gap-2 w-full">
                   <Input
                     value={name}
                     onChange={(e) => handleNameChange(e.target.value)}
-                    className="w-48 border border-gray-300"
+                    className="w-full sm:w-48 border border-gray-300"
                     placeholder="Enter name"
                   />
-                  <div className="flex gap-1">
+                  <div className="flex items-center gap-1 w-full sm:w-auto justify-end">
                     <Button
                       size="sm"
                       onClick={handleSave}
                       disabled={isUpdating || !hasChanges}
-                      className="h-8 px-2"
+                      className="h-8 px-3 flex items-center justify-center"
                     >
                       {isUpdating ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        <Save className="w-3 h-3" />
+                        <Save className="w-4 h-4" />
                       )}
                     </Button>
                     <Button
@@ -120,9 +125,10 @@ function UserDialog({ user, children }: UserDialogProps) {
                       variant="outline"
                       onClick={handleCancel}
                       disabled={isUpdating}
-                      className="h-8 px-2"
+                      className="h-8 px-3 flex items-center justify-center hover:bg-red-50 hover:text-red-600 transition-colors"
+                      title="Cancel"
                     >
-                      Cancel
+                      <X className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
@@ -131,7 +137,7 @@ function UserDialog({ user, children }: UserDialogProps) {
                   className="flex items-center gap-1 cursor-pointer"
                   onClick={() => setEditing(true)}
                 >
-                  <span className="text-lg font-medium">{name}</span>
+                  <span className="text-lg font-medium truncate">{name}</span>
                   <Pencil className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               )}
