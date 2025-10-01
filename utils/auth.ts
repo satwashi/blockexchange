@@ -6,6 +6,7 @@ import { nextCookies } from "better-auth/next-js";
 import { admin, createAuthMiddleware } from "better-auth/plugins";
 import { telegramOAuth } from "../telegram-oauth/index";
 import syncUser from "@/server/user/sync-user";
+import createUserWallets from "@/server/wallets/create-user-wallets";
 const botToken = process.env.TELEGRAM_BOT_TOKEN!;
 export const auth = betterAuth({
   emailAndPassword: {
@@ -28,16 +29,22 @@ export const auth = betterAuth({
     },
   },
 
-  // databaseHooks: {
-  //   user: {
-  //     create: {
-  //       after: async (user) => {
-  //         const { id } = user;
-  //         console.log(id, "idddddddddddddddddddddddddddddddddddddddd");
-  //       },
-  //     },
-  //   },
-  // },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          const { id } = user;
+          console.log(
+            id,
+            "idddddddddddddddddddddddddddddddddddddddd , new use cominng"
+          );
+
+          await syncUser({ id });
+          await createUserWallets(id);
+        },
+      },
+    },
+  },
 
   hooks: {
     after: createAuthMiddleware(async (ctx) => {

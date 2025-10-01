@@ -2,8 +2,12 @@
 import supabaseAdmin from "@/lib/supabaseAdmin";
 import { getServerSession } from "../user/users";
 
-async function createUserWallets() {
-  const { id } = await getServerSession();
+async function createUserWallets(userId: string) {
+  let id = userId;
+  if (!id) {
+    const { id: sessionId } = await getServerSession();
+    id = sessionId;
+  }
   // 1. Fetch all wallets
   const { data: wallets, error: walletsError } = await supabaseAdmin
     .from("wallets")
