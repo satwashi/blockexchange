@@ -1,9 +1,24 @@
+"use client";
+
 import { Mail } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function EmailAlertsSetting() {
   const [emailAlerts, setEmailAlerts] = useState(true);
+
+  // Load saved preference on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("emailAlerts");
+    if (stored !== null) {
+      setEmailAlerts(stored === "true");
+    }
+  }, []);
+
+  // Save preference whenever it changes
+  useEffect(() => {
+    localStorage.setItem("emailAlerts", String(emailAlerts));
+  }, [emailAlerts]);
 
   return (
     <div className="flex items-center justify-between px-6 py-2 hover:bg-muted/50 transition-colors">

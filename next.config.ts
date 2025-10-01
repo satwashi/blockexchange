@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**", // allow all paths
+      },
+      {
+        protocol: "https",
         hostname: "images.cryptocompare.com",
         port: "",
         pathname: "/**",

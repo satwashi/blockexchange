@@ -39,12 +39,12 @@ export function createSettingsSections(): Array<{
         {
           key: "edit-profile",
           type: "component",
-          render: () => <EditProfileSetting />,
+          render: (user) => <EditProfileSetting user={user} />,
         },
         {
           key: "change-password",
           type: "component",
-          render: () => <ChangePasswordSetting />,
+          render: (user) => <ChangePasswordSetting user={user} />,
         },
       ],
     },
@@ -54,7 +54,7 @@ export function createSettingsSections(): Array<{
         {
           key: "kyc-status",
           type: "component",
-          render: () => <KycStatusSetting />,
+          render: (user) => <KycStatusSetting user={user} />,
         },
       ],
     },
