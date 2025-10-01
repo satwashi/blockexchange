@@ -2,22 +2,11 @@ import TrustIndicators from "./trust-indicators";
 
 import CoinShowCase from "./coin-showcase/coin-show-case";
 import { Button } from "@/components/ui/button";
-import { getServerSession } from "@/server/user/users";
 
 import GoogleLoging from "@/components/forms/google-loging";
 import Link from "next/link";
-import LoggedInCta from "./hero/_logged-in-ctas";
 
 export async function HeroSection() {
-  const sessionResult = await getServerSession();
-  const session = (sessionResult as any)?.session;
-  const isLoggedIn = Boolean(session);
-  const userVerified = Boolean(
-    session?.user?.verified === "verified" ||
-      session?.user?.verified === true ||
-      session?.user?.kyc_status === "verified" ||
-      session?.user?.kyc_status === "approved"
-  );
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-crypto-dark via-crypto-card to-crypto-dark" />
@@ -33,22 +22,19 @@ export async function HeroSection() {
                 Low fees, lightning-fast execution, and security-first design.
                 Join Blockechange and start your journey today.
               </p>
-              {isLoggedIn ? (
-                <LoggedInCta userVerified={userVerified} />
-              ) : (
-                <div className="flex flex-wrap gap-3">
-                  <Button asChild>
-                    <Link href="/signup">Create free account</Link>
-                  </Button>
-                  <GoogleLoging
-                    className="flex items-center justify-center gap-2 p-1"
-                    text="Sign In"
-                  />
-                  <Button variant="outline" asChild>
-                    <Link href="/market">Explore markets</Link>
-                  </Button>
-                </div>
-              )}
+
+              <div className="flex flex-wrap gap-3">
+                <Button asChild>
+                  <Link href="/signup">Create free account</Link>
+                </Button>
+                <GoogleLoging
+                  className="flex items-center justify-center gap-2 p-1"
+                  text="Sign In"
+                />
+                <Button variant="outline" asChild>
+                  <Link href="/market">Explore markets</Link>
+                </Button>
+              </div>
             </div>
 
             <TrustIndicators />

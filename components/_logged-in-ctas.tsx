@@ -46,7 +46,7 @@ const LoggedInCta = ({ userVerified }: { userVerified: boolean | string }) => {
     },
     {
       id: "wallet",
-      label: "Wallet setup",
+      label: "Deposit Crypto",
       status: userVerified ? "current" : "pending",
       href: "/wallet",
     },

@@ -2,11 +2,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -22,11 +22,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import useInitTransaction from "@/queries/transactions/use-init-transcation";
 import { ArrowDownLeft, Loader2 as WalletIcon } from "lucide-react";
 import { WalletData } from "./wallet-card";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 const depositSchema = z.object({
   amount: z
@@ -44,17 +51,23 @@ type DepositSchema = z.infer<typeof depositSchema>;
 
 type DepositDialogProps = {
   children: React.ReactNode;
-  wallet: WalletData;
-  icon: React.ReactNode;
+  wallet?: WalletData; // optional; if not provided, user selects
+  wallets?: WalletData[];
+  icon?: React.ReactNode;
 };
 
 export default function DepositDialog({
   children,
   wallet,
+  wallets,
   icon,
 }: DepositDialogProps) {
-  const { wallet_type, balance } = wallet;
+  const initial = wallet ?? wallets?.[0];
+  const [selected, setSelected] = useState<WalletData | undefined>(initial);
+  const wallet_type = selected?.wallet_type ?? wallet?.wallet_type ?? "";
+  const balance = selected?.balance ?? wallet?.balance ?? 0;
   const { initTransaction, isPending } = useInitTransaction();
+  const [open, setOpen] = useState(false);
 
   const form = useForm<DepositSchema>({
     resolver: zodResolver(depositSchema),
@@ -83,19 +96,20 @@ export default function DepositDialog({
       {
         onSuccess: () => {
           form.reset();
+          setOpen(false);
         },
       }
     );
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       {children}
-      <DialogContent className="sm:max-w-md bg-card border-border">
+      <DialogContent className="sm:max-w-md bg-card border-border max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2 text-foreground">
             <ArrowDownLeft className="h-5 w-5 text-wallet-success" />
-            <span>Deposit {wallet.wallet_type}</span>
+            <span>Deposit {wallet_type}</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -104,10 +118,43 @@ export default function DepositDialog({
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6"
           >
+            {/* Wallet chooser */}
+            {wallets && wallets.length > 0 && (
+              <div className="space-y-2">
+                <FormLabel>Choose asset</FormLabel>
+                <Select
+                  value={selected?.wallet_type}
+                  onValueChange={(val) => {
+                    const w = wallets.find((w) => w.wallet_type === val);
+                    setSelected(w);
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select asset" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {wallets.map((w) => (
+                      <SelectItem key={w.wallet_type} value={w.wallet_type}>
+                        {w.wallet_type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             {/* Wallet Info */}
             <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-              <div className="w-8 h-8 bg-wallet-gradient rounded-full flex items-center justify-center font-bold text-white text-sm">
-                {icon}
+              <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-background">
+                {wallet_type ? (
+                  <img
+                    src={`/crypto/${wallet_type.toUpperCase()}.png`}
+                    alt={wallet_type}
+                    className="h-8 w-8 object-contain"
+                  />
+                ) : (
+                  <ArrowDownLeft className="h-4 w-4 text-muted-foreground" />
+                )}
               </div>
               <div>
                 <div className="font-medium text-foreground">{wallet_type}</div>
@@ -165,18 +212,22 @@ export default function DepositDialog({
 
             {/* Actions */}
             <DialogFooter className="space-x-2">
-              <DialogClose asChild>
-                <Button type="submit" disabled={isPending}>
-                  {isPending ? (
-                    <>
-                      <WalletIcon className="h-4 w-4 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>Confirm Deposit</>
-                  )}
-                </Button>
-              </DialogClose>
+              <Button
+                type="submit"
+                disabled={isPending}
+                onClick={() => {
+                  // Closing is handled in onSuccess callback below
+                }}
+              >
+                {isPending ? (
+                  <>
+                    <WalletIcon className="h-4 w-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>Confirm Deposit</>
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>
