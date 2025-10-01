@@ -1,5 +1,4 @@
 "use client";
-
 import { Smartphone } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
