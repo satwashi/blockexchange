@@ -26,7 +26,6 @@ export default function EditProfileSetting({ user }: { user: UserType }) {
           <User className="w-5 h-5 text-muted-foreground" />
           <span className="text-sm font-medium">Edit Profile</span>
         </div>
-        <ChevronRight className="w-4 h-4 text-muted-foreground" />
       </Button>
     </UserDialog>
   );

@@ -304,7 +304,7 @@ export const SettingsDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-md max-h-[85vh] p-0 pb-4 overflow-y-scroll bg-card border-border/50 shadow-2xl animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-8 duration-300">
+      <DialogContent className="max-w-md max-h-[85vh] p-0 pb-4 overflow-y-scroll bg-card border-border/50 shadow-2xl animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-8 duration-300 m-2">
         <DialogHeader className="px-6 pt-6 pb-4 space-y-4">
           <DialogTitle className="text-xl font-semibold text-foreground">
             Settings
