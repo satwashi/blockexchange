@@ -92,36 +92,40 @@ export const UserMenu = ({ user, items }: UserMenuProps) => {
           <SheetTitle className="sr-only">Account</SheetTitle>
           <div className="mt-0 space-y-0">
             <UserInfo user={user} />
-            <Card className="p-2 mt-4">
-              {menuItems.map((item, index) => {
-                if ((item as any).type === "component") {
-                  const compItem = item as Extract<
-                    UserMenuEntry,
-                    { type: "component" }
-                  >;
-                  const node = compItem.render
-                    ? compItem.render(user)
-                    : compItem.component;
-                  return <div key={index}>{node}</div>;
-                }
-                const it = item as Extract<UserMenuEntry, { type?: "item" }>;
-                return (
-                  <Button
-                    key={index}
-                    variant="ghost"
-                    size="sm"
-                    className={`w-full justify-start p-2 gap-2 ${
-                      it.variant === "destructive"
-                        ? "text-destructive hover:text-destructive hover:bg-destructive/10"
-                        : ""
-                    }`}
-                    onClick={it.onClick}
-                  >
-                    <it.icon className="h-4 w-4" />
-                    {it.label}
-                  </Button>
-                );
-              })}
+            <Card className="px-2 py-6 mt-6">
+              <div className="flex flex-col gap-2">
+                {" "}
+                {/* controlled vertical spacing */}
+                {menuItems.map((item, index) => {
+                  if ((item as any).type === "component") {
+                    const compItem = item as Extract<
+                      UserMenuEntry,
+                      { type: "component" }
+                    >;
+                    const node = compItem.render
+                      ? compItem.render(user)
+                      : compItem.component;
+                    return <div key={index}>{node}</div>;
+                  }
+                  const it = item as Extract<UserMenuEntry, { type?: "item" }>;
+                  return (
+                    <Button
+                      key={index}
+                      variant="ghost"
+                      size="sm"
+                      className={`w-full justify-start py-2 px-2 gap-2 m-0 rounded-md ${
+                        it.variant === "destructive"
+                          ? "text-destructive hover:text-destructive hover:bg-destructive/10"
+                          : ""
+                      }`}
+                      onClick={it.onClick}
+                    >
+                      <it.icon className="h-4 w-4" />
+                      {it.label}
+                    </Button>
+                  );
+                })}
+              </div>
             </Card>
           </div>
         </SheetContent>

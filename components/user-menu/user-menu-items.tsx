@@ -1,21 +1,26 @@
 import {
-  Shield,
-  Bell,
-  CreditCard,
-  Settings,
   User,
-  HelpCircle,
+  Home,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  List,
+  BookOpenText,
+  Newspaper,
+  Info,
+  BriefcaseBusiness,
   LogOut,
+  Settings,
 } from "lucide-react";
-import { toast } from "sonner";
-import { UserMenuEntry } from "./UserMenu";
 import { queryClient } from "@/providers/query-provider";
 import { signOut } from "@/utils/auth-client";
 import { Button } from "@/components/ui/button";
 import { ProfileDialog } from "./profile-dialogue";
 import { SettingsDialog } from "./settigs-dialogu/settings-dialogue";
+import Link from "next/link";
+import { UserMenuEntry } from "./UserMenu";
 
 const menuItems: UserMenuEntry[] = [
+  // Profile
   {
     type: "component",
     render: (user) => (
@@ -23,8 +28,7 @@ const menuItems: UserMenuEntry[] = [
         <Button
           variant="ghost"
           size="sm"
-          className={`w-full justify-start p-2 gap-2  
-        }`}
+          className="w-full justify-start p-2 gap-2"
         >
           <User className="mr-2 h-4 w-4" />
           Profile
@@ -32,6 +36,8 @@ const menuItems: UserMenuEntry[] = [
       </ProfileDialog>
     ),
   },
+
+  // Settings
   {
     type: "component",
     render: (user) => (
@@ -39,8 +45,7 @@ const menuItems: UserMenuEntry[] = [
         <Button
           variant="ghost"
           size="sm"
-          className={`w-full justify-start p-2 gap-2  
-        }`}
+          className="w-full justify-start p-2 gap-2"
         >
           <Settings className="mr-2 h-4 w-4" />
           Settings
@@ -49,27 +54,135 @@ const menuItems: UserMenuEntry[] = [
     ),
   },
 
+  // Home
   {
-    label: "Billing",
-    icon: CreditCard,
-    onClick: () => toast.success("Billing clicked"),
-    variant: "default" as const,
+    type: "component",
+    render: () => (
+      <Link href="/">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start p-2 gap-2"
+        >
+          <Home className="mr-2 h-4 w-4" />
+          Home
+        </Button>
+      </Link>
+    ),
+  },
+
+  // Financial
+  {
+    type: "component",
+    render: () => (
+      <Link href="/deposits">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start p-2 gap-2"
+        >
+          <ArrowDownCircle className="mr-2 h-4 w-4 text-green-500" />
+          Deposits
+        </Button>
+      </Link>
+    ),
   },
   {
-    label: "Notifications",
-    icon: Bell,
-    onClick: () => toast.success("Notifications clicked"),
+    type: "component",
+    render: () => (
+      <Link href="/withdrawals">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start p-2 gap-2"
+        >
+          <ArrowUpCircle className="mr-2 h-4 w-4 text-red-500" />
+          Withdrawals
+        </Button>
+      </Link>
+    ),
   },
   {
-    label: "Security",
-    icon: Shield,
-    onClick: () => toast.success("Security clicked"),
+    type: "component",
+    render: () => (
+      <Link href="/orders">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start p-2 gap-2"
+        >
+          <List className="mr-2 h-4 w-4" />
+          Orders
+        </Button>
+      </Link>
+    ),
+  },
+
+  // Content
+  {
+    type: "component",
+    render: () => (
+      <Link href="/blog">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start p-2 gap-2"
+        >
+          <BookOpenText className="mr-2 h-4 w-4" />
+          Blog
+        </Button>
+      </Link>
+    ),
   },
   {
-    label: "Help & Support",
-    icon: HelpCircle,
-    onClick: () => toast.success("Help clicked"),
+    type: "component",
+    render: () => (
+      <Link href="/news">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start p-2 gap-2"
+        >
+          <Newspaper className="mr-2 h-4 w-4" />
+          News
+        </Button>
+      </Link>
+    ),
   },
+
+  // Company
+  {
+    type: "component",
+    render: () => (
+      <Link href="/about">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start p-2 gap-2"
+        >
+          <Info className="mr-2 h-4 w-4" />
+          About Us
+        </Button>
+      </Link>
+    ),
+  },
+  {
+    type: "component",
+    render: () => (
+      <Link href="/careers">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start p-2 gap-2"
+        >
+          <BriefcaseBusiness className="mr-2 h-4 w-4" />
+          Careers
+        </Button>
+      </Link>
+    ),
+  },
+
+  // Logout
   {
     label: "Log out",
     icon: LogOut,
