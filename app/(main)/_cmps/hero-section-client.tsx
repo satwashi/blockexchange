@@ -154,7 +154,7 @@ export function LoggedInHeroContent({ userId }: { userId: string }) {
                 totalChange24h >= 0 ? "text-green-500" : "text-red-500"
               }`}
             >
-              Today's PnL: {totalChange24h.toFixed(2)}%
+              Today&apos;s PnL: {totalChange24h.toFixed(2)}%
             </div>
           </div>
         </div>
