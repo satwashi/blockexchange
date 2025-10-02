@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSetting } from "@/queries/settings/useSettings";
 import { useTrade } from "@/queries/trade/useTrade";
 import { NewOrder } from "@/types/order";
@@ -64,7 +65,28 @@ export default function TradingForm({ symbol }: { symbol: string }) {
     defaultValues,
   });
 
-  if (isLoading) return <>Loading</>;
+  if (isLoading) {
+    return (
+      <div className="w-full md:flex-[1] flex flex-col gap-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-4 w-16" /> {/* label */}
+            <Skeleton className="h-10 w-full rounded-md" /> {/* select */}
+          </div>
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-4 w-20" /> {/* label */}
+            <Skeleton className="h-10 w-full rounded-md" /> {/* input */}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-4">
+          <Skeleton className="h-10 w-full rounded-md" />
+          <Skeleton className="h-10 w-full rounded-md" />
+        </div>
+      </div>
+    );
+  }
   if (error) return <>Error</>;
   function onSubmit(data: FormValues) {
     const profit_range = profit_ranges?.find(
