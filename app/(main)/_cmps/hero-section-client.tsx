@@ -9,6 +9,8 @@ import { useSession } from "@/queries/useSession";
 import { useUserWallets } from "@/queries/wallets/use-user-wallets";
 import { ArrowUpRight, TrendingUp, Wallet, ChevronDown } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import DepositDialog from "../wallet/_cmp/deposite-dialogue";
+import { DialogTrigger } from "@/components/ui/dialog";
 
 export function HeroSectionClient() {
   return (
@@ -39,7 +41,7 @@ function HeroSectionContent() {
 }
 
 export function LoggedInHeroContent({ userId }: { userId: string }) {
-  const { totalBalance, totalChange24h, totals, isLoading } =
+  const { wallets, totalBalance, totalChange24h, totals, isLoading } =
     useUserWallets(userId);
 
   const [selectedCurrency, setSelectedCurrency] = useState<
@@ -162,18 +164,22 @@ export function LoggedInHeroContent({ userId }: { userId: string }) {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mt-8">
           <div className="hidden sm:flex gap-4 w-full">
-            <Button
-              asChild
-              size="lg"
-              className="group bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex-1"
-            >
-              <Link href="/wallet" className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-8 h-8 bg-black/10 rounded-full">
-                  <ArrowUpRight className="w-4 h-4" />
-                </div>
-                <span>Deposit Now</span>
-              </Link>
-            </Button>
+            <DepositDialog wallets={wallets}>
+              <DialogTrigger asChild>
+                <Button
+                  asChild
+                  size="lg"
+                  className="group bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex-1"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center w-8 h-8 bg-black/10 rounded-full">
+                      <ArrowUpRight className="w-4 h-4" />
+                    </div>
+                    <span>Deposit Now</span>
+                  </div>
+                </Button>
+              </DialogTrigger>
+            </DepositDialog>
 
             <Button
               asChild
@@ -192,17 +198,21 @@ export function LoggedInHeroContent({ userId }: { userId: string }) {
 
           {/* Mobile */}
           <div className="flex sm:hidden gap-4 justify-center">
-            <Link
-              href="/wallet"
-              className="group flex flex-col items-center gap-1 p-2 rounded-xl bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 border border-yellow-500/20 hover:border-yellow-500/40 transition-all duration-300 transform hover:scale-105 min-w-[70px]"
-            >
-              <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full shadow-md group-hover:shadow-lg transition-all duration-300">
-                <ArrowUpRight className="w-4 h-4 text-black" />
-              </div>
-              <span className="text-xs font-medium text-yellow-400">
-                Deposit
-              </span>
-            </Link>
+            <DepositDialog wallets={wallets}>
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  className="group flex flex-col items-center gap-1 p-2 rounded-xl bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 border border-yellow-500/20 hover:border-yellow-500/40 transition-all duration-300 transform hover:scale-105 min-w-[70px]"
+                >
+                  <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full shadow-md group-hover:shadow-lg transition-all duration-300">
+                    <ArrowUpRight className="w-4 h-4 text-black" />
+                  </div>
+                  <span className="text-xs font-medium text-yellow-400">
+                    Deposit
+                  </span>
+                </button>
+              </DialogTrigger>
+            </DepositDialog>
 
             <Link
               href="/trading"
