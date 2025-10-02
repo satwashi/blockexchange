@@ -218,6 +218,14 @@ export const useCoins = () => {
     [filteredCoins]
   );
 
+  const top5Gainers = useMemo(
+    () =>
+      [...(filteredCoins || [])]
+        .sort((a, b) => b.change24h - a.change24h)
+        .slice(0, 5),
+    [filteredCoins]
+  );
+
   const topLosers = useMemo(
     () =>
       [...(filteredCoins || [])]
@@ -262,7 +270,11 @@ export const useCoins = () => {
   const handleFavorite = (symbol: string) => {
     setFavorites((prev) => {
       const newSet = new Set(prev);
-      newSet.has(symbol) ? newSet.delete(symbol) : newSet.add(symbol);
+      if (newSet.has(symbol)) {
+        newSet.delete(symbol);
+      } else {
+        newSet.add(symbol);
+      }
       return newSet;
     });
   };
@@ -271,6 +283,7 @@ export const useCoins = () => {
     coins,
     filteredCoins,
     topGainers,
+    top5Gainers,
     topLosers,
     favorites,
     favoriteCoins,

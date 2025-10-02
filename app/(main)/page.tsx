@@ -1,6 +1,6 @@
 import { getServerSession } from "@/server/user/users";
 import ExchangeFAQ from "./_cmps/exchange-faq";
-import { HeroSection } from "./_cmps/hero-section";
+import { HeroSectionClient } from "./_cmps/hero-section-client";
 import NewsSection from "./_cmps/news/news-list";
 import TrustAndSocialProf from "./_cmps/trust-and-social-prof";
 import LoggedInCta from "@/components/_logged-in-ctas";
@@ -26,7 +26,7 @@ async function SessionAwareLanding() {
   return (
     <>
       {isLoggedIn && <LoggedInCta userVerified={userVerified} />}
-      <HeroSection />
+      <HeroSectionClient />
       <NewsSection />
       <TrustAndSocialProf />
       <ExchangeFAQ />

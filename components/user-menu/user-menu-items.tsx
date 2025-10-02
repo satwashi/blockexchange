@@ -7,6 +7,7 @@ import {
   BriefcaseBusiness,
   LogOut,
   Settings,
+  LayoutDashboard,
 } from "lucide-react";
 import { queryClient } from "@/providers/query-provider";
 import { signOut } from "@/utils/auth-client";
@@ -66,6 +67,27 @@ const menuItems: UserMenuEntry[] = [
         </Button>
       </Link>
     ),
+  },
+
+  {
+    type: "component",
+    render: (user) => {
+      // ✅ Only render if user is admin
+      if (user?.role !== "admin") return null;
+
+      return (
+        <Link href="/dashboard" passHref>
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full justify-start p-2 gap-2"
+          >
+            <LayoutDashboard className="mr-2 h-4 w-4" />
+            Dashboard
+          </Button>
+        </Link>
+      );
+    },
   },
 
   // Financial

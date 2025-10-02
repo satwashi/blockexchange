@@ -9,6 +9,7 @@ import EmailAlertsSetting from "./sections_cmps/EmailAlertsSetting";
 import SMSAlertsSetting from "./sections_cmps/SMSAlertsSetting";
 import ContactSupportSetting from "./sections_cmps/ContactSupportSetting";
 import KycStatusSetting from "./sections_cmps/KycStatusSettings";
+import ThemeSelection from "./sections_cmps/themeSelection";
 
 export type DialogListItem =
   | {
@@ -70,6 +71,11 @@ export function createSettingsSections(): Array<{
           key: "sms-alerts",
           type: "component",
           render: () => <SMSAlertsSetting />,
+        },
+        {
+          key: "theme-choice",
+          type: "component",
+          render: () => <ThemeSelection />,
         },
       ],
     },
