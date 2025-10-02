@@ -2,10 +2,12 @@
 import { useTheme } from "next-themes";
 import TradingForm from "./_cmp/trading-from";
 import TradingViewWidget from "@/components/crypto/tading-view";
+import { useParams } from "next/navigation";
 
 export default function TradingControls() {
+  const { crypto } = useParams<{ crypto: string }>();
   const { theme } = useTheme();
-  const tradingViewSymbol = `BINANCE:BTCUSDT`;
+  const tradingViewSymbol = `BINANCE:${crypto}USDT`;
   return (
     <div className="flex flex-col md:flex-row gap-8 p-4 min-h-screen max-w-6xl mx-auto">
       {/* --- Chart Section --- */}
