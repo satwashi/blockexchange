@@ -5,7 +5,6 @@ interface TradingViewWidgetProps {
   symbol?: string;
   theme?: "light" | "dark";
   width?: string | number;
-  height?: string | number;
   interval?: string;
   backgroundColor?: string;
   gridColor?: string;
@@ -16,7 +15,6 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
   symbol = "BITSTAMP:BTCUSD",
   theme = "dark",
   width = "100%",
-  height = 610,
   interval = "D",
   backgroundColor = "#0F0F0F",
   gridColor = "rgba(242, 242, 242, 0.06)",
@@ -26,10 +24,10 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
   const uniqueId = useId();
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current; // ✅ store ref in a variable
+    if (!container) return;
 
-    // Clear previous script/widget
-    containerRef.current.innerHTML = "";
+    container.innerHTML = "";
 
     const script = document.createElement("script");
     script.src =
@@ -45,9 +43,8 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
       hide_top_toolbar: false,
       hide_legend: false,
       hide_volume: false,
-      hotlist: true,
       interval,
-      autosize: true,
+      autosize: true, // chart fills parent container
       locale: "en",
       save_image: true,
       style: "1",
@@ -56,50 +53,27 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
       timezone: "Etc/UTC",
       backgroundColor,
       gridColor,
-      watchlist: [],
       withdateranges: true,
       range,
-      compareSymbols: [],
       studies: [],
-      width,
-      height,
     });
 
-    containerRef.current.appendChild(script);
+    container.appendChild(script);
 
     return () => {
-      containerRef.current!.innerHTML = "";
+      if (container) container.innerHTML = ""; // ✅ safe cleanup
     };
-  }, [
-    symbol,
-    theme,
-    width,
-    height,
-    interval,
-    backgroundColor,
-    gridColor,
-    range,
-  ]);
+  }, [symbol, theme, interval, backgroundColor, gridColor, range]);
 
   return (
     <div
-      className="tradingview-widget-container"
+      className="tradingview-widget-container w-full h-full"
       id={`tradingview-${uniqueId}`}
     >
       <div
-        className="tradingview-widget-container__widget"
+        className="tradingview-widget-container__widget w-full h-full"
         ref={containerRef}
       />
-      {/* <div className="tradingview-widget-copyright">
-        <a
-          href={`https://www.tradingview.com/symbols/${symbol.split(":")[1]}/`}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          <span className="blue-text">{symbol} Chart</span>
-        </a>
-        <span className="trademark"> by TradingView</span>
-      </div> */}
     </div>
   );
 };
