@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -222,7 +221,7 @@ export const useCoins = () => {
     () =>
       [...(filteredCoins || [])]
         .sort((a, b) => b.change24h - a.change24h)
-        .slice(0, 5),
+        .slice(0, 10),
     [filteredCoins]
   );
 
@@ -254,7 +253,7 @@ export const useCoins = () => {
     () =>
       [...(filteredCoins || [])]
         .sort((a, b) => b.volume24h - a.volume24h)
-        .slice(0, 5),
+        .slice(0, 10),
     [filteredCoins]
   );
 
@@ -262,7 +261,7 @@ export const useCoins = () => {
     () =>
       [...(filteredCoins || [])]
         .sort((a, b) => a.marketCap - b.marketCap)
-        .slice(0, 5),
+        .slice(0, 10),
     [filteredCoins]
   );
 

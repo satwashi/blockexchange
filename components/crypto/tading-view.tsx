@@ -9,6 +9,7 @@ interface TradingViewWidgetProps {
   backgroundColor?: string;
   gridColor?: string;
   range?: string;
+  onSymbolChange?: (symbol: string) => void; // <-- new
 }
 
 const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
@@ -19,12 +20,13 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
   backgroundColor = "#0F0F0F",
   gridColor = "rgba(242, 242, 242, 0.06)",
   range = "YTD",
+  onSymbolChange,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const uniqueId = useId();
 
   useEffect(() => {
-    const container = containerRef.current; // ✅ store ref in a variable
+    const container = containerRef.current;
     if (!container) return;
 
     container.innerHTML = "";
@@ -39,12 +41,8 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
       allow_symbol_change: true,
       calendar: false,
       details: true,
-      hide_side_toolbar: false,
-      hide_top_toolbar: false,
-      hide_legend: false,
-      hide_volume: false,
       interval,
-      autosize: true, // chart fills parent container
+      autosize: true,
       locale: "en",
       save_image: true,
       style: "1",
@@ -60,10 +58,32 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
 
     container.appendChild(script);
 
-    return () => {
-      if (container) container.innerHTML = ""; // ✅ safe cleanup
+    // ✅ Listen for symbol changes via postMessage
+    const handleMessage = (event: MessageEvent) => {
+      if (typeof event.data !== "string") return;
+      try {
+        const parsed = JSON.parse(event.data);
+        if (parsed?.name === "widget_symbol" && parsed?.symbol) {
+          onSymbolChange?.(parsed.symbol);
+        }
+      } catch {}
     };
-  }, [symbol, theme, interval, backgroundColor, gridColor, range]);
+
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      container.innerHTML = "";
+    };
+  }, [
+    symbol,
+    theme,
+    interval,
+    backgroundColor,
+    gridColor,
+    range,
+    onSymbolChange,
+  ]);
 
   return (
     <div
