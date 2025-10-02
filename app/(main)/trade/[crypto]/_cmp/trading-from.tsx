@@ -161,15 +161,14 @@ export default function TradingForm({ symbol }: { symbol: string }) {
           <div className="grid grid-cols-2 gap-4">
             <Button
               disabled={isTrading}
-              variant="destructive"
-              className="w-full"
+              className="bg-green-600 hover:bg-green-500 text-white w-full"
               onClick={() => handleTrade("LONG")}
             >
               Go Long
             </Button>
             <Button
+              variant="destructive"
               disabled={isTrading}
-              className="bg-green-600 hover:bg-green-500 text-white w-full"
               onClick={() => handleTrade("SHORT")}
             >
               Go Short
