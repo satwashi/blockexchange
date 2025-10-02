@@ -37,7 +37,10 @@ export const useUserWallets = (userId: string) => {
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel).catch(console.error);
+    return () => {
+      // ✅ non-async cleanup function
+      supabase.removeChannel(channel).catch((err) => console.error(err));
+    };
   }, [userId, queryClient]);
 
   const walletList = wallets ?? [];
