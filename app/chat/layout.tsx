@@ -2,6 +2,8 @@
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChatListSidebar } from "@/components/chat/ChatListSidebar";
+import { ResizablePanel } from "@/components/chat/resizable-panel";
+import { useState } from "react";
 
 // Mock data - replace with your actual data source
 const mockChats = [
@@ -47,25 +49,24 @@ const mockChats = [
   },
 ];
 
-export default function ChatPage() {
+export default function ChatLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [sidebarWidth, setSidebarWidth] = useState(320);
   const isMobile = useIsMobile();
 
   if (isMobile) {
-    return (
-      <div className="h-screen">
-        <ChatListSidebar chats={mockChats} />
-      </div>
-    );
+    return <div className="h-screen">{children}</div>;
   }
 
   return (
-    <div className="flex h-full items-center justify-center bg-muted/20">
-      <div className="text-center">
-        <h2 className="font-semibold text-xl mb-2">No chat selected</h2>
-        <p className="text-muted-foreground">
-          Select a conversation from the sidebar to start chatting
-        </p>
-      </div>
+    <div className="h-screen">
+      <ResizablePanel defaultSize={320} minSize={80} maxSize={500}>
+        <ChatListSidebar chats={mockChats} width={sidebarWidth} />
+        <div className="flex-1 min-h-0">{children}</div>
+      </ResizablePanel>
     </div>
   );
 }

@@ -98,10 +98,10 @@ function OrderRow({ order }: { order: Order }) {
   return (
     <Card className="border-border hover:border-accent transition-colors">
       <CardContent className="p-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-4">
           {/* Symbol and Side */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xl font-bold text-foreground">
                 {order.symbol}
               </span>
@@ -166,7 +166,7 @@ function OrderRow({ order }: { order: Order }) {
             </div>
           </div>
         </div>
-        <> {seconds}</>
+        {/* <> {seconds}</> */}
       </CardContent>
     </Card>
   );

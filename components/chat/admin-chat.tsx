@@ -1,23 +1,40 @@
 import { RealtimeChat } from "@/components/realtime-chat";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Customer } from "@/app/chat/page";
+import { Customer } from "@/types/chat/customer";
 
-export default function AdminChatPage({ customer }: { customer: Customer }) {
+export default function AdminChatPage({ customer }: { customer?: Customer }) {
+  if (!customer) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center">
+          <h2 className="font-semibold text-xl mb-2">No customer selected</h2>
+          <p className="text-muted-foreground">
+            Please select a customer to start chatting
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div className="flex h-full flex-col">
       <ChatHeader customer={customer} />
-      <RealtimeChat
-        roomName={`chat_${customer.id}`} // join that user's room
-        username="Admin"
-      />
-    </>
+      <div className="flex-1 min-h-0">
+        <RealtimeChat
+          roomName={`chat_4`} // join that user's room
+          username="Admin"
+        />
+      </div>
+    </div>
   );
 }
 
-function ChatHeader({ customer }: { customer: Customer }) {
+function ChatHeader({ customer }: { customer?: Customer }) {
+  if (!customer) return null;
+
   return (
-    <div className="bg-card border-b border-border p-4 flex items-center justify-between">
+    <div className="bg-card border-b border-border p-4 flex items-center justify-between shrink-0">
       <div className="flex items-center space-x-3">
         {/* Back button for mobile
         {onBackToList && (

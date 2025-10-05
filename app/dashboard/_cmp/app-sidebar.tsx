@@ -130,18 +130,16 @@ export function AppSidebar() {
 function LogoSection() {
   const { user } = useSession();
   return (
-    <Link href={"/"}>
-      <div className="mb-8">
-        <div className="flex items-center gap-3">
-          <Logo />
-          <div>
-            <p className="text-xs text-gray-500 capitalize">
-              {user?.role ?? "user"} Panel
-            </p>
-          </div>
-          <SidebarTrigger />
+    <div className="mb-8">
+      <div className="flex items-center gap-3">
+        <Logo />
+        <div>
+          <p className="text-xs text-gray-500 capitalize">
+            {user?.role ?? "user"} Panel
+          </p>
         </div>
+        <SidebarTrigger />
       </div>
-    </Link>
+    </div>
   );
 }

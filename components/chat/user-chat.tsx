@@ -31,10 +31,7 @@ export default function UserChat() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md w-full h-[500px] flex flex-col p-0">
           <div className="flex-1 overflow-hidden">
-            <RealtimeChat
-              roomName={`chat_${customerId}`}
-              username={`customer_${customerId}`}
-            />
+            <RealtimeChat roomName={`chat_${4}`} username={`${user.name}`} />
           </div>
         </DialogContent>
       </Dialog>

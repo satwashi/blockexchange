@@ -22,6 +22,11 @@ const navItems: NavItem[] = [
 export function MobileBottomNav() {
   const pathname = usePathname();
 
+  // Hide mobile nav on chat pages
+  if (pathname.startsWith("/chat")) {
+    return null;
+  }
+
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur border-t bg-background">
       <div className="flex items-center justify-around py-2">

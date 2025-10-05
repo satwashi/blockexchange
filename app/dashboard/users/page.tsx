@@ -22,7 +22,7 @@ import { useImpersonation } from "@/providers/impersonate-provider";
 export default function Page() {
   const { users, isLoading, error } = useListUsers({
     page: 1,
-    limit: 10,
+    limit: 40,
   });
 
   const { impersonateUser } = useImpersonation();

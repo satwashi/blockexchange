@@ -4,6 +4,7 @@ import { HeroSectionClient } from "./_cmps/hero-section-client";
 import NewsSection from "./_cmps/news/news-list";
 import TrustAndSocialProf from "./_cmps/trust-and-social-prof";
 import LoggedInCta from "@/components/_logged-in-ctas";
+import UserChat from "@/components/chat/user-chat";
 
 export default function Home() {
   return (
@@ -30,6 +31,7 @@ async function SessionAwareLanding() {
       <NewsSection />
       <TrustAndSocialProf />
       <ExchangeFAQ />
+      <UserChat />
     </>
   );
 }
