@@ -3,7 +3,8 @@
 import { cn } from "@/lib/utils";
 import { ChatMessageItem } from "@/components/chat-message";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
-import { type ChatMessage, useRealtimeChat } from "@/hooks/use-realtime-chat";
+import { useRealtimeChat } from "@/hooks/use-realtime-chat";
+import type { ChatMessage } from "@/server/chat/store-message";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
@@ -36,12 +37,9 @@ export const RealtimeChat = ({
     messages: realtimeMessages,
     sendMessage,
     isConnected,
-  } = useRealtimeChat({
-    roomName,
-    username,
-  });
+  } = useRealtimeChat(roomName);
   const [newMessage, setNewMessage] = useState("");
-
+  console.log("realtimeMessages.............", realtimeMessages);
   // Merge realtime messages with initial messages
   const allMessages = useMemo(() => {
     const mergedMessages = [...initialMessages, ...realtimeMessages];

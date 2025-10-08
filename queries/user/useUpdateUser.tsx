@@ -46,7 +46,7 @@ export const useUpdateUser = () => {
 
       // Optionally invalidate other related queries
       queryClient.invalidateQueries({ queryKey: ["kyc"] });
-      queryClient.invalidateQueries({ queryKey: ["wallets"] });
+      // queryClient.invalidateQueries({ queryKey: ["wallets"] });
     },
     onError: (error: Error, variables) => {
       console.error("User update failed:", error);

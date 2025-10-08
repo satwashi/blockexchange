@@ -39,7 +39,7 @@ export const auth = betterAuth({
             "idddddddddddddddddddddddddddddddddddddddd , new use cominng"
           );
 
-          await syncUser({ id });
+          await syncUser({ id, name: user.name });
           await createUserWallets(id);
         },
       },
@@ -51,7 +51,10 @@ export const auth = betterAuth({
       const newSession = ctx.context.newSession;
       if (newSession) {
         console.log("Session found.................");
-        return await syncUser({ id: newSession.user.id });
+        return await syncUser({
+          id: newSession.user.id,
+          name: newSession.user.name,
+        });
       }
     }),
   },

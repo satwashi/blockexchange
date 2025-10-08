@@ -1,7 +1,14 @@
+"use server";
 import supabaseAdmin from "@/lib/supabaseAdmin";
-export default async function syncUser({ id }: { id: string }) {
+export default async function syncUser({
+  id,
+  name,
+}: {
+  id: string;
+  name: string;
+}) {
   const { error, data } = await supabaseAdmin.from("users").upsert(
-    { id },
+    { id, name },
     {
       onConflict: "id", // Ensure uniqueness on `id`
     }

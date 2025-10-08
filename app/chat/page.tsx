@@ -3,57 +3,13 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChatListSidebar } from "@/components/chat/ChatListSidebar";
 
-// Mock data - replace with your actual data source
-const mockChats = [
-  {
-    id: "chat-1",
-    customerName: "Sarah Johnson",
-    lastMessage: "Thanks for your help!",
-    timestamp: "2m ago",
-    unreadCount: 2,
-    isActive: true,
-  },
-  {
-    id: "chat-2",
-    customerName: "Michael Chen",
-    lastMessage: "When will my order arrive?",
-    timestamp: "15m ago",
-    unreadCount: 1,
-    isActive: true,
-  },
-  {
-    id: "chat-3",
-    customerName: "Emma Williams",
-    lastMessage: "I need to update my billing info",
-    timestamp: "1h ago",
-    unreadCount: 0,
-    isActive: false,
-  },
-  {
-    id: "chat-4",
-    customerName: "James Rodriguez",
-    lastMessage: "The product is exactly what I needed",
-    timestamp: "2h ago",
-    unreadCount: 0,
-    isActive: false,
-  },
-  {
-    id: "chat-5",
-    customerName: "Olivia Brown",
-    lastMessage: "Can I get a refund?",
-    timestamp: "3h ago",
-    unreadCount: 3,
-    isActive: true,
-  },
-];
-
 export default function ChatPage() {
   const isMobile = useIsMobile();
 
   if (isMobile) {
     return (
       <div className="h-screen">
-        <ChatListSidebar chats={mockChats} />
+        <ChatListSidebar />
       </div>
     );
   }

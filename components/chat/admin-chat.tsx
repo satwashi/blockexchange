@@ -2,8 +2,10 @@ import { RealtimeChat } from "@/components/realtime-chat";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Customer } from "@/types/chat/customer";
+import { useRealtimeChat } from "@/hooks/use-realtime-chat";
 
 export default function AdminChatPage({ customer }: { customer?: Customer }) {
+  // const  useRealtimeChat()
   if (!customer) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -22,8 +24,8 @@ export default function AdminChatPage({ customer }: { customer?: Customer }) {
       <ChatHeader customer={customer} />
       <div className="flex-1 min-h-0">
         <RealtimeChat
-          roomName={`chat_4`} // join that user's room
-          username="Admin"
+          roomName={`${customer.id}`} // join that user's room
+          username="Yonani"
         />
       </div>
     </div>

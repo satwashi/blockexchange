@@ -2,6 +2,7 @@
 import { auth } from "@/utils/auth";
 
 import { headers } from "next/headers";
+import syncUser from "./sync-user";
 
 export const signInServer = async (email: string, password: string) => {
   try {
@@ -87,6 +88,11 @@ export const updateUserServer = async (userData: {
       body: userData,
       headers: await headers(),
     });
+
+    if (userData.name) {
+      const { id } = await getServerSession();
+      syncUser({ id, name: userData.name });
+    }
 
     return {
       success: true,

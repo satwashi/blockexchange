@@ -8,30 +8,16 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-
-interface Chat {
-  id: string;
-  customerName: string;
-  lastMessage: string;
-  timestamp: string;
-  unreadCount: number;
-  isActive: boolean;
-}
+import useChats from "@/queries/chat/use-chats";
 
 interface ChatListSidebarProps {
-  chats: Chat[];
   width?: number;
 }
 
-export function ChatListSidebar({ chats, width }: ChatListSidebarProps) {
+export function ChatListSidebar({ width }: ChatListSidebarProps) {
   const [sidebarWidth, setSidebarWidth] = useState(width || 320);
   const router = useRouter();
   const pathname = usePathname();
-
-  // Extract chat ID from current path
-  const selectedChatId = pathname.includes("/chat/")
-    ? pathname.split("/chat/")[1]
-    : null;
 
   useEffect(() => {
     if (width) {
@@ -40,6 +26,15 @@ export function ChatListSidebar({ chats, width }: ChatListSidebarProps) {
   }, [width]);
 
   const isCollapsed = sidebarWidth < 120;
+  const { chats, isLoading } = useChats();
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // Extract chat ID from current path
+  const selectedChatId = pathname.includes("/chat/")
+    ? pathname.split("/chat/")[1]
+    : null;
 
   return (
     <div className="flex h-full flex-col border-r border-border bg-card">
@@ -72,15 +67,15 @@ export function ChatListSidebar({ chats, width }: ChatListSidebarProps) {
                   <div className="relative">
                     <Avatar className="h-12 w-12">
                       <AvatarFallback className="bg-muted text-sm">
-                        {chat.customerName.slice(0, 2).toUpperCase()}
+                        {chat.customer_name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    {chat.unreadCount > 0 && (
+                    {chat.unread_count > 0 && (
                       <Badge
                         variant="default"
                         className="absolute -bottom-1 -right-1 h-5 min-w-5 px-1.5 text-xs"
                       >
-                        {chat.unreadCount}
+                        {chat.unread_count}
                       </Badge>
                     )}
                   </div>
@@ -88,39 +83,39 @@ export function ChatListSidebar({ chats, width }: ChatListSidebarProps) {
                   <div className="flex items-start gap-3">
                     <Avatar className="h-10 w-10">
                       <AvatarFallback className="bg-muted text-sm">
-                        {chat.customerName.slice(0, 2).toUpperCase()}
+                        {chat.customer_name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <span className="font-medium text-sm truncate">
-                          {chat.customerName}
+                          {chat.customer_name}
                         </span>
                         <span className="text-muted-foreground text-xs shrink-0">
-                          {chat.timestamp}
+                          {chat.last_message_time}
                         </span>
                       </div>
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-muted-foreground text-sm truncate">
-                          {chat.lastMessage}
+                          {chat.last_message}
                         </p>
-                        {chat.unreadCount > 0 && (
+                        {chat.unread_count > 0 && (
                           <Badge
                             variant="default"
                             className="h-5 min-w-5 shrink-0 px-1.5"
                           >
-                            {chat.unreadCount}
+                            {chat.unread_count}
                           </Badge>
                         )}
                       </div>
-                      {chat.isActive && (
+                      {/* {chat.isActive && (
                         <div className="mt-2 flex items-center gap-1.5">
                           <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                           <span className="text-green-600 dark:text-green-400 text-xs">
                             Active
                           </span>
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 )}

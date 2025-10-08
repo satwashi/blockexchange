@@ -20,10 +20,10 @@ export const useSession = () => {
       return getSessionApi();
     },
   });
-
   const user = session?.user;
   const id = user?.id;
   const role = user?.role;
+  const name = user?.name;
 
-  return { session, id, isLoading, error, user, role };
+  return { session, id, isLoading, error, user, role, name };
 };

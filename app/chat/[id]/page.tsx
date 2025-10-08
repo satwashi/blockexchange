@@ -2,15 +2,7 @@
 
 import { useParams } from "next/navigation";
 import AdminChatPage from "@/components/chat/admin-chat";
-
-// Mock data - replace with your actual data source
-const mockChats = [
-  { id: "chat-1", customerName: "Sarah Johnson" },
-  { id: "chat-2", customerName: "Michael Chen" },
-  { id: "chat-3", customerName: "Emma Williams" },
-  { id: "chat-4", customerName: "James Rodriguez" },
-  { id: "chat-5", customerName: "Olivia Brown" },
-];
+import useChats from "@/queries/chat/use-chats";
 
 // Default customer for testing connection
 const defaultCustomer = {
@@ -25,18 +17,27 @@ const defaultCustomer = {
 export default function ChatPage() {
   const params = useParams();
   const chatId = params.id as string;
+  const { chats, isLoading } = useChats();
 
-  const chat = mockChats.find((c) => c.id === chatId);
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div>Loading chat...</div>
+      </div>
+    );
+  }
+
+  const chat = chats.find((c) => c.id === chatId);
 
   // Use default customer for testing if chat not found
   const customerToUse = chat
     ? {
         id: chat.id,
-        name: chat.customerName,
+        name: chat.customer_name,
         avatar: "",
         isOnline: true,
-        lastMessage: "Ready to chat",
-        timestamp: "now",
+        lastMessage: chat.last_message,
+        timestamp: chat.last_message_time,
       }
     : defaultCustomer;
 
