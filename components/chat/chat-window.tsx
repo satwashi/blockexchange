@@ -2,8 +2,8 @@
 
 import { RealtimeChat } from "@/components/realtime-chat";
 import { Button } from "@/components/ui/button";
+import { ChatMessage } from "@/server/chat/store-message";
 import { ArrowLeft } from "lucide-react";
-import type { ChatMessage } from "@/hooks/use-realtime-chat";
 
 interface ChatWindowProps {
   roomName: string;
