@@ -13,7 +13,6 @@ interface ChatWindowProps {
   messages?: ChatMessage[];
   onMessage?: (messages: ChatMessage[]) => void;
 }
-
 export function ChatWindow({
   roomName,
   username,
