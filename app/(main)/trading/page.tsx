@@ -14,8 +14,8 @@ export default function TradingControls() {
       <div
         className="
           w-full md:w-2/3 
-          h-[40vh] sm:h-[50vh] md:h-[70vh] 
-          rounded-2xl shadow-md overflow-hidden
+          h-[47vh] sm:h-[50vh] md:h-[70vh] 
+            overflow-hidden
         "
       >
         <TradingViewWidget

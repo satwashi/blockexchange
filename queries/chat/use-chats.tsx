@@ -1,6 +1,7 @@
 "use client";
 
 import supabaseClient from "@/lib/client";
+import { queryClient } from "@/providers/query-provider";
 import fetchChats from "@/server/chat/fetch-chats";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -24,8 +25,6 @@ function formatTimestamp(timestamp: string | null) {
 import { useEffect } from "react";
 
 const useChats = () => {
-  const queryClient = useQueryClient();
-
   const { data, isLoading, error } = useQuery<Chat[], Error>({
     queryKey: ["chats"],
     queryFn: fetchChats,
@@ -52,7 +51,7 @@ const useChats = () => {
     return () => {
       supabaseClient.removeChannel(channel);
     };
-  }, [queryClient]);
+  }, []);
 
   return { chats: data ?? [], isLoading, error };
 };

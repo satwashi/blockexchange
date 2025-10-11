@@ -17,9 +17,11 @@ const fetchChats = async (): Promise<Chat[]> => {
 
   if (error) throw new Error(error.message);
 
+  console.log(data);
+
   return data.map((chat) => ({
     id: chat.id,
-    customer_name: chat.customer_name,
+    customer_name: chat.customer_name || "Anonymose",
     last_message: chat.last_message || "No messages yet",
     last_message_time: chat.last_message_time,
     unread_count: chat.unread_count,

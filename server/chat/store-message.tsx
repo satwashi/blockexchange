@@ -19,6 +19,7 @@ export interface ChatMessage {
  */
 export async function storeMessage(message: ChatMessage, roomId: string) {
   const { id: senderId } = await getServerSession();
+  console.log(senderId, "sender id");
   if (!senderId) throw new Error("Unauthorized");
 
   const { data, error } = await supabaseAdmin.from("messages").insert({
