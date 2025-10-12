@@ -1,4 +1,4 @@
-import { NavbarAuth } from "./navbar-auth";
+import { Navbar as NavbarAuth } from "./navbar-auth";
 import Logo from "./logo";
 import DesktopNav from "./desktop-nav";
 import { auth } from "@/utils/auth";

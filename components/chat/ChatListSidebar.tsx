@@ -10,6 +10,7 @@ import { useRouter, usePathname } from "next/navigation";
 import useChats from "@/queries/chat/use-chats";
 import Logo from "../shared/header/logo";
 import { useRoomChat } from "@/hooks/use-room-chat";
+import Link from "next/link";
 
 interface ChatListSidebarProps {
   width?: number;
@@ -46,7 +47,7 @@ export function ChatListSidebar({ width }: ChatListSidebarProps) {
   const selectedChatId = pathname.includes("/chat/")
     ? pathname.split("/chat/")[1]
     : null;
-  const { isConnected } = useRoomChat(selectedChatId, "test");
+  // const { isConnected } = useRoomChat(selectedChatId, "test");
 
   useEffect(() => {
     if (width) {
@@ -88,77 +89,77 @@ export function ChatListSidebar({ width }: ChatListSidebarProps) {
             const formattedTime = formatTimeLikeImage(chat.last_message_time);
 
             return (
-              <button
-                key={chat.id}
-                onClick={() => router.push(`/chat/${chat.id}`)}
-                className={cn(
-                  "block w-full rounded-lg p-3 text-left transition-colors hover:bg-accent relative",
-                  isSelected && "bg-accent",
-                  isCollapsed && "p-2 flex justify-center"
-                )}
-              >
-                {isCollapsed ? (
-                  // Collapsed view - avatar only with badge
-                  <div className="relative">
-                    <Avatar
-                      className={cn(
-                        "bg-muted",
-                        isVeryCollapsed ? "h-10 w-10" : "h-12 w-12"
-                      )}
-                    >
-                      <AvatarFallback className="bg-muted text-sm">
-                        {chat.customer_name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    {chat.unread_count > 0 && (
-                      <Badge
-                        variant="default"
-                        className="absolute -top-1 -right-1 h-5 min-w-5 px-1.5 text-xs border-2 border-background"
-                      >
-                        {chat.unread_count}
-                      </Badge>
-                    )}
-                    {/* Online indicator */}
-                    <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background bg-green-500" />
-                  </div>
-                ) : (
-                  // Expanded view - full chat item
-                  <div className="flex items-start gap-3">
+              <Link key={chat.id} href={`/chat/${chat.id}`}>
+                <button
+                  className={cn(
+                    "block w-full rounded-lg p-3 text-left transition-colors hover:bg-accent relative",
+                    isSelected && "bg-accent",
+                    isCollapsed && "p-2 flex justify-center"
+                  )}
+                >
+                  {isCollapsed ? (
+                    // Collapsed view - avatar only with badge
                     <div className="relative">
-                      <Avatar className="h-12 w-12">
+                      <Avatar
+                        className={cn(
+                          "bg-muted",
+                          isVeryCollapsed ? "h-10 w-10" : "h-12 w-12"
+                        )}
+                      >
                         <AvatarFallback className="bg-muted text-sm">
                           {chat.customer_name.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
+                      {chat.unread_count > 0 && (
+                        <Badge
+                          variant="default"
+                          className="absolute -top-1 -right-1 h-5 min-w-5 px-1.5 text-xs border-2 border-background"
+                        >
+                          {chat.unread_count}
+                        </Badge>
+                      )}
                       {/* Online indicator */}
                       <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background bg-green-500" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="font-semibold text-sm truncate">
-                          {chat.customer_name}
-                        </span>
-                        <span className="text-muted-foreground text-xs shrink-0">
-                          {formattedTime}
-                        </span>
+                  ) : (
+                    // Expanded view - full chat item
+                    <div className="flex items-start gap-3">
+                      <div className="relative">
+                        <Avatar className="h-12 w-12">
+                          <AvatarFallback className="bg-muted text-sm">
+                            {chat.customer_name.slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        {/* Online indicator */}
+                        <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background bg-green-500" />
                       </div>
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-muted-foreground text-sm truncate">
-                          {chat.last_message}
-                        </p>
-                        {chat.unread_count > 0 && (
-                          <Badge
-                            variant="default"
-                            className="h-5 min-w-5 shrink-0 px-1.5 text-xs"
-                          >
-                            {chat.unread_count}
-                          </Badge>
-                        )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <span className="font-semibold text-sm truncate">
+                            {chat.customer_name}
+                          </span>
+                          <span className="text-muted-foreground text-xs shrink-0">
+                            {formattedTime}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-muted-foreground text-sm truncate">
+                            {chat.last_message}
+                          </p>
+                          {chat.unread_count > 0 && (
+                            <Badge
+                              variant="default"
+                              className="h-5 min-w-5 shrink-0 px-1.5 text-xs"
+                            >
+                              {chat.unread_count}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </button>
+                  )}
+                </button>
+              </Link>
             );
           })}
         </div>

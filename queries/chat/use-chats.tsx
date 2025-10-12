@@ -3,7 +3,8 @@
 import supabaseClient from "@/lib/client";
 import { queryClient } from "@/providers/query-provider";
 import fetchChats from "@/server/chat/fetch-chats";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo } from "react";
 
 export interface Chat {
   id: string;
@@ -22,8 +23,6 @@ function formatTimestamp(timestamp: string | null) {
   return `${Math.floor(diff / 86400)}d ago`;
 }
 
-import { useEffect } from "react";
-
 const useChats = () => {
   const { data, isLoading, error } = useQuery<Chat[], Error>({
     queryKey: ["chats"],
@@ -31,6 +30,7 @@ const useChats = () => {
     staleTime: Infinity,
   });
 
+  // Subscribe to realtime changes
   useEffect(() => {
     const channel = supabaseClient
       .channel("messages-realtime")
@@ -53,7 +53,20 @@ const useChats = () => {
     };
   }, []);
 
-  return { chats: data ?? [], isLoading, error };
+  // ✅ Compute total unread messages
+  const totalUnreadCount = useMemo(() => {
+    return (data ?? []).reduce(
+      (sum, chat) => sum + (chat.unread_count || 0),
+      0
+    );
+  }, [data]);
+
+  return {
+    chats: data ?? [],
+    isLoading,
+    error,
+    totalUnreadCount, // ✅ now available
+  };
 };
 
 export default useChats;

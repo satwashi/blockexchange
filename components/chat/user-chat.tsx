@@ -14,7 +14,8 @@ import { useRoomChat } from "@/hooks/use-room-chat";
 
 export default function UserChat() {
   const { id: roomName, name: username } = useSession();
-  const { isConnected } = useRoomChat(roomName, username);
+
+  if (!roomName || !username) return null;
 
   return (
     <div className="fixed bottom-20 right-10 z-50">

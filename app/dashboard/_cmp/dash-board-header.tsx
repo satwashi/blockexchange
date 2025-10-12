@@ -3,17 +3,24 @@
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Bell, LogOut } from "lucide-react";
+import { LogOut, MessageCircle } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { useSession } from "@/queries/useSession";
+
 import { signOut } from "@/utils/auth-client";
 import DashBoardHeaderSkeleton from "./skeletons/dashnoard-header-skeleton";
+import useChats from "@/queries/chat/use-chats";
 
 export default function DashBoardHeader() {
   const router = useRouter();
   const { user, isLoading } = useSession();
+  const { totalUnreadCount } = useChats();
+
   if (isLoading) return <DashBoardHeaderSkeleton />;
+
+  const unreadCount = totalUnreadCount;
+
   async function logout() {
     await signOut({
       fetchOptions: {
@@ -32,10 +39,22 @@ export default function DashBoardHeader() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon">
-          <Bell className="h-5 w-5" />
-        </Button>
+        {/* Chat Button with Unread Badge */}
+        <div className="relative">
+          <Link href="/chat">
+            <Button variant="ghost" size="icon" aria-label="Chats">
+              <MessageCircle className="h-5 w-5 text-foreground transition-transform duration-200 hover:scale-110" />
+            </Button>
+          </Link>
 
+          {unreadCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full animate-pulse">
+              {unreadCount}
+            </span>
+          )}
+        </div>
+
+        {/* User Info */}
         <div className="flex items-center gap-3">
           <div className="text-right">
             <p className="text-sm font-medium text-foreground">{user?.name}</p>
@@ -46,7 +65,6 @@ export default function DashBoardHeader() {
           <Link href="/dashboard/profile">
             <Avatar>
               <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
-
               <AvatarFallback>
                 {user?.name?.charAt(0).toUpperCase()}
               </AvatarFallback>
@@ -54,6 +72,7 @@ export default function DashBoardHeader() {
           </Link>
         </div>
 
+        {/* Logout Button */}
         <Button
           variant="ghost"
           size="icon"

@@ -15,7 +15,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-full items-center justify-center bg-muted/20">
+    <div className="flex flex-col h-screen items-center justify-center">
       <div className="text-center">
         <h2 className="font-semibold text-xl mb-2">No chat selected</h2>
         <p className="text-muted-foreground">

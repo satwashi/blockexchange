@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 export default function AdminChatPage({ customer }: { customer?: Customer }) {
   if (!customer) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-screen flex-col  items-center justify-center">
         <div className="text-center">
           <h2 className="font-semibold text-xl mb-2">No customer selected</h2>
           <p className="text-muted-foreground">
