@@ -9,6 +9,8 @@ import { Send } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useRoomChat } from "@/hooks/use-room-chat";
+import { markChatAsRead } from "@/server/chat/mark-chat-as-read";
+import useMarkChatAsRead from "@/queries/chat/use-Mark-read";
 
 interface RealtimeChatProps {
   roomName: string;
@@ -21,7 +23,7 @@ export const RealtimeChat = ({ roomName, username }: RealtimeChatProps) => {
     roomName,
     username
   );
-
+  const { markChatAsRead } = useMarkChatAsRead();
   // 🧭 Scroll behavior
   const { containerRef, scrollToBottom } = useChatScroll();
 
@@ -41,6 +43,7 @@ export const RealtimeChat = ({ roomName, username }: RealtimeChatProps) => {
 
       await sendMessage(newMessage.trim());
       setNewMessage("");
+      // markChatAsRead(roomName);
     },
     [newMessage, isConnected, sendMessage]
   );
