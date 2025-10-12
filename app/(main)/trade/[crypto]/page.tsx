@@ -14,7 +14,7 @@ export default function TradingControls() {
       <div
         className="
           w-full md:w-2/3 
-          h-[47vh] sm:h-[50vh] md:h-[70vh] 
+          h-[47vh] sm:h-[50vh] md:sh-[70vh] 
             overflow-hidden
         "
       >

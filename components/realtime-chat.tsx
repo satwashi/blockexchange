@@ -7,18 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ChatMessage } from "@/server/chat/store-message";
+
 import { useRoomChat } from "@/hooks/use-room-chat";
 
 interface RealtimeChatProps {
   roomName: string;
-  username?: string; // optional if session provides it internally
+  username: string;
 }
 
-export const RealtimeChat = ({ roomName }: RealtimeChatProps) => {
-  // 🧠 Hook handles everything: fetching, sending, realtime
-  const { messages, sendMessage, isConnected, isLoading, isPending } =
-    useRoomChat(roomName);
+export const RealtimeChat = ({ roomName, username }: RealtimeChatProps) => {
+  // ✅ Correct hook call
+  const { messages, sendMessage, isConnected, isLoading } = useRoomChat(
+    roomName,
+    username
+  );
 
   // 🧭 Scroll behavior
   const { containerRef, scrollToBottom } = useChatScroll();
@@ -35,14 +37,15 @@ export const RealtimeChat = ({ roomName }: RealtimeChatProps) => {
   const handleSendMessage = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!newMessage.trim() || !isConnected || isPending) return;
+      if (!newMessage.trim() || !isConnected) return;
+
       await sendMessage(newMessage.trim());
       setNewMessage("");
     },
-    [newMessage, isConnected, isPending, sendMessage]
+    [newMessage, isConnected, sendMessage]
   );
 
-  // 🧩 Sort and remove duplicates (in case realtime + fetch overlap)
+  // 🧩 Sort and remove duplicates
   const sortedMessages = useMemo(() => {
     const unique = messages.filter(
       (msg, idx, arr) => idx === arr.findIndex((m) => m.id === msg.id)
@@ -51,7 +54,7 @@ export const RealtimeChat = ({ roomName }: RealtimeChatProps) => {
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full w-full bg-background text-foreground antialiased">
+    <div className="flex flex-col h-full w-full bg-background text-foreground antialiased ">
       {/* 🟡 Loading State */}
       {isLoading && (
         <div className="flex justify-center items-center py-4 text-sm text-muted-foreground">
@@ -81,7 +84,7 @@ export const RealtimeChat = ({ roomName }: RealtimeChatProps) => {
                 >
                   <ChatMessageItem
                     message={message}
-                    isOwnMessage={message.user.name === roomName}
+                    isOwnMessage={message.user.name === username} // ✅ fixed
                     showHeader={showHeader}
                   />
                 </div>
@@ -107,13 +110,12 @@ export const RealtimeChat = ({ roomName }: RealtimeChatProps) => {
           placeholder={
             isConnected ? "Type a message..." : "Connecting to chat..."
           }
-          disabled={!isConnected || isPending}
+          disabled={!isConnected}
         />
         {isConnected && newMessage.trim() && (
           <Button
             className="aspect-square rounded-full animate-in fade-in slide-in-from-right-4 duration-300"
             type="submit"
-            disabled={!isConnected || isPending}
           >
             <Send className="size-4" />
           </Button>

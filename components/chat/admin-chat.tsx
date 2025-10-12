@@ -1,11 +1,14 @@
+"use client";
 import { RealtimeChat } from "@/components/realtime-chat";
-
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Customer } from "@/types/chat/customer";
-import { useRealtimeChat } from "@/hooks/use-realtime-chat";
+import useMarkChatAsRead from "@/queries/chat/use-Mark-read";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminChatPage({ customer }: { customer?: Customer }) {
-  // const  useRealtimeChat()
   if (!customer) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -25,7 +28,7 @@ export default function AdminChatPage({ customer }: { customer?: Customer }) {
       <div className="flex-1 min-h-0">
         <RealtimeChat
           roomName={`${customer.id}`} // join that user's room
-          username="Yonani"
+          username="test"
         />
       </div>
     </div>
@@ -33,22 +36,30 @@ export default function AdminChatPage({ customer }: { customer?: Customer }) {
 }
 
 function ChatHeader({ customer }: { customer?: Customer }) {
+  const { markChatAsRead, isPending } = useMarkChatAsRead();
+  const router = useRouter();
+
+  // Mark chat as read only once when header mounts
+  useEffect(() => {
+    if (customer?.id) {
+      markChatAsRead(customer.id);
+    }
+  }, [customer?.id, markChatAsRead]);
+
   if (!customer) return null;
 
   return (
-    <div className="bg-card border-b border-border p-4 flex items-center justify-between shrink-0">
+    <div className="bg-card border-b border-border p-4 flex items-center justify-between shrink-0 h-16">
       <div className="flex items-center space-x-3">
-        {/* Back button for mobile
-        {onBackToList && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBackToList}
-            className="md:hidden"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        )} */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.push("/chat")}
+          className="md:hidden"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+
         <div className="relative">
           <Avatar className="h-10 w-10">
             <AvatarImage src={customer.avatar} alt={customer.name} />

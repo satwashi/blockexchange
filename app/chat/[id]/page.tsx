@@ -3,6 +3,8 @@
 import { useParams } from "next/navigation";
 import AdminChatPage from "@/components/chat/admin-chat";
 import useChats from "@/queries/chat/use-chats";
+import { useRoomChat } from "@/hooks/use-room-chat";
+import { username } from "better-auth/plugins";
 
 // Default customer for testing connection
 const defaultCustomer = {

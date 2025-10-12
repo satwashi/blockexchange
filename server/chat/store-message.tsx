@@ -17,14 +17,25 @@ export interface ChatMessage {
  * @param roomId - The userId representing the chat room
  * @param senderId - The userId of the sender (admin or customer)
  */
-export async function storeMessage(message: ChatMessage, roomId: string) {
-  const { id: senderId } = await getServerSession();
-  console.log(senderId, "sender id");
-  if (!senderId) throw new Error("Unauthorized");
+export async function storeMessage(
+  message: ChatMessage,
+  roomId: string,
+  senderId?: string
+) {
+  // Try to get senderId from parameter first, then fallback to session
+  let finalSenderId = senderId;
+
+  if (!finalSenderId) {
+    const sessionResult = await getServerSession();
+    finalSenderId = sessionResult.id;
+  }
+
+  console.log(finalSenderId, "sender id");
+  if (!finalSenderId) throw new Error("Unauthorized");
 
   const { data, error } = await supabaseAdmin.from("messages").insert({
     room_id: roomId,
-    sender_id: senderId,
+    sender_id: finalSenderId,
     content: message.content,
     created_at: message.createdAt,
   });
