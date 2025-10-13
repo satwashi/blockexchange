@@ -38,22 +38,23 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
     script.async = true;
 
     script.innerHTML = JSON.stringify({
-      allow_symbol_change: true,
-      calendar: false,
-      details: true,
-      interval,
       autosize: true,
-      locale: "en",
-      save_image: true,
-      style: "1",
       symbol,
+      interval,
       theme,
+      style: "1",
       timezone: "Etc/UTC",
+      locale: "en",
+      allow_symbol_change: true,
+      hide_side_toolbar: false, // ✅ show drawing tools
+      hide_top_toolbar: false, // ✅ show top toolbar (timeframes, settings, etc.)
+      details: true,
+      calendar: true,
+      studies: [],
       backgroundColor,
       gridColor,
       withdateranges: true,
       range,
-      studies: [],
     });
 
     container.appendChild(script);
