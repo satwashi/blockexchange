@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { useFilePreview } from "./_hooks/use-file-preview";
 import { useModal } from "./_hooks/useModals";
 import useSubmitKyc from "@/queries/kyc/use-submit-kyc";
+import { useFileUploadAPI } from "@/hooks/use-file-upload-api";
 
 interface KYCFormData {
   fullName: string;
@@ -61,6 +62,7 @@ const KYCVerification = () => {
   const idPhoto = useFilePreview();
   const selfie = useFilePreview();
   const previewModal = useModal();
+  const { uploadFile, isUploading } = useFileUploadAPI();
 
   const { submitKYC, isPending } = useSubmitKyc();
 
@@ -71,24 +73,44 @@ const KYCVerification = () => {
     toast("All form data has been cleared.");
   };
 
-  const onSubmit = (data: KYCFormData) => {
+  const onSubmit = async (data: KYCFormData) => {
     if (!idPhoto.file || !selfie.file) {
       toast.error("Both ID photo and selfie are required!");
       return;
     }
 
-    submitKYC({
-      fullName: data.fullName,
-      idType: data.idType,
-      idNumber: data.idNumber,
-      idPhoto: idPhoto.file,
-      selfie: selfie.file,
-    });
+    try {
+      // Upload files first
+      toast.loading("Uploading photos...", { id: "upload" });
 
-    // Optionally reset form and previews here, or inside onSuccess
-    form.reset();
-    idPhoto.clear();
-    selfie.clear();
+      const [idPhotoResult, selfieResult] = await Promise.all([
+        uploadFile(idPhoto.file, "kyc_documents", "id_photos"),
+        uploadFile(selfie.file, "kyc_documents", "selfies"),
+      ]);
+
+      toast.dismiss("upload");
+      toast.loading("Submitting KYC application...", { id: "submit" });
+
+      // Submit KYC with URLs
+      await submitKYC({
+        fullName: data.fullName,
+        idType: data.idType,
+        idNumber: data.idNumber,
+        idPhotoUrl: idPhotoResult.url,
+        selfieUrl: selfieResult.url,
+      });
+
+      toast.dismiss("submit");
+
+      // Reset form and previews
+      form.reset();
+      idPhoto.clear();
+      selfie.clear();
+    } catch (error) {
+      toast.dismiss("upload");
+      toast.dismiss("submit");
+      console.error("KYC submission failed:", error);
+    }
   };
 
   return (
@@ -257,11 +279,15 @@ const KYCVerification = () => {
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <Button disabled={isPending} type="submit" className="flex-1">
-                    {isPending ? (
+                  <Button
+                    disabled={isPending || isUploading}
+                    type="submit"
+                    className="flex-1"
+                  >
+                    {isPending || isUploading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />{" "}
-                        Submitting...
+                        {isUploading ? "Uploading..." : "Submitting..."}
                       </>
                     ) : (
                       <>
@@ -272,7 +298,7 @@ const KYCVerification = () => {
                   </Button>
 
                   <Button
-                    disabled={isPending}
+                    disabled={isPending || isUploading}
                     type="button"
                     variant="secondary"
                     onClick={clearForm}

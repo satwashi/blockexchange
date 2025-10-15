@@ -108,3 +108,31 @@ export const updateUserServer = async (userData: {
     };
   }
 };
+
+export const updateUserPasswordServer = async (
+  newPassword: string,
+  currentPassword: string
+) => {
+  try {
+    await auth.api.changePassword({
+      body: {
+        newPassword,
+        currentPassword, // required
+      },
+      headers: await headers(), // headers containing the user's session token
+    });
+
+    return {
+      success: true,
+      message: "User password updated successfully.",
+    };
+  } catch (error) {
+    const e = error as Error;
+    console.error("Failed to update user password:", e);
+
+    return {
+      success: false,
+      message: e.message || "Failed to update user password.",
+    };
+  }
+};

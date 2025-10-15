@@ -33,12 +33,14 @@ export default function ChangePasswordSetting({ user }: { user: UserType }) {
 }
 
 function ChangePasswordDialog({ user, children }: PasswordDialogProps) {
-  const { updatePassword, updateWithdrawalPassword, isUpdating } =
+  const { updatePasswordWithCurrent, updateWithdrawalPassword, isUpdating } =
     useUpdateUser();
 
   // State for login password form
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newLoginPassword, setNewLoginPassword] = useState("");
   const [confirmLoginPassword, setConfirmLoginPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
 
   // State for withdrawal password
@@ -52,16 +54,25 @@ function ChangePasswordDialog({ user, children }: PasswordDialogProps) {
     try {
       // Validate login password
       if (newLoginPassword && confirmLoginPassword) {
+        if (!currentPassword) {
+          toast.error("Current password is required");
+          return;
+        }
         if (newLoginPassword !== confirmLoginPassword) {
-          toast.error("Passwords don't match");
+          toast.error("New passwords don't match");
           return;
         }
         if (newLoginPassword.length < 8) {
-          toast.error("Password must be at least 8 characters");
+          toast.error("New password must be at least 8 characters");
           return;
         }
-        await updatePassword(newLoginPassword);
+        if (currentPassword === newLoginPassword) {
+          toast.error("New password must be different from current password");
+          return;
+        }
+        await updatePasswordWithCurrent(newLoginPassword, currentPassword);
         // Clear login password fields
+        setCurrentPassword("");
         setNewLoginPassword("");
         setConfirmLoginPassword("");
       }
@@ -91,7 +102,14 @@ function ChangePasswordDialog({ user, children }: PasswordDialogProps) {
 
         {/* Login Password Section */}
         <div className="flex flex-col space-y-2">
-          <span className="text-sm text-gray-500">Set Login Password</span>
+          <span className="text-sm text-gray-500">Change Login Password</span>
+
+          <Input
+            type={showCurrentPassword ? "text" : "password"}
+            placeholder="Current Password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+          />
 
           <Input
             type={showLogin ? "text" : "password"}
@@ -107,18 +125,32 @@ function ChangePasswordDialog({ user, children }: PasswordDialogProps) {
             onChange={(e) => setConfirmLoginPassword(e.target.value)}
           />
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowLogin(!showLogin)}
-            className="self-end hover:bg-transparent"
-          >
-            {showLogin ? (
-              <EyeOff className="w-5 h-5 text-gray-500" />
-            ) : (
-              <Eye className="w-5 h-5 text-gray-500" />
-            )}
-          </Button>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              className="hover:bg-transparent"
+            >
+              {showCurrentPassword ? (
+                <EyeOff className="w-5 h-5 text-gray-500" />
+              ) : (
+                <Eye className="w-5 h-5 text-gray-500" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowLogin(!showLogin)}
+              className="hover:bg-transparent"
+            >
+              {showLogin ? (
+                <EyeOff className="w-5 h-5 text-gray-500" />
+              ) : (
+                <Eye className="w-5 h-5 text-gray-500" />
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Withdrawal Password Section (only if exists / KYC verified) */}

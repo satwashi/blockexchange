@@ -1,7 +1,11 @@
 "use client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { updateUserServer } from "@/server/user/users";
+import {
+  updateUserServer,
+  updateUserPasswordServer,
+} from "@/server/user/users";
+import { queryClient } from "@/providers/query-provider";
 
 // Define the user update payload type based on the auth schema
 export type UserUpdatePayload = {
@@ -22,8 +26,6 @@ async function updateUserAction(userData: UserUpdatePayload) {
 }
 
 export const useUpdateUser = () => {
-  const queryClient = useQueryClient();
-
   const {
     mutateAsync: updateUser,
     isPending: isUpdating,
@@ -87,6 +89,48 @@ export const useUpdateUser = () => {
     return updateUserField("password", password);
   };
 
+  // New hook specifically for password updates with current password validation
+  const updatePasswordWithCurrent = async (
+    newPassword: string,
+    currentPassword: string
+  ) => {
+    try {
+      const result = await updateUserPasswordServer(
+        newPassword,
+        currentPassword
+      );
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      // Show success toast
+      toast.success("Password updated successfully!", {
+        description: "Your password has been changed.",
+        duration: 3000,
+      });
+
+      // Invalidate and refetch user session data
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+
+      return result;
+    } catch (error) {
+      console.error("Password update failed:", error);
+
+      // Show error toast with user-friendly message
+      toast.error("Failed to update password", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
+        duration: 4000,
+      });
+
+      throw error;
+    }
+  };
+
   const updateWithdrawalPassword = async (password: string) => {
     return updateUserField("withdrawal_password", password);
   };
@@ -103,6 +147,7 @@ export const useUpdateUser = () => {
     updateUserField,
     updateName,
     updatePassword,
+    updatePasswordWithCurrent,
     updateWithdrawalPassword,
   };
 };
