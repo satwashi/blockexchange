@@ -7,8 +7,11 @@ import { Customer } from "@/types/chat/customer";
 import useMarkChatAsRead from "@/queries/chat/use-Mark-read";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/queries/useSession";
 
 export default function AdminChatPage({ customer }: { customer?: Customer }) {
+  const { name: username } = useSession();
+
   if (!customer) {
     return (
       <div className="flex h-screen flex-col  items-center justify-center">
@@ -27,8 +30,8 @@ export default function AdminChatPage({ customer }: { customer?: Customer }) {
       <ChatHeader customer={customer} />
       <div className="flex-1 min-h-0">
         <RealtimeChat
-          roomName={`${customer.id}`} // join that user's room
-          username="test"
+          roomName={`${customer.id}`}
+          username={username} // join that user's room
         />
       </div>
     </div>

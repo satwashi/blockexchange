@@ -215,6 +215,7 @@ export function useRealtimeChat({ roomName, username }: UseRealtimeChatProps) {
 
     // subscribe to room
     newChannel.subscribe((status) => {
+      console.log("Supabase Realtime status:", status);
       if (status === "SUBSCRIBED") setIsConnected(true);
       else if (status === "CLOSED" || status === "CHANNEL_ERROR")
         setIsConnected(false);

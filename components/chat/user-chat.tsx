@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Bot } from "lucide-react";
 import { useSession } from "@/queries/useSession";
-import { useRoomChat } from "@/hooks/use-room-chat";
 
 export default function UserChat() {
   const { id: roomName, name: username } = useSession();
@@ -47,7 +46,10 @@ export default function UserChat() {
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="sm:max-w-md w-full h-[400px] flex flex-col p-0 border-0">
+        <DialogContent
+          className="sm:max-w-md w-full h-[400px] flex flex-col p-0 border-0"
+          aria-describedby={undefined}
+        >
           <DialogHeader className="p-4 pb-2 border-b">
             <DialogTitle className="flex items-center justify-between w-full">
               <span>User Support Chat</span>

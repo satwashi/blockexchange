@@ -1,11 +1,20 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Wallet, TrendingUp, Copy, CheckCircle2 } from "lucide-react";
+import {
+  Wallet,
+  TrendingUp,
+  Copy,
+  CheckCircle2,
+  ArrowDownLeft,
+  ArrowUpRight,
+  ArrowUpDown,
+} from "lucide-react";
 import { DialogTrigger } from "@/components/ui/dialog";
 
 import WithdrawDialog from "./withdraw-dialogue";
 import DepositDialog from "./deposite-dialogue";
+import ConvertDialog from "./convert-dialogue";
 
 export interface WalletData {
   id: string;
@@ -19,9 +28,10 @@ export interface WalletData {
 
 interface WalletCardProps {
   wallet: WalletData;
+  userWallets?: WalletData[];
 }
 
-export const WalletCard = ({ wallet }: WalletCardProps) => {
+export const WalletCard = ({ wallet, userWallets = [] }: WalletCardProps) => {
   const [copied, setCopied] = useState(false);
   const { wallet_type, balance, address, icon, name, change24h } = wallet;
 
@@ -102,8 +112,8 @@ export const WalletCard = ({ wallet }: WalletCardProps) => {
             </div>
           )}
 
-          {/* Deposit & Withdraw actions */}
-          <div className="flex gap-3 pt-2">
+          {/* Deposit, Withdraw & Convert actions */}
+          <div className="flex gap-2 pt-2">
             <DepositDialog
               wallet={wallet}
               icon={
@@ -115,6 +125,7 @@ export const WalletCard = ({ wallet }: WalletCardProps) => {
                   size="sm"
                   className="flex-1 hover:shadow-primary transition-smooth"
                 >
+                  <ArrowDownLeft className="h-4 w-4 mr-2" />
                   Deposit
                 </Button>
               </DialogTrigger>
@@ -126,10 +137,24 @@ export const WalletCard = ({ wallet }: WalletCardProps) => {
             >
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="flex-1">
+                  <ArrowUpRight className="h-4 w-4 mr-2" />
                   Withdraw
                 </Button>
               </DialogTrigger>
             </WithdrawDialog>
+
+            <ConvertDialog
+              wallet={wallet}
+              userWallets={userWallets}
+              icon={<img src={icon} alt={wallet_type} className="h-4 w-4" />}
+            >
+              <DialogTrigger asChild>
+                <Button variant="secondary" size="sm" className="flex-1">
+                  <ArrowUpDown className="h-4 w-4 mr-2" />
+                  Convert
+                </Button>
+              </DialogTrigger>
+            </ConvertDialog>
           </div>
         </div>
       </CardContent>

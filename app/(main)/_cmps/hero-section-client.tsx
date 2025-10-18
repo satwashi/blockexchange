@@ -175,7 +175,7 @@ export function LoggedInHeroContent({ userId }: { userId: string }) {
                     <div className="flex items-center justify-center w-8 h-8 bg-black/10 rounded-full">
                       <ArrowUpRight className="w-4 h-4" />
                     </div>
-                    <span>Deposit Now</span>
+                    <span>Deposit</span>
                   </div>
                 </Button>
               </DialogTrigger>
