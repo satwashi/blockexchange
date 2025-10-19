@@ -149,9 +149,9 @@ export const WalletCard = ({ wallet, userWallets = [] }: WalletCardProps) => {
               icon={<img src={icon} alt={wallet_type} className="h-4 w-4" />}
             >
               <DialogTrigger asChild>
-                <Button variant="secondary" size="sm" className="flex-1">
+                <Button size="sm" className="flex-1">
                   <ArrowUpDown className="h-4 w-4 mr-2" />
-                  Convert
+                  Swap
                 </Button>
               </DialogTrigger>
             </ConvertDialog>

@@ -520,7 +520,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -555,6 +555,11 @@ import useCoins from "@/queries/coins/use-coins";
 import { useSession } from "@/queries/useSession";
 import withdrawCrypto from "@/server/wallets/withdraw-crypto";
 import depositCrypto from "@/server/wallets/deposit-crypto";
+import {
+  decimalMul,
+  decimalDiv,
+  formatDecimal,
+} from "@/utils/crypto/arthimetic";
 
 const convertSchema = z.object({
   fromCoin: z.string().min(1, "Source coin is required"),
@@ -610,6 +615,24 @@ export default function ConvertDialog({
   const toCoin = form.watch("toCoin");
   const amount = form.watch("amount");
 
+  // Update form when wallet changes
+  React.useEffect(() => {
+    if (wallet_type) {
+      form.setValue("fromCoin", wallet_type);
+    }
+  }, [wallet_type, form]);
+
+  // Update selected when fromCoin changes (for wallet selection)
+  React.useEffect(() => {
+    if (!wallet && fromCoin) {
+      const walletList = wallets || [];
+      const foundWallet = walletList.find((w) => w.wallet_type === fromCoin);
+      if (foundWallet) {
+        setSelected(foundWallet);
+      }
+    }
+  }, [fromCoin, wallet, wallets]);
+
   // Get available target coins (exclude source coin)
   const availableTargetCoins = useMemo(() => {
     return SUPPORTED_COINS.filter((coin) => coin !== fromCoin);
@@ -621,45 +644,134 @@ export default function ConvertDialog({
     if (wallet && wallet.wallet_type === fromCoin) {
       return wallet;
     }
-    // Otherwise, find from userWallets
-    return userWallets.find((w) => w.wallet_type === fromCoin);
-  }, [userWallets, fromCoin, wallet]);
+    // Otherwise, find from the appropriate wallet list
+    const walletList = wallet ? userWallets : wallets || [];
+    return walletList.find((w) => w.wallet_type === fromCoin);
+  }, [userWallets, wallets, fromCoin, wallet]);
 
   // Get realtime prices
   const fromPrice = useMemo(() => {
     if (!coins || !fromCoin) return 0;
     const coinData = coins.find((c) => c.symbol === fromCoin);
-    return coinData?.price || 0;
+    let price = coinData?.price || 0;
+
+    // Fallback for USDT if price is 0 or not found
+    if (fromCoin === "USDT" && price === 0) {
+      price = 1; // USDT is typically pegged to $1
+      console.log(
+        "Applied USDT fallback price for fromCoin:",
+        fromCoin,
+        "price:",
+        price
+      );
+    }
+
+    console.log("From price debug:", {
+      fromCoin,
+      coinData,
+      price,
+      allCoins: coins.map((c) => ({ symbol: c.symbol, price: c.price })),
+    });
+
+    return price;
   }, [coins, fromCoin]);
 
   const toPrice = useMemo(() => {
     if (!coins || !toCoin) return 0;
     const coinData = coins.find((c) => c.symbol === toCoin);
-    return coinData?.price || 0;
+    let price = coinData?.price || 0;
+
+    // Fallback for USDT if price is 0 or not found
+    if (toCoin === "USDT" && price === 0) {
+      price = 1; // USDT is typically pegged to $1
+      console.log(
+        "Applied USDT fallback price for toCoin:",
+        toCoin,
+        "price:",
+        price
+      );
+    }
+
+    console.log("To price debug:", {
+      toCoin,
+      coinData,
+      price,
+      allCoins: coins.map((c) => ({ symbol: c.symbol, price: c.price })),
+    });
+
+    return price;
   }, [coins, toCoin]);
 
   // Calculate conversion
   const convertedAmount = useMemo(() => {
-    if (!amount || !fromPrice || !toPrice || fromPrice === 0 || toPrice === 0)
-      return 0;
+    if (!amount) return 0;
     const amountNum = parseFloat(amount);
     if (isNaN(amountNum) || amountNum <= 0) return 0;
 
-    // Convert to USD first, then to target coin
-    const usdValue = amountNum * fromPrice;
-    const result = usdValue / toPrice;
+    // Handle USDT case - if both coins are USDT, return the same amount
+    if (fromCoin === toCoin) return amountNum;
 
-    console.log("Conversion debug:", {
-      amount,
-      amountNum,
+    // If converting to USDT and we have a valid fromPrice, use direct conversion
+    if (toCoin === "USDT" && fromPrice > 0) {
+      const usdValue = decimalMul(amountNum, fromPrice).toNumber();
+      console.log("USDT conversion debug:", {
+        fromCoin,
+        toCoin,
+        amount,
+        amountNum,
+        fromPrice,
+        usdValue,
+      });
+      return usdValue;
+    }
+
+    // If converting from USDT and we have a valid toPrice, use direct conversion
+    if (fromCoin === "USDT" && toPrice > 0) {
+      const result = decimalDiv(amountNum, toPrice).toNumber();
+      console.log("From USDT conversion debug:", {
+        fromCoin,
+        toCoin,
+        amount,
+        amountNum,
+        toPrice,
+        result,
+      });
+      return result;
+    }
+
+    // Standard conversion: convert to USD first, then to target coin
+    if (fromPrice > 0 && toPrice > 0) {
+      const usdValue = decimalMul(amountNum, fromPrice);
+      const result = decimalDiv(usdValue, toPrice).toNumber();
+
+      console.log("Standard conversion debug:", {
+        fromCoin,
+        toCoin,
+        amount,
+        amountNum,
+        fromPrice,
+        toPrice,
+        usdValue: usdValue.toString(),
+        result,
+        rate: decimalDiv(fromPrice, toPrice).toNumber(),
+        expectedRate: `1 ${fromCoin} should equal approximately ${formatDecimal(
+          decimalDiv(fromPrice, toPrice),
+          8
+        )} ${toCoin}`,
+      });
+
+      return result;
+    }
+
+    console.log("Conversion failed - missing prices:", {
+      fromCoin,
+      toCoin,
       fromPrice,
       toPrice,
-      usdValue,
-      result,
     });
 
-    return result;
-  }, [amount, fromPrice, toPrice]);
+    return 0;
+  }, [amount, fromPrice, toPrice, fromCoin, toCoin]);
 
   // Check if user has zero balance
   const hasZeroBalance = useMemo(() => {
@@ -682,8 +794,22 @@ export default function ConvertDialog({
 
   // Check if conversion is valid
   const isValidConversion = useMemo(() => {
+    if (!amount || !fromCoin || !toCoin) return false;
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) return false;
+
+    // If converting to the same coin, it's always valid
+    if (fromCoin === toCoin) return true;
+
+    // If converting to USDT, only need fromPrice
+    if (toCoin === "USDT") return fromPrice > 0;
+
+    // If converting from USDT, only need toPrice
+    if (fromCoin === "USDT") return toPrice > 0;
+
+    // For other conversions, need both prices and valid converted amount
     return convertedAmount > 0 && fromPrice > 0 && toPrice > 0;
-  }, [convertedAmount, fromPrice, toPrice]);
+  }, [convertedAmount, fromPrice, toPrice, amount, fromCoin, toCoin]);
 
   const handleConvert = async (values: ConvertSchema) => {
     if (!userId) {
@@ -797,14 +923,27 @@ export default function ConvertDialog({
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
-    if (!open) {
+    if (open) {
+      // Reset form when dialog opens
+      const initialWallet = wallet ?? wallets?.[0];
+      const initialWalletType = initialWallet?.wallet_type ?? "";
+      form.reset({
+        fromCoin: initialWalletType,
+        toCoin: "",
+        amount: "",
+      });
+      setSelected(initialWallet);
+    } else {
       // Reset form when dialog closes
       setTimeout(() => {
+        const initialWallet = wallet ?? wallets?.[0];
+        const initialWalletType = initialWallet?.wallet_type ?? "";
         form.reset({
-          fromCoin: wallet_type,
+          fromCoin: initialWalletType,
           toCoin: "",
           amount: "",
         });
+        setSelected(initialWallet);
       }, 300);
     }
   };
@@ -826,44 +965,6 @@ export default function ConvertDialog({
             className="space-y-6"
             noValidate
           >
-            {/* Wallet chooser (only when an explicit wallet is not provided) */}
-            {wallets && wallets.length > 0 && (
-              <div className="space-y-2">
-                <FormLabel>Choose source asset</FormLabel>
-                <Select
-                  value={selected?.wallet_type}
-                  onValueChange={(val) => {
-                    const w = wallets.find((w) => w.wallet_type === val);
-                    setSelected(w);
-                    form.setValue("fromCoin", val);
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select source asset" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {wallets.map((w) => (
-                      <SelectItem key={w.wallet_type} value={w.wallet_type}>
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={`/crypto/${w.wallet_type.toUpperCase()}.png`}
-                              alt={w.wallet_type}
-                              className="h-4 w-4"
-                            />
-                            <span>{w.wallet_type}</span>
-                          </div>
-                          <span className="text-xs text-muted-foreground ml-2">
-                            {w.balance.toFixed(4)}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
             {/* From and To Selection - Side by Side */}
             <div className="grid grid-cols-2 gap-4">
               {/* Source Coin Selection */}
@@ -873,22 +974,30 @@ export default function ConvertDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>From</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={!!wallet} // Disable when wallet prop is provided
+                    >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className={wallet ? "opacity-60" : ""}>
                           <SelectValue placeholder="Select source coin" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {SUPPORTED_COINS.map((coin) => {
-                          const wallet = userWallets.find(
+                          // Use wallets array if no wallet prop, otherwise use userWallets
+                          const walletList = wallet
+                            ? userWallets
+                            : wallets || [];
+                          const walletData = walletList.find(
                             (w) => w.wallet_type === coin
                           );
                           return (
                             <SelectItem
                               key={coin}
                               value={coin}
-                              disabled={!wallet}
+                              disabled={!walletData}
                             >
                               <div className="flex items-center justify-between w-full">
                                 <div className="flex items-center gap-2">
@@ -899,9 +1008,9 @@ export default function ConvertDialog({
                                   />
                                   <span>{coin}</span>
                                 </div>
-                                {wallet && (
+                                {walletData && (
                                   <span className="text-xs text-muted-foreground ml-2">
-                                    {wallet.balance.toFixed(4)}
+                                    {formatDecimal(walletData.balance, 4)}
                                   </span>
                                 )}
                               </div>
@@ -977,7 +1086,7 @@ export default function ConvertDialog({
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-semibold">
-                      {currentBalance.toFixed(4)} {fromCoin}
+                      {formatDecimal(currentBalance, 4)} {fromCoin}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       Available
@@ -1054,15 +1163,24 @@ export default function ConvertDialog({
                   </span>
                   <span className="font-semibold">
                     {convertedAmount < 0.001
-                      ? convertedAmount.toFixed(8)
-                      : convertedAmount.toFixed(6)}{" "}
+                      ? formatDecimal(convertedAmount, 8)
+                      : formatDecimal(convertedAmount, 6)}{" "}
                     {toCoin}
                   </span>
                 </div>
-                {fromPrice > 0 && toPrice > 0 && (
+                {fromPrice > 0 && toPrice > 0 && fromCoin !== toCoin && (
                   <div className="text-xs text-muted-foreground mt-1">
-                    Rate: 1 {fromCoin} = {(toPrice / fromPrice).toFixed(8)}{" "}
-                    {toCoin}
+                    Rate: 1 {fromCoin} ={" "}
+                    {formatDecimal(decimalDiv(fromPrice, toPrice), 8)} {toCoin}
+                    {/* <div className="text-xs text-red-500 mt-1">
+                      Debug: {fromCoin} price: ${formatDecimal(fromPrice, 2)},{" "}
+                      {toCoin} price: ${formatDecimal(toPrice, 2)}
+                    </div> */}
+                  </div>
+                )}
+                {fromCoin === toCoin && (
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Same currency - 1:1 conversion
                   </div>
                 )}
               </div>
@@ -1082,7 +1200,7 @@ export default function ConvertDialog({
             {hasInsufficientBalance && !hasZeroBalance && (
               <div className="text-sm text-destructive">
                 Insufficient balance. You have{" "}
-                {currentSourceWallet?.balance.toFixed(4)} {fromCoin}
+                {formatDecimal(currentSourceWallet?.balance || 0, 4)} {fromCoin}
               </div>
             )}
 
@@ -1093,7 +1211,9 @@ export default function ConvertDialog({
                 disabled={
                   isConverting ||
                   !toCoin ||
+                  !amount ||
                   hasZeroBalance ||
+                  hasInsufficientBalance ||
                   !isValidConversion
                 }
               >
@@ -1104,6 +1224,8 @@ export default function ConvertDialog({
                   </>
                 ) : hasZeroBalance ? (
                   <>Cannot Convert - Zero Balance</>
+                ) : hasInsufficientBalance ? (
+                  <>Insufficient Balance</>
                 ) : !isValidConversion ? (
                   <>Check Conversion</>
                 ) : (
