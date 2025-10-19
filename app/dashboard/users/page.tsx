@@ -84,7 +84,7 @@ export default function Page() {
   }
 
   return (
-    <div className="w-full mt-[100px] px-8">
+    <div className="w-full mt-[100px] px-8 mb-20">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold mb-6">Users</h1>
       </div>

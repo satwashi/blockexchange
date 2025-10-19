@@ -8,9 +8,20 @@ export const useTrade = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: trade, isPending: isTrading } = useMutation({
-    mutationFn: (order: NewOrder) => goLongOrShort(order),
+    mutationFn: async (order: NewOrder) => {
+      try {
+        console.log("Starting trade with order:", order);
+        const result = await goLongOrShort(order);
+        console.log("Trade successful:", result);
+        return result;
+      } catch (error) {
+        console.error("Trade mutation error:", error);
+        throw error; // Re-throw to trigger onError
+      }
+    },
 
     onSuccess: (data) => {
+      console.log("Trade onSuccess:", data);
       if ((data as any)?.requiresKyc) {
         window.location.href = "/kyc"; // client-side redirect
         return;
@@ -20,6 +31,7 @@ export const useTrade = () => {
     },
 
     onError: (error: unknown) => {
+      console.error("Trade onError:", error);
       const message =
         error instanceof Error ? error.message : "Something went wrong.";
       toast.error(message);

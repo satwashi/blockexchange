@@ -5,6 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LogOut, MessageCircle } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import Link from "next/link";
 import { useSession } from "@/queries/useSession";
 
@@ -32,9 +38,24 @@ export default function DashBoardHeader() {
   }
 
   return (
-    <header className="h-16 z-30 border-b fixed right-0 left-0 flex items-center justify-between px-6 shadow-sm bg-secondary">
+    <header className="h-16 z-30 border-b flex items-center justify-between px-6 shadow-sm bg-secondary">
       <div className="flex items-center gap-4">
-        <SidebarTrigger />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative group">
+                <SidebarTrigger className="h-10 w-10 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200 border border-border/50 hover:border-border shadow-sm" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="bg-primary text-primary-foreground"
+            >
+              <p>Toggle Sidebar</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
       </div>
 

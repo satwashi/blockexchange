@@ -11,7 +11,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { usePathname, useRouter } from "next/navigation";
-
 import { Button } from "../../../components/ui/button";
 import {
   Home,
@@ -33,9 +32,9 @@ export function AppSidebar() {
   const getNavClass = (url: string) => {
     const isActive = pathname === url;
     return cn(
-      "flex justify-start items-center py-2 rounded-lg transition-all duration-200 p-2",
+      "flex justify-start items-center rounded-lg transition-all duration-200 h-12 px-4",
       isActive
-        ? "bg-primary text-whi shadow-lg"
+        ? "bg-primary text-white shadow-lg"
         : "text-gray-700 hover:bg-gray-100"
     );
 
@@ -93,8 +92,9 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <Button
                       variant="ghost"
-                      // type="button"
-                      className={getNavClass(item.url)}
+                      className={`w-full justify-start gap-3 ${getNavClass(
+                        item.url
+                      )}`}
                       onClick={() => router.push(item.url)}
                     >
                       <item.icon className="h-5 w-5" />
@@ -138,7 +138,7 @@ function LogoSection() {
             {user?.role ?? "user"} Panel
           </p>
         </div>
-        <SidebarTrigger />
+        {/* <SidebarTrigger /> */}
       </div>
     </div>
   );

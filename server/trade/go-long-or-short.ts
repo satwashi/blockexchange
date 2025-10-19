@@ -25,7 +25,17 @@ export default async function goLongOrShort(order: NewOrder) {
   // console.log(order.profit_range, "Profit Range....");
 
   // 2 Find USDT wallet
-  const { balance } = await getUserWallet(id);
+  let userWallet;
+  try {
+    userWallet = await getUserWallet(id);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("No wallets found")) {
+      throw new Error("USDT wallet not found. Please contact support.");
+    }
+    throw error; // Re-throw other errors
+  }
+
+  const { balance } = userWallet;
 
   if (!balance) {
     throw new Error("USDT wallet not found. Please contact support.");
