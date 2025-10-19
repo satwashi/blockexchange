@@ -560,6 +560,7 @@ import {
   decimalDiv,
   formatDecimal,
 } from "@/utils/crypto/arthimetic";
+import { queryClient } from "@/providers/query-provider";
 
 const convertSchema = z.object({
   fromCoin: z.string().min(1, "Source coin is required"),
@@ -900,7 +901,7 @@ export default function ConvertDialog({
           8
         )} ${toCoin}`
       );
-
+      queryClient.invalidateQueries({ queryKey: ["user_wallets", userId] });
       form.reset();
       setOpen(false);
     } catch (error) {
