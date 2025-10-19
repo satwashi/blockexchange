@@ -16,6 +16,7 @@ import { ProfileDialog } from "./profile-dialogue";
 import { SettingsDialog } from "./settigs-dialogu/settings-dialogue";
 import Link from "next/link";
 import { UserMenuEntry } from "./UserMenu";
+import { useImpersonation } from "@/providers/impersonate-provider";
 
 const menuItems: UserMenuEntry[] = [
   // Profile
@@ -200,28 +201,55 @@ const menuItems: UserMenuEntry[] = [
       </Link>
     ),
   },
+  {
+    type: "component",
+    render: () => <Logout />,
+  },
 
   // Logout
-  {
-    label: "Log out",
-    icon: LogOut,
-    onClick: async () => {
-      await signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            try {
-              localStorage.removeItem("impersonatedUserId");
-            } catch {}
-            queryClient.invalidateQueries({ queryKey: ["session"] });
-            if (typeof window !== "undefined") {
-              window.location.href = "/";
-            }
-          },
-        },
-      });
-    },
-    variant: "destructive" as const,
-  },
+  // {
+  //   label: "Log out",
+  //   icon: LogOut,
+  //   onClick: async () => {
+  //     await signOut({
+  //       fetchOptions: {
+  //         onSuccess: () => {
+  //           try {
+  //             localStorage.removeItem("impersonatedUserId");
+  //           } catch {}
+  //           queryClient.invalidateQueries({ queryKey: ["session"] });
+  //           if (typeof window !== "undefined") {
+  //             window.location.href = "/";
+  //           }
+  //         },
+  //       },
+  //     });
+  //   },
+  //   variant: "destructive" as const,
+  // },
 ];
 
+function Logout() {
+  const { clearLocalImpersonation } = useImpersonation();
+  return (
+    <Button
+      size="lg"
+      className="w-full justify-start p-2 gap-2 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+      onClick={async () => {
+        await signOut({
+          fetchOptions: {
+            onSuccess: () => {
+              clearLocalImpersonation();
+              window.location.href = "/";
+            },
+          },
+        });
+      }}
+      variant="outline"
+    >
+      <LogOut className="mr-2 h-4 w-4" />
+      Logout
+    </Button>
+  );
+}
 export default menuItems;
