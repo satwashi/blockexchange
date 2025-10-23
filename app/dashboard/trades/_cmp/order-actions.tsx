@@ -5,6 +5,7 @@ import { Order } from "@/types/order";
 import { ActionItem } from "../../_cmp/Generic-table";
 import Markloss from "./mark-loss";
 import MarkWin from "./mark-win";
+import ChatUser from "./chat-user";
 
 export function getRandomProfit(
   min_profit: number,
@@ -33,8 +34,9 @@ export default function getOrderActions(order: Order): ActionItem<Order>[] {
     },
     {
       label: "Message user",
-      icon: <MessageCircle className="mr-2 h-4 w-4 text-muted-foreground" />,
-      onClick: () => console.log(`Navigate to order ${order.id}`),
+      render: (order: Order) => {
+        return <ChatUser userId={order.user_id} />;
+      },
     },
   ];
 }
