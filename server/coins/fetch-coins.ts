@@ -376,8 +376,7 @@ const getFallbackData = (): CryptoData[] => {
     priceHistory: [],
   }];
 };
-//hell
-export default fetchCoins;
+ 
 const withTimeout = async (url: string, timeoutMs: number) => {
   const controller = new AbortController();
   const t = setTimeout(() => controller.abort(), timeoutMs);
