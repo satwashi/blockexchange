@@ -35,69 +35,10 @@ const generateMockPriceHistory = (currentPrice: number, change: number) => {
 
 // ✅ Optimized API fetch with multiple endpoints and better error handling
 const fetchCoins = async (): Promise<CryptoData[]> => {
-  const endpoints = [
-    "https://api.binance.com/api/v3/ticker/24hr",
-    "https://api1.binance.com/api/v3/ticker/24hr",
-    "https://api2.binance.com/api/v3/ticker/24hr",
-    "https://api3.binance.com/api/v3/ticker/24hr",
-  ];
-
-  for (let i = 0; i < endpoints.length; i++) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      const res = await fetch(endpoints[i], {
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-
-      if (!res.ok) continue;
-
-      const data = await res.json();
-
-      if (!Array.isArray(data) || data.length === 0) continue;
-
-      const coins = data
-        .filter(
-          (coin: any) =>
-            coin.symbol?.endsWith("USDT") &&
-            !coin.symbol.includes("DOWN") &&
-            !coin.symbol.includes("UP") &&
-            !coin.symbol.includes("BEAR") &&
-            !coin.symbol.includes("BULL")
-        )
-        .map((c: any, index: number) => ({
-          symbol: c.symbol.replace("USDT", ""),
-          price: parseFloat(c.lastPrice) || 0,
-          change1h: (parseFloat(c.priceChangePercent) || 0) * 0.3,
-          change24h: parseFloat(c.priceChangePercent) || 0,
-          change7d: (parseFloat(c.priceChangePercent) || 0) * 1.2,
-          volume24h:
-            (parseFloat(c.volume) || 0) * (parseFloat(c.lastPrice) || 0),
-          marketCap:
-            (parseFloat(c.volume) || 0) *
-            (parseFloat(c.lastPrice) || 0) *
-            (100 - index * 2),
-          priceHistory: generateMockPriceHistory(
-            parseFloat(c.lastPrice) || 0,
-            parseFloat(c.priceChangePercent) || 0
-          ),
-        }))
-        .filter((coin) => coin.price > 0 && coin.symbol) // Remove invalid coins
-        .sort((a, b) => b.volume24h - a.volume24h)
-        .slice(0, 100);
-
-      if (coins.length > 0) {
-        return coins;
-      }
-    } catch (error) {
-      // Continue to next endpoint
-      continue;
-    }
-  }
-
-  throw new Error("All Binance API endpoints failed");
+  const res = await fetch("/api/coins", { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to load coins");
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 };
 
 export const useCoins = () => {
@@ -129,10 +70,74 @@ export const useCoins = () => {
     refetch,
   } = useQuery({
     queryKey: ["coins"],
-    queryFn: fetchCoins,
+    queryFn: async () => {
+      let data: CryptoData[] = [];
+      try {
+        const res = await fetch("/api/coins", { cache: "no-store" });
+        if (res.ok) {
+          const j = await res.json();
+          if (Array.isArray(j)) data = j as CryptoData[];
+        }
+      } catch {}
+
+      if (data.length === 0) {
+        try {
+          const res2 = await fetch("/api/coins", { cache: "no-store" });
+          if (res2.ok) {
+            const j2 = await res2.json();
+            if (Array.isArray(j2)) data = j2 as CryptoData[];
+          }
+        } catch {}
+      }
+
+      if (data.length > 0) {
+        try {
+          localStorage.setItem(
+            "coins-cache",
+            JSON.stringify({ t: Date.now(), data })
+          );
+        } catch {}
+        return data;
+      }
+
+      const prev = (queryClient.getQueryData(["coins"]) as CryptoData[] | undefined) || [];
+      if (prev && prev.length > 0) return prev;
+
+      try {
+        const cachedRaw = localStorage.getItem("coins-cache");
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          if (cached && Array.isArray(cached.data) && cached.data.length > 0) {
+            return cached.data as CryptoData[];
+          }
+        }
+      } catch {}
+
+      return [] as CryptoData[];
+    },
     staleTime: 1000 * 10,
+    refetchInterval: (query) => {
+      const d = (query.state.data as CryptoData[] | undefined) || [];
+      return Array.isArray(d) && d.length > 0 ? 15000 : 5000;
+    },
+    refetchOnReconnect: true,
+    refetchOnWindowFocus: false,
+    networkMode: "always",
     retry: 2,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+    placeholderData: (prev) => {
+      if (prev && Array.isArray(prev) && prev.length > 0) return prev as CryptoData[];
+      try {
+        const cachedRaw = localStorage.getItem("coins-cache");
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          if (cached && Array.isArray(cached.data) && cached.data.length > 0) {
+            return cached.data as CryptoData[];
+          }
+        }
+      } catch {}
+      return prev as any;
+    },
   });
 
   // ✅ Optimized WebSocket with better reconnection logic
@@ -192,7 +197,14 @@ export const useCoins = () => {
               .slice(0, 100);
 
             if (updatedCoins.length > 0) {
-              queryClient.setQueryData(["coins"], updatedCoins);
+              const hasUSDT = updatedCoins.some((c: any) => c.symbol === "USDT");
+              let finalCoins = updatedCoins;
+              if (!hasUSDT) {
+                const prev = queryClient.getQueryData<any[]>(["coins"]) || [];
+                const prevUSDT = prev.find((c: any) => c.symbol === "USDT");
+                finalCoins = [...updatedCoins, prevUSDT || { symbol: "USDT", price: 1, change1h: 0, change24h: 0, change7d: 0, volume24h: 0, marketCap: 0, priceHistory: [] }];
+              }
+              queryClient.setQueryData(["coins"], finalCoins);
             }
           } catch (err) {
             console.error("WebSocket parse error:", err);

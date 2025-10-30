@@ -1,17 +1,16 @@
 // app/api/coins/route.ts
 import { NextResponse } from "next/server";
+import fetchCoins from "@/server/coins/fetch-coins";
 
 export async function GET() {
   try {
-    const res = await fetch("https://api.binance.com/api/v3/ticker/24hr", {
-      headers: { "User-Agent": "Mozilla/5.0" }, // optional but helps
+    const coins = await fetchCoins();
+    return NextResponse.json(coins, {
+      headers: { "Cache-Control": "public, max-age=10, s-maxage=10" },
     });
-    const data = await res.json();
-    return NextResponse.json(data);
   } catch {
-    return NextResponse.json(
-      { error: "Failed to fetch coins" },
-      { status: 500 }
-    );
+    return NextResponse.json([], {
+      headers: { "Cache-Control": "public, max-age=5, s-maxage=5" },
+    });
   }
 }
