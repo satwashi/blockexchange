@@ -436,6 +436,3 @@ const fetchCoin = async (): Promise<CryptoData[]> => {
 };
 
 export default fetchCoins;
-function fetchCoins() {
-    
-}
