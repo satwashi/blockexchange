@@ -140,6 +140,14 @@ export const useCoins = () => {
     },
   });
 
+  const coinMap = useMemo(() => {
+    const map: Record<string, CryptoData> = {};
+    for (const c of coins) map[c.symbol.toUpperCase()] = c;
+    return map;
+  }, [coins]);
+
+  const isPricesReady = coins.length > 0;
+
   // ✅ Optimized WebSocket with better reconnection logic
   useEffect(() => {
     if (typeof window === "undefined" || coins.length === 0) return;
@@ -148,6 +156,7 @@ export const useCoins = () => {
     let reconnectTimeout: NodeJS.Timeout | null = null;
     let reconnectAttempts = 0;
     const maxReconnectAttempts = 3;
+    let updateTimer: any = null;
 
     const connectWebSocket = () => {
       try {
@@ -187,10 +196,7 @@ export const useCoins = () => {
                   (parseFloat(c.v) || 0) *
                   (parseFloat(c.c) || 0) *
                   (100 - index * 2),
-                priceHistory: generateMockPriceHistory(
-                  parseFloat(c.c) || 0,
-                  parseFloat(c.P) || 0
-                ),
+                priceHistory: [],
               }))
               .filter((coin) => coin.price > 0 && coin.symbol)
               .sort((a, b) => b.volume24h - a.volume24h)
@@ -204,7 +210,10 @@ export const useCoins = () => {
                 const prevUSDT = prev.find((c: any) => c.symbol === "USDT");
                 finalCoins = [...updatedCoins, prevUSDT || { symbol: "USDT", price: 1, change1h: 0, change24h: 0, change7d: 0, volume24h: 0, marketCap: 0, priceHistory: [] }];
               }
-              queryClient.setQueryData(["coins"], finalCoins);
+              clearTimeout(updateTimer);
+              updateTimer = setTimeout(() => {
+                queryClient.setQueryData(["coins"], finalCoins);
+              }, 250);
             }
           } catch (err) {
             console.error("WebSocket parse error:", err);
@@ -231,6 +240,7 @@ export const useCoins = () => {
 
     return () => {
       reconnectTimeout && clearTimeout(reconnectTimeout);
+      updateTimer && clearTimeout(updateTimer);
       ws?.close(1000, "Component unmounting");
     };
   }, [queryClient, coins.length]);
@@ -297,11 +307,13 @@ export const useCoins = () => {
   return {
     // Data
     coins,
+    coinMap,
     filteredCoins,
     topGainers,
     top5Gainers,
     topLosers,
     favoriteCoins,
+    isPricesReady,
     popular5,
     newListings5,
 

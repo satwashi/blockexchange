@@ -260,6 +260,27 @@ const getBestEndpoints = (): string[] => {
 
 // Final enhanced fetchCoins function
 const fetchCoins = async (): Promise<CryptoData[]> => {
+  // Fast path: quick Binance attempt with short timeout, then immediate CoinGecko fallback
+  try {
+    const quickEndpoints = endpoints.slice(0, 2);
+    const controller = new AbortController();
+    const to = setTimeout(() => controller.abort(), 3000);
+    const res = await Promise.any(
+      quickEndpoints.map((u) => fetch(u, { signal: controller.signal, headers: { "User-Agent": "Mozilla/5.0" } }))
+    );
+    clearTimeout(to);
+    if (res && res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        const coins = processCoinData(data);
+        if (coins.length > 0) return coins;
+      }
+    }
+  } catch {}
+
+  const cg = await fetchFromCoinGeckoCore();
+  if (cg.length > 0) return cg;
+
   const bestEndpoints = getBestEndpoints();
   
   console.log(`Trying ${bestEndpoints.length} endpoints in order of health...`);
@@ -369,6 +390,53 @@ const getFallbackData = (): CryptoData[] => {
     marketCap: 0,
     priceHistory: [],
   }];
+};
+
+const fetchFromCoinGeckoCore = async (): Promise<CryptoData[]> => {
+  const core = ["BTC","ETH","BNB","SOL","XRP","ADA","DOGE","TRX","MATIC","LTC"];
+  const idMap: Record<string,string> = {
+    BTC: "bitcoin",
+    ETH: "ethereum",
+    BNB: "binancecoin",
+    SOL: "solana",
+    XRP: "ripple",
+    ADA: "cardano",
+    DOGE: "dogecoin",
+    TRX: "tron",
+    MATIC: "polygon",
+    LTC: "litecoin",
+  };
+  const ids = core.map((s) => idMap[s]).join(",");
+  const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`;
+  try {
+    const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+    if (!r.ok) return [];
+    const j = await r.json();
+    const coins: CryptoData[] = core
+      .map((sym) => {
+        const id = idMap[sym];
+        const p = j?.[id]?.usd;
+        const ch24 = j?.[id]?.usd_24h_change;
+        if (!p || p <= 0) return null;
+        return {
+          symbol: sym,
+          price: Number(p) || 0,
+          change1h: Number(ch24 || 0) * 0.3,
+          change24h: Number(ch24 || 0) || 0,
+          change7d: Number(ch24 || 0) * 1.2,
+          volume24h: 0,
+          marketCap: 0,
+          priceHistory: [],
+        } as CryptoData;
+      })
+      .filter(Boolean) as CryptoData[];
+    if (!coins.some((c) => c.symbol === "USDT")) {
+      coins.push({ symbol: "USDT", price: 1, change1h: 0, change24h: 0, change7d: 0, volume24h: 0, marketCap: 0, priceHistory: [] });
+    }
+    return coins;
+  } catch {
+    return [];
+  }
 };
 
 export default fetchCoins;
