@@ -15,8 +15,8 @@ export default function Page() {
         <StockMarketOverview locale="en" theme={theme as "light" | "dark"} />
       </div> */}
       <div className="w-full h-[calc(100dvh-64px-58px)] md:h-[calc(100dvh-64px)]">
-        {/* <StockMarketOverview locale="en" theme={theme as "light" | "dark"} /> */}
-        <MarketOverview />
+        {/* <StockMarketOverview  /> */}
+        <MarketOverview locale="en" theme={theme as "light" | "dark"} />
       </div>
 
       {/* <MarketOverview /> */}
