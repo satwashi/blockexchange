@@ -28,8 +28,10 @@ export function MobileBottomNav() {
   }
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur border-t bg-background">
-      <div className="flex items-center justify-around py-2">
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur border-t bg-background h-[58px] supports-[padding:max(0px)]:pb-[max(env(safe-area-inset-bottom),0px)]"
+    >
+      <div className="flex items-stretch justify-around h-full">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.path;
@@ -41,7 +43,7 @@ export function MobileBottomNav() {
               size="sm"
               asChild
               className={`
-                relative flex flex-col items-center space-y-1 h-auto py-2 px-3
+                relative flex flex-col items-center justify-center gap-0.5 h-full py-1 px-2 leading-none
                 transition-all
                 hover:text-primary     /* for desktop */
                 active:scale-95        /* for mobile tap feedback */
@@ -49,11 +51,9 @@ export function MobileBottomNav() {
               `}
             >
               <Link href={item.path}>
-                <Icon
-                  className={`h-5 w-5 ${isActive ? "text-yellow-500" : ""}`}
-                />
+                <Icon className={`h-5 w-5 ${isActive ? "text-yellow-500" : ""}`} />
                 <span
-                  className={`text-xs font-medium ${
+                  className={`text-[10px] font-medium ${
                     isActive ? "text-yellow-500" : ""
                   }`}
                 >
@@ -62,7 +62,7 @@ export function MobileBottomNav() {
 
                 {/* underline indicator for active page */}
                 {isActive && (
-                  <span className="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-yellow-500 rounded-full" />
+                  <span className="absolute -bottom-0.5 left-2 right-2 h-[2px] bg-yellow-500 rounded-full" />
                 )}
               </Link>
             </Button>

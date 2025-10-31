@@ -1,48 +1,30 @@
-"use client";
-// TradingViewWidget.tsx
-import React, { useEffect, useRef, useState, memo } from "react";
-import { useTheme } from "next-themes";
+import React, { useEffect, useRef, memo } from "react";
 
-const MarketOverview: React.FC<{ locale?: string; className?: string }> = ({
+type MarketOverviewProps = {
+  locale?: string; // Default: "en"
+  theme?: "light" | "dark"; // Default: "dark"
+};
+
+const MarketOverview: React.FC<MarketOverviewProps> = ({
   locale = "en",
-  className,
+  theme = "dark",
 }) => {
   const container = useRef<HTMLDivElement | null>(null);
-  const { theme, systemTheme } = useTheme();
-  const resolvedTheme = (theme === "system" ? systemTheme : theme) || "dark";
-  const colorTheme = resolvedTheme === "dark" ? "dark" : "light";
-
-  const [height, setHeight] = useState<number>(550);
 
   useEffect(() => {
     if (!container.current) return;
 
-    const ro = new ResizeObserver((entries) => {
-      const width = entries[0]?.contentRect.width || 400;
-      if (width < 360) setHeight(420);
-      else if (width < 640) setHeight(480);
-      else if (width < 1024) setHeight(520);
-      else setHeight(550);
-    });
-    ro.observe(container.current);
-    return () => ro.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const el = container.current;
-    if (!el) return;
-
-    el.innerHTML = "";
+    // Clear previous scripts
+    container.current.innerHTML = "";
 
     const script = document.createElement("script");
     script.src =
       "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
     script.type = "text/javascript";
     script.async = true;
-
     script.innerHTML = `
       {
-        "colorTheme": "${colorTheme}",
+        "colorTheme": "${theme}",
         "dateRange": "12M",
         "locale": "${locale}",
         "largeChartUrl": "",
@@ -105,79 +87,41 @@ const MarketOverview: React.FC<{ locale?: string; className?: string }> = ({
           {
             "title": "Crypto",
             "symbols": [
-              {
-                "s": "BINANCE:BTCUSDT",
-                "d": "BTC-USDT",
-                "base-currency-logoid": "crypto/XTVCBTC",
-                "currency-logoid": "crypto/XTVCUSDT"
-              },
-              {
-                "s": "BINANCE:ETHUSD",
-                "d": "Smart contracts & DeFi foundation.",
-                "base-currency-logoid": "crypto/XTVCETH",
-                "currency-logoid": "country/US"
-              },
-              {
-                "s": "BINANCE:BNBUSDT",
-                "d": "Binance ecosystem token.",
-                "base-currency-logoid": "crypto/XTVCBNB",
-                "currency-logoid": "crypto/XTVCUSDT"
-              },
-              {
-                "s": "OKX:SOLUSDT",
-                "d": "Fast, popular for dApps and DeFi.",
-                "base-currency-logoid": "crypto/XTVCSOL",
-                "currency-logoid": "crypto/XTVCUSDT"
-              },
-              {
-                "s": "BINANCE:XRPUSDT",
-                "d": "Banking and cross-border payments.",
-                "base-currency-logoid": "crypto/XTVCXRP",
-                "currency-logoid": "crypto/XTVCUSDT"
-              },
-              {
-                "s": "BINANCE:ADAUSDT",
-                "d": "Research-driven blockchain.",
-                "base-currency-logoid": "crypto/XTVCADA",
-                "currency-logoid": "crypto/XTVCUSDT"
-              },
-              {
-                "s": "BINANCE:DOGEUSDT",
-                "d": "Meme coin with massive popularity.",
-                "base-currency-logoid": "crypto/XTVCDOGE",
-                "currency-logoid": "crypto/XTVCUSDT"
-              },
-              {
-                "s": "BINANCE:AVAXUSDT",
-                "d": "High-speed DeFi platform.",
-                "base-currency-logoid": "crypto/XTVCAVAX",
-                "currency-logoid": "crypto/XTVCUSDT"
-              }
+              { "s": "BINANCE:BTCUSDT", "d": "BTC-USDT", "base-currency-logoid": "crypto/XTVCBTC", "currency-logoid": "crypto/XTVCUSDT" },
+              { "s": "BINANCE:ETHUSD", "d": "Smart contracts & DeFi foundation.", "base-currency-logoid": "crypto/XTVCETH", "currency-logoid": "country/US" },
+              { "s": "BINANCE:BNBUSDT", "d": "Binance ecosystem token.", "base-currency-logoid": "crypto/XTVCBNB", "currency-logoid": "crypto/XTVCUSDT" },
+              { "s": "OKX:SOLUSDT", "d": "Fast, popular for dApps and DeFi.", "base-currency-logoid": "crypto/XTVCSOL", "currency-logoid": "crypto/XTVCUSDT" },
+              { "s": "BINANCE:XRPUSDT", "d": "Banking and cross-border payments.", "base-currency-logoid": "crypto/XTVCXRP", "currency-logoid": "crypto/XTVCUSDT" },
+              { "s": "BINANCE:ADAUSDT", "d": "Research-driven blockchain.", "base-currency-logoid": "crypto/XTVCADA", "currency-logoid": "crypto/XTVCUSDT" },
+              { "s": "BINANCE:DOGEUSDT", "d": "Meme coin with massive popularity.", "base-currency-logoid": "crypto/XTVCDOGE", "currency-logoid": "crypto/XTVCUSDT" },
+              { "s": "BINANCE:AVAXUSDT", "d": "High-speed DeFi platform.", "base-currency-logoid": "crypto/XTVCAVAX", "currency-logoid": "crypto/XTVCUSDT" }
             ]
           }
         ],
         "support_host": "https://www.tradingview.com",
         "backgroundColor": "#0f0f0f",
         "width": "100%",
-        "height": "${height}",
+        "height": "100%",
         "showSymbolLogo": true,
         "showChart": true
       }`;
 
-    el.appendChild(script);
-
-    return () => {
-      el.innerHTML = "";
-    };
-  }, [colorTheme, height, locale]);
+    container.current.appendChild(script);
+  }, [locale, theme]);
 
   return (
-    <div
-      className={`tradingview-widget-container w-full min-w-0 ${className ?? ""}`}
-      ref={container}
-    >
-      <div className="tradingview-widget-container__widget" />
-      <div className="tradingview-widget-copyright"></div>
+    <div className="tradingview-widget-container" ref={container}>
+      <div className="tradingview-widget-container__widget"></div>
+      <div className="tradingview-widget-copyright">
+        {/* <a
+          href="https://www.tradingview.com/markets/"
+          rel="noopener noreferrer nofollow"
+          target="_blank"
+        >
+          <span className="blue-text">Market summary</span>
+        </a>
+        <span className="trademark"> by TradingView</span> */}
+      </div>
     </div>
   );
 };
