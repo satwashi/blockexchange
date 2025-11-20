@@ -45,8 +45,8 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
       style: "1",
       timezone: "Etc/UTC",
       locale: "en",
-      // allow_symbol_change: true,
-      allow_symbol_change: false,
+      allow_symbol_change: true,
+      // allow_symbol_change: false,
       hide_side_toolbar: false, // ✅ show drawing tools
       hide_top_toolbar: false, // ✅ show top toolbar (timeframes, settings, etc.)
       details: true,
