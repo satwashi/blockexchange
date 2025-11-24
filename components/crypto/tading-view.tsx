@@ -14,7 +14,7 @@ interface TradingViewWidgetProps {
 
 const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
   symbol = "BITSTAMP:BTCUSD",
-  theme,
+  theme = "dark",
   width = "100%",
   interval = "D",
   backgroundColor = "#0F0F0F",

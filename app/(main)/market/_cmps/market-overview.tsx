@@ -96,14 +96,24 @@ const MarketOverview: React.FC<MarketOverviewProps> = ({
               { "s": "BINANCE:DOGEUSDT", "d": "Meme coin with massive popularity.", "base-currency-logoid": "crypto/XTVCDOGE", "currency-logoid": "crypto/XTVCUSDT" },
               { "s": "BINANCE:AVAXUSDT", "d": "High-speed DeFi platform.", "base-currency-logoid": "crypto/XTVCAVAX", "currency-logoid": "crypto/XTVCUSDT" }
             ]
-          }
-,
-           {
+          },
+          {
             "title": "Metals",
             "symbols": [
-              { "s": "CAPITALCOM:GOLD", "d": "Gold", "logoid": "metal/gold", "currency-logoid": "country/US" },
-              { "s": "CAPITALCOM:SILVER", "d": "silver", "logoid": "metal/silver", "currency-logoid": "country/US" }
-            ]
+              {
+                "s": "CAPITALCOM:GOLD",
+                "d": "Gold",
+                "logoid": "metal/gold",
+                "currency-logoid": "country/US"
+              },
+              {
+                "s": "CAPITALCOM:SILVER",
+                "d": "silver",
+                "logoid": "metal/silver",
+                "currency-logoid": "country/US"
+              }
+            ],
+            "originalTitle": "Metals"
           }
         ],
         "support_host": "https://www.tradingview.com",
