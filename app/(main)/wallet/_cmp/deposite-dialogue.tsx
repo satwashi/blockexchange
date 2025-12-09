@@ -35,6 +35,9 @@ import { ArrowDownLeft, Loader2 as WalletIcon, Copy, CheckCircle2, AlertTriangle
 import { WalletData } from "./wallet-card";
 // import { toast } from "sonner";
 
+// Feature flag: Set to true when customer pays to enable network selection
+const SHOW_NETWORK_SELECTION = false;
+
 const depositSchema = z.object({
   amount: z
     .string()
@@ -195,8 +198,8 @@ export default function DepositDialog({
               </div>
             </div>
 
-            {/* Network Selection */}
-            {availableNetworks.length > 0 && (
+            {/* Network Selection - Hidden until customer pays */}
+            {SHOW_NETWORK_SELECTION && availableNetworks.length > 0 && (
               <div className="space-y-2">
                 <FormLabel>Select Network</FormLabel>
                 <Select
@@ -217,8 +220,8 @@ export default function DepositDialog({
               </div>
             )}
 
-            {/* Deposit Address */}
-            {depositAddress && (
+            {/* Deposit Address - Hidden until customer pays */}
+            {SHOW_NETWORK_SELECTION && depositAddress && (
               <div className="space-y-2">
                 <FormLabel>Deposit Address ({selectedNetwork})</FormLabel>
                 <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-border">
