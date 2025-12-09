@@ -1,20 +1,35 @@
 import useCountdown from "@/hooks/use-coutdown";
-import { Order } from "@/types/order";
+import { OrderWithUser } from "@/types/order";
 import { formatDate } from "@/utils/format";
-import { Check, X } from "lucide-react";
+import { Check, X, User } from "lucide-react";
 
 export const orderColumns = [
   {
+    key: "user",
+    label: "User",
+    render: (order: OrderWithUser) => (
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+          <User className="w-4 h-4 text-primary" />
+        </div>
+        <div className="flex flex-col">
+          <span className="font-medium text-sm">{order.user?.name || "Unknown"}</span>
+          <span className="text-xs text-muted-foreground font-mono">{order.user_id?.slice(0, 8)}...</span>
+        </div>
+      </div>
+    ),
+  },
+  {
     key: "symbol",
     label: "Pair",
-    render: (order: Order) => (
+    render: (order: OrderWithUser) => (
       <span className="font-medium">{order.symbol}</span>
     ),
   },
   {
     key: "side",
     label: "Side",
-    render: (order: Order) => (
+    render: (order: OrderWithUser) => (
       <span
         className={`font-bold ${
           order.side === "LONG" ? "text-green-600" : "text-red-600"
@@ -31,7 +46,7 @@ export const orderColumns = [
   {
     key: "time",
     label: "Time",
-    render: (order: Order) => {
+    render: (order: OrderWithUser) => {
       if (!order.time) return "--";
 
       const parts = order.time.split(":").map(Number);
@@ -64,7 +79,7 @@ export const orderColumns = [
   {
     key: "pnl",
     label: "PnL",
-    render: (order: Order) => (
+    render: (order: OrderWithUser) => (
       <span
         className={`font-medium ${
           order.pnl !== null
@@ -82,17 +97,15 @@ export const orderColumns = [
       </span>
     ),
   },
-
   {
     key: "Profit-Range",
     label: "profit-range",
-    render: (order: Order) => <span>{order.profit_range}</span>,
+    render: (order: OrderWithUser) => <span>{order.profit_range}</span>,
   },
-  ,
   {
     key: "status",
     label: "Status",
-    render: (order: Order) => (
+    render: (order: OrderWithUser) => (
       <span
         className={`capitalize font-medium ${
           order.status === "OPEN" ? "text-blue-600" : "text-gray-500"
@@ -102,11 +115,10 @@ export const orderColumns = [
       </span>
     ),
   },
-
   {
     key: "remaining",
     label: "Remaining Time",
-    render: (order: Order) => {
+    render: (order: OrderWithUser) => {
       if (!order.created_at || !order.time) return "--";
 
       // Parse duration from order.time ("mm:ss" or "hh:mm:ss")
@@ -128,11 +140,10 @@ export const orderColumns = [
       return <Remaining expiry={expiry} />;
     },
   },
-
   {
     key: "On Market",
     label: "On Market",
-    render: (order: Order) => (
+    render: (order: OrderWithUser) => (
       <span>
         {order.on_market ? (
           <Check color="green" size={16} />
@@ -142,11 +153,10 @@ export const orderColumns = [
       </span>
     ),
   },
-
   {
     key: "created_at",
     label: "Created At",
-    render: (order: Order) => <span>{formatDate(order.created_at)}</span>,
+    render: (order: OrderWithUser) => <span>{formatDate(order.created_at)}</span>,
   },
 ];
 

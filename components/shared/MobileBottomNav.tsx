@@ -1,26 +1,40 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Home, TrendingUp, BarChart3, List, Wallet } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  ArrowLeftRight,
+  BarChart3,
+  FileText,
+  Home,
+  Wallet,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-interface NavItem {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  path: string;
-}
-
-const navItems: NavItem[] = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: TrendingUp, label: "Market", path: "/market" },
-  { icon: BarChart3, label: "Trade", path: "/trading" },
-  { icon: List, label: "Orders", path: "/orders" },
-  { icon: Wallet, label: "Wallet", path: "/wallet" },
+const leftItems = [
+  { icon: Home, id: "home", label: "Home", url: "/" },
+  { icon: BarChart3, id: "market", label: "Market", url: "/market" },
 ];
+
+const rightItems = [
+  { icon: FileText, id: "orders", label: "Orders", url: "/orders" },
+  { icon: Wallet, id: "wallet", label: "Wallet", url: "/wallet" },
+];
+
+const primaryAction = {
+  icon: ArrowLeftRight,
+  id: "trade",
+  label: "Trade",
+  url: "/trading",
+};
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+
+  const isActive = (url: string) => {
+    if (url === "/") return pathname === "/";
+    return pathname.startsWith(url);
+  };
 
   // Hide mobile nav on chat pages
   if (pathname.startsWith("/chat")) {
@@ -28,46 +42,78 @@ export function MobileBottomNav() {
   }
 
   return (
-    <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur border-t bg-background h-[58px] supports-[padding:max(0px)]:pb-[max(env(safe-area-inset-bottom),0px)]"
-    >
-      <div className="flex items-stretch justify-around h-full">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.path;
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+      <div className="mx-auto max-w-md px-4 pb-4">
+        {/* Main navigation container - pill shaped */}
+        <div className="relative bg-background/95 backdrop-blur-lg rounded-full border border-border/50 shadow-xl shadow-black/30">
+          <div className="flex items-center justify-between h-14 px-4">
+            {/* Left icons */}
+            <div className="flex items-center gap-4">
+              {leftItems.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.url);
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.url}
+                    className={cn(
+                      "w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200",
+                      active
+                        ? "bg-yellow-500/15 text-yellow-500"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="h-5 w-5" strokeWidth={1.5} />
+                  </Link>
+                );
+              })}
+            </div>
 
-          return (
-            <Button
-              key={item.path}
-              variant="ghost"
-              size="sm"
-              asChild
-              className={`
-                relative flex flex-col items-center justify-center gap-0.5 h-full py-1 px-2 leading-none
-                transition-all
-                hover:text-primary     /* for desktop */
-                active:scale-95        /* for mobile tap feedback */
-                active:text-primary
-              `}
+            {/* Center spacer for the floating button */}
+            <div className="w-16" />
+
+            {/* Right icons */}
+            <div className="flex items-center gap-4">
+              {rightItems.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.url);
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.url}
+                    className={cn(
+                      "w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200",
+                      active
+                        ? "bg-yellow-500/15 text-yellow-500"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="h-5 w-5" strokeWidth={1.5} />
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Center Trade Button - Floating above */}
+          <Link
+            href={primaryAction.url}
+            className="absolute left-1/2 -translate-x-1/2 -top-5"
+          >
+            <div
+              className={cn(
+                "w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200",
+                "bg-background border-4 border-border/30 shadow-lg shadow-black/30",
+                "hover:scale-105 active:scale-95",
+                isActive(primaryAction.url)
+                  ? "text-yellow-500"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
-              <Link href={item.path}>
-                <Icon className={`h-5 w-5 ${isActive ? "text-yellow-500" : ""}`} />
-                <span
-                  className={`text-[10px] font-medium ${
-                    isActive ? "text-yellow-500" : ""
-                  }`}
-                >
-                  {item.label}
-                </span>
-
-                {/* underline indicator for active page */}
-                {isActive && (
-                  <span className="absolute -bottom-0.5 left-2 right-2 h-[2px] bg-yellow-500 rounded-full" />
-                )}
-              </Link>
-            </Button>
-          );
-        })}
+              <ArrowLeftRight className="h-6 w-6" strokeWidth={1.5} />
+            </div>
+          </Link>
+        </div>
       </div>
     </nav>
   );

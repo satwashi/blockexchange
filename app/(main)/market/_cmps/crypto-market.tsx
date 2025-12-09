@@ -15,7 +15,7 @@ export default function CryptoMarket() {
     topLosers,
     handleFavorite,
     isLoading,
-  } = useCoins();
+  } = useCoins({ realtime: true }); // Enable WebSocket for market page
 
   if (isLoading)
     return (

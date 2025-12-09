@@ -41,7 +41,12 @@ const fetchCoins = async (): Promise<CryptoData[]> => {
   return Array.isArray(data) ? data : [];
 };
 
-export const useCoins = () => {
+interface UseCoinsOptions {
+  realtime?: boolean; // Enable WebSocket for real-time updates (default: false)
+}
+
+export const useCoins = (options: UseCoinsOptions = {}) => {
+  const { realtime = false } = options;
   const queryClient = useQueryClient();
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
@@ -148,15 +153,21 @@ export const useCoins = () => {
 
   const isPricesReady = coins.length > 0;
 
-  // ✅ Optimized WebSocket with better reconnection logic
+  // ✅ Optimized WebSocket with THROTTLED updates (only when realtime=true)
   useEffect(() => {
-    if (typeof window === "undefined" || coins.length === 0) return;
+    // Skip WebSocket if realtime is disabled (use REST API polling instead)
+    if (!realtime || typeof window === "undefined" || coins.length === 0) return;
 
     let ws: WebSocket | null = null;
     let reconnectTimeout: NodeJS.Timeout | null = null;
     let reconnectAttempts = 0;
     const maxReconnectAttempts = 3;
-    let updateTimer: any = null;
+    
+    // Throttle config: update UI at most once every 5 seconds
+    const THROTTLE_MS = 5000;
+    let lastUpdateTime = 0;
+    let pendingCoins: any[] | null = null;
+    let throttleTimer: any = null;
 
     const connectWebSocket = () => {
       try {
@@ -210,10 +221,26 @@ export const useCoins = () => {
                 const prevUSDT = prev.find((c: any) => c.symbol === "USDT");
                 finalCoins = [...updatedCoins, prevUSDT || { symbol: "USDT", price: 1, change1h: 0, change24h: 0, change7d: 0, volume24h: 0, marketCap: 0, priceHistory: [] }];
               }
-              clearTimeout(updateTimer);
-              updateTimer = setTimeout(() => {
+              
+              // Throttle: only update if enough time has passed
+              const now = Date.now();
+              pendingCoins = finalCoins; // Always keep latest data
+              
+              if (now - lastUpdateTime >= THROTTLE_MS) {
+                // Enough time passed, update immediately
+                lastUpdateTime = now;
                 queryClient.setQueryData(["coins"], finalCoins);
-              }, 250);
+              } else if (!throttleTimer) {
+                // Schedule update for remaining time
+                const remainingTime = THROTTLE_MS - (now - lastUpdateTime);
+                throttleTimer = setTimeout(() => {
+                  if (pendingCoins) {
+                    lastUpdateTime = Date.now();
+                    queryClient.setQueryData(["coins"], pendingCoins);
+                  }
+                  throttleTimer = null;
+                }, remainingTime);
+              }
             }
           } catch (err) {
             console.error("WebSocket parse error:", err);
@@ -240,10 +267,10 @@ export const useCoins = () => {
 
     return () => {
       reconnectTimeout && clearTimeout(reconnectTimeout);
-      updateTimer && clearTimeout(updateTimer);
+      throttleTimer && clearTimeout(throttleTimer);
       ws?.close(1000, "Component unmounting");
     };
-  }, [queryClient, coins.length]);
+  }, [queryClient, coins.length, realtime]);
 
   // ✅ Optimized derived data with single computation
   const {

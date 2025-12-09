@@ -33,10 +33,6 @@ import {
 import useInitTransaction from "@/queries/transactions/use-init-transcation";
 import { ArrowDownLeft, Loader2 as WalletIcon, Copy, CheckCircle2, AlertTriangle } from "lucide-react";
 import { WalletData } from "./wallet-card";
-// import { toast } from "sonner";
-
-// Feature flag: Set to true when customer pays to enable network selection
-const SHOW_NETWORK_SELECTION = false;
 
 const depositSchema = z.object({
   amount: z
@@ -54,7 +50,7 @@ type DepositSchema = z.infer<typeof depositSchema>;
 
 type DepositDialogProps = {
   children: React.ReactNode;
-  wallet?: WalletData; // optional; if not provided, user selects
+  wallet?: WalletData;
   wallets?: WalletData[];
   icon?: React.ReactNode;
 };
@@ -63,7 +59,6 @@ export default function DepositDialog({
   children,
   wallet,
   wallets,
-  icon,
 }: DepositDialogProps) {
   const initial = wallet ?? wallets?.[0];
   const [selected, setSelected] = useState<WalletData | undefined>(initial);
@@ -113,12 +108,6 @@ export default function DepositDialog({
 
   const handleSubmit = (values: DepositSchema) => {
     const { amount, image } = values;
-    const formData = new FormData();
-    formData.append("wallet_type", wallet_type);
-    formData.append("amount", values.amount);
-    formData.append("transaction_type", "deposit");
-    formData.append("image", values.image[0]); // only first file
-    values.image = values.image[0];
 
     initTransaction(
       {
@@ -142,7 +131,7 @@ export default function DepositDialog({
       <DialogContent className="sm:max-w-md bg-card border-border max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2 text-foreground">
-            <ArrowDownLeft className="h-5 w-5 text-wallet-success" />
+            <ArrowDownLeft className="h-5 w-5 text-green-500" />
             <span>Deposit {wallet_type}</span>
           </DialogTitle>
         </DialogHeader>
@@ -198,8 +187,8 @@ export default function DepositDialog({
               </div>
             </div>
 
-            {/* Network Selection - Hidden until customer pays */}
-            {SHOW_NETWORK_SELECTION && availableNetworks.length > 0 && (
+            {/* Network Selection */}
+            {availableNetworks.length > 0 && (
               <div className="space-y-2">
                 <FormLabel>Select Network</FormLabel>
                 <Select
@@ -220,8 +209,8 @@ export default function DepositDialog({
               </div>
             )}
 
-            {/* Deposit Address - Hidden until customer pays */}
-            {SHOW_NETWORK_SELECTION && depositAddress && (
+            {/* Deposit Address */}
+            {depositAddress && (
               <div className="space-y-2">
                 <FormLabel>Deposit Address ({selectedNetwork})</FormLabel>
                 <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-border">
@@ -299,21 +288,15 @@ export default function DepositDialog({
             />
 
             {/* Actions */}
-            <DialogFooter className="space-x-2">
-              <Button
-                type="submit"
-                disabled={isPending}
-                onClick={() => {
-                  // Closing is handled in onSuccess callback below
-                }}
-              >
+            <DialogFooter>
+              <Button type="submit" disabled={isPending}>
                 {isPending ? (
                   <>
                     <WalletIcon className="h-4 w-4 mr-2 animate-spin" />
                     Processing...
                   </>
                 ) : (
-                  <>Confirm Deposit</>
+                  "Confirm Deposit"
                 )}
               </Button>
             </DialogFooter>

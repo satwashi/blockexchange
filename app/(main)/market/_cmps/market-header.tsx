@@ -14,7 +14,7 @@ const formatLargeNumber = (num: number) => {
 };
 
 export default function MarketHeader() {
-  const { searchTerm, setSearchTerm, marketStats, isLoading } = useCoins();
+  const { searchTerm, setSearchTerm, marketStats, isLoading } = useCoins({ realtime: true }); // Enable WebSocket for market page
 
   if (isLoading) {
     return <MarketHeaderSkeleton />;

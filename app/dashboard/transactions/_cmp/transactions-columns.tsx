@@ -1,31 +1,47 @@
-import { Transaction } from "@/types/transactions";
+import { TransactionWithUser } from "@/types/transactions";
 import { formatDate } from "@/utils/format";
-import { ClipboardIcon } from "lucide-react";
+import { ClipboardIcon, User } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
 import DepositeScreenshot from "./deposite-screenshot";
+
+const userColumn = {
+  key: "user",
+  label: "User",
+  render: (tx: TransactionWithUser) => (
+    <div className="flex items-center gap-2">
+      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+        <User className="w-4 h-4 text-primary" />
+      </div>
+      <div className="flex flex-col">
+        <span className="font-medium text-sm">{tx.user?.name || "Unknown"}</span>
+        <span className="text-xs text-muted-foreground font-mono">{tx.user_id?.slice(0, 8)}...</span>
+      </div>
+    </div>
+  ),
+};
+
 const commonColums = [
+  userColumn,
   {
     key: "id",
     label: "ID",
-    render: (tx: Transaction) => (
+    render: (tx: TransactionWithUser) => (
       <span className="text-gray-600">#{tx.id}</span>
     ),
   },
   {
     key: "amount",
     label: "Amount",
-    render: (tx: Transaction) => (
+    render: (tx: TransactionWithUser) => (
       <span className="font-medium">
         {tx.amount} {tx.wallet_type}
       </span>
     ),
   },
-
   {
     key: "status",
     label: "Status",
-    render: (tx: Transaction) => (
+    render: (tx: TransactionWithUser) => (
       <span
         className={`capitalize font-medium ${
           tx.status === "pending"
@@ -39,16 +55,15 @@ const commonColums = [
       </span>
     ),
   },
-
   {
     key: "created_at",
     label: "Created At",
-    render: (tx: Transaction) => <span>{formatDate(tx.created_at)}</span>,
+    render: (tx: TransactionWithUser) => <span>{formatDate(tx.created_at)}</span>,
   },
   {
     key: "verified_at",
     label: "Verified At",
-    render: (tx: Transaction) => (
+    render: (tx: TransactionWithUser) => (
       <span>{tx.verified_at ? formatDate(tx.verified_at) : "--"}</span>
     ),
   },
@@ -57,15 +72,14 @@ const commonColums = [
 export const withdrawColumns = [
   {
     key: "address",
-    label: "address",
-    render: (tx: Transaction) => {
+    label: "Address",
+    render: (tx: TransactionWithUser) => {
+      if (!tx.address) return "--";
       // Shorten the address for display
-      const shortAddress = `${tx.address.slice(0, 6)}...${tx.address.slice(
-        -4
-      )}`;
+      const shortAddress = `${tx.address.slice(0, 6)}...${tx.address.slice(-4)}`;
       const copyToClipboard = () => {
-        navigator.clipboard.writeText(tx.address);
-        toast.success("Address copied!"); // optional
+        navigator.clipboard.writeText(tx.address!);
+        toast.success("Address copied!");
       };
 
       return (
@@ -86,7 +100,7 @@ export const depositColumns = [
   {
     key: "image",
     label: "Image",
-    render: (tx: Transaction) => {
+    render: (tx: TransactionWithUser) => {
       return <DepositeScreenshot tx={tx} />;
     },
   },

@@ -24,3 +24,14 @@ export type Order = BaseOrder &
     pnl: number | null; // Profit/Loss (null if not closed yet)
     win_status?: "WIN" | "LOSS"; // result
   };
+
+// User info for admin views (users table only has id and name)
+export type UserInfo = {
+  id: string;
+  name: string;
+};
+
+// Order with user info for admin dashboard
+export type OrderWithUser = Order & {
+  user?: UserInfo | null;
+};

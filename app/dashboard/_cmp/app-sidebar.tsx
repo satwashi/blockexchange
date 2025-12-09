@@ -4,142 +4,93 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  // SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { usePathname, useRouter } from "next/navigation";
-import { Button } from "../../../components/ui/button";
+import { usePathname } from "next/navigation";
 import {
   Home,
   Repeat,
   Users,
   Settings,
-  CreditCard,
+  ArrowDownToLine,
+  ArrowUpFromLine,
   FileCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useSession } from "@/queries/useSession";
-import Logo from "../../../components/shared/header/logo";
+import Logo from "@/components/shared/header/logo";
+
+const navItems = [
+  { title: "Dashboard", url: "/dashboard", icon: Home },
+  { title: "Trades", url: "/dashboard/trades", icon: Repeat },
+  { title: "Users", url: "/dashboard/users", icon: Users },
+  { title: "Deposits", url: "/dashboard/transactions/deposits", icon: ArrowDownToLine },
+  { title: "Withdrawals", url: "/dashboard/transactions/withdrawals", icon: ArrowUpFromLine },
+  { title: "KYC", url: "/dashboard/kyc", icon: FileCheck },
+  { title: "Settings", url: "/dashboard/settings", icon: Settings },
+];
 
 export function AppSidebar() {
-  const router = useRouter();
   const pathname = usePathname();
 
-  const getNavClass = (url: string) => {
-    const isActive = pathname === url;
-    return cn(
-      "flex justify-start items-center rounded-lg transition-all duration-200 h-12 px-4",
-      isActive
-        ? "bg-primary text-white shadow-lg"
-        : "text-gray-700 hover:bg-gray-100"
-    );
-
-    // return "flex justify-start items-center";
+  const isActive = (url: string) => {
+    if (url === "/dashboard") return pathname === url;
+    return pathname.startsWith(url);
   };
 
-  const items = [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: Home,
-    },
-    {
-      title: "Trades",
-      url: "/dashboard/trades",
-      icon: Repeat, // better than ArrowLeftRight
-    },
-    {
-      title: "Users",
-      url: "/dashboard/users",
-      icon: Users,
-    },
-    {
-      title: "Settings",
-      url: "/dashboard/settings",
-      icon: Settings,
-    },
-    {
-      title: "Withdrawals",
-      url: "/dashboard/transactions/withdrawals",
-      icon: CreditCard,
-    },
-    {
-      title: "Deposits",
-      url: "/dashboard/transactions/deposits",
-      icon: CreditCard,
-    },
-    {
-      title: "KYC",
-      url: "/dashboard/kyc",
-      icon: FileCheck, // more relevant than CreditCard
-    },
-  ];
-
   return (
-    <Sidebar className="w-64 z-50  border-r border-gray-200 shadow-sm">
+    <Sidebar className="w-64 border-r border-border/50 bg-background">
       <SidebarContent className="p-4">
         <LogoSection />
+        
         <SidebarGroup>
-          {/* <SidebarGroupLabel>Navigation</SidebarGroupLabel> */}
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-2">
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Button
-                      variant="ghost"
-                      className={`w-full justify-start gap-3 ${getNavClass(
-                        item.url
-                      )}`}
-                      onClick={() => router.push(item.url)}
-                    >
-                      <item.icon className="h-5 w-5" />
-                      <span className="font-medium">{item.title}</span>
-                    </Button>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+            <SidebarMenu className="space-y-1">
+              {navItems.map((item) => {
+                const active = isActive(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link
+                        href={item.url}
+                        prefetch={true}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
+                          "text-sm font-medium",
+                          active
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                        )}
+                      >
+                        <item.icon className={cn("h-4 w-4", active && "text-primary-foreground")} />
+                        {item.title}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        {/* <ContactSupport /> */}
       </SidebarContent>
     </Sidebar>
   );
 }
 
-// function ContactSupport() {
-//   return (
-//     <Card className="mt-auto pt-8">
-//       <div className="p-4   ">
-//         <p className="text-sm font-medium mb-1">Need Help?</p>
-//         <p className="text-xs  mb-3">Contact our support team</p>
-//         <button className="text-xs  hover:text-primary font-medium">
-//           Get Support →
-//         </button>
-//       </div>
-//     </Card>
-//   );
-// }
-
 function LogoSection() {
   const { user } = useSession();
+  
   return (
-    <div className="mb-8">
+    <div className="mb-6 pb-4 border-b border-border/50">
       <div className="flex items-center gap-3">
         <Logo />
-        <div>
-          <p className="text-xs text-gray-500 capitalize">
-            {user?.role ?? "user"} Panel
-          </p>
-        </div>
-        {/* <SidebarTrigger /> */}
       </div>
+      <p className="text-xs text-muted-foreground mt-2 capitalize">
+        {user?.role ?? "user"} Panel
+      </p>
     </div>
   );
 }

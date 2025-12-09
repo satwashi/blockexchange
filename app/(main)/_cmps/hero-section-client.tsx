@@ -376,15 +376,6 @@ export function LoggedInHeroContent({ userId }: { userId: string }) {
   return (
     <div className="space-y-8">
       <div className="space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-2xl md:text-4xl font-bold text-yellow-400">
-            Fund Your Account
-          </h1>
-          <h2 className="text-xl md:text-3xl font-bold text-foreground">
-            and Start Trading
-          </h2>
-        </div>
-
         {/* Balance Card */}
         <div className="bg-gradient-to-br from-card/50 to-card/20 backdrop-blur-sm border border-border/50 rounded-2xl p-6 space-y-4">
           <div className="flex items-center justify-between">

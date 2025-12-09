@@ -5,15 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LogOut, MessageCircle } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import Link from "next/link";
 import { useSession } from "@/queries/useSession";
-
 import { signOut } from "@/utils/auth-client";
 import DashBoardHeaderSkeleton from "./skeletons/dashnoard-header-skeleton";
 import useChats from "@/queries/chat/use-chats";
@@ -25,83 +18,56 @@ export default function DashBoardHeader() {
 
   if (isLoading) return <DashBoardHeaderSkeleton />;
 
-  const unreadCount = totalUnreadCount;
-
   async function logout() {
     await signOut({
       fetchOptions: {
-        onSuccess: () => {
-          router.push("/");
-        },
+        onSuccess: () => router.push("/"),
       },
     });
   }
 
   return (
-    <header className="h-16 z-30 border-b flex items-center justify-between px-6 shadow-sm bg-secondary">
-      <div className="flex items-center gap-4">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="relative group">
-                <SidebarTrigger className="h-10 w-10 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200 border border-border/50 hover:border-border shadow-sm" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="bg-primary text-primary-foreground"
-            >
-              <p>Toggle Sidebar</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
+    <header className="h-14 border-b border-border/50 flex items-center justify-between px-4 bg-background/95 backdrop-blur-sm sticky top-0 z-30">
+      <div className="flex items-center gap-3">
+        <SidebarTrigger className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors rounded-lg" />
+        <h1 className="text-lg font-semibold">Dashboard</h1>
       </div>
 
-      <div className="flex items-center gap-4">
-        {/* Chat Button with Unread Badge */}
-        <div className="relative">
-          <Link href="/chat">
-            <Button variant="ghost" size="icon" aria-label="Chats">
-              <MessageCircle className="h-5 w-5 text-foreground transition-transform duration-200 hover:scale-110" />
-            </Button>
-          </Link>
-
-          {unreadCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full animate-pulse">
-              {unreadCount}
-            </span>
-          )}
-        </div>
+      <div className="flex items-center gap-2">
+        {/* Chat Button */}
+        <Link href="/chat">
+          <Button variant="ghost" size="icon" className="relative h-9 w-9">
+            <MessageCircle className="h-4 w-4" />
+            {totalUnreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full">
+                {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
+              </span>
+            )}
+          </Button>
+        </Link>
 
         {/* User Info */}
-        <div className="flex items-center gap-3">
-          <div className="text-right">
-            <p className="text-sm font-medium text-foreground">{user?.name}</p>
-            <p className="text-xs capitalize text-muted-foreground">
-              {user?.role}
-            </p>
+        <div className="flex items-center gap-2 px-2">
+          <div className="text-right hidden sm:block">
+            <p className="text-sm font-medium leading-tight">{user?.name}</p>
+            <p className="text-xs text-muted-foreground capitalize">{user?.role}</p>
           </div>
-          <Link href="/dashboard/profile">
-            <Avatar>
-              <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
-              <AvatarFallback>
-                {user?.name?.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          </Link>
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
+            <AvatarFallback className="text-xs bg-primary/10 text-primary">
+              {user?.name?.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
         </div>
 
-        {/* Logout Button */}
+        {/* Logout */}
         <Button
           variant="ghost"
           size="icon"
           onClick={logout}
-          aria-label="Logout"
-          className="text-destructive hover:text-destructive/90"
+          className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
         >
-          <LogOut className="h-5 w-5" />
+          <LogOut className="h-4 w-4" />
         </Button>
       </div>
     </header>

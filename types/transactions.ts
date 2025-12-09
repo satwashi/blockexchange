@@ -14,6 +14,17 @@ export interface Transaction {
   image?: string;
 }
 
+// User info for admin views (users table only has id and name)
+export interface UserInfo {
+  id: string;
+  name: string;
+}
+
+// Transaction with user info for admin dashboard
+export interface TransactionWithUser extends Transaction {
+  user?: UserInfo | null;
+}
+
 export interface InitTransactionParams {
   wallet_type: string;
   amount: number;

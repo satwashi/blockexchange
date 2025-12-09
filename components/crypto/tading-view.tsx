@@ -6,10 +6,8 @@ interface TradingViewWidgetProps {
   theme?: "light" | "dark";
   width?: string | number;
   interval?: string;
-  backgroundColor?: string;
-  gridColor?: string;
   range?: string;
-  onSymbolChange?: (symbol: string) => void; // <-- new
+  onSymbolChange?: (symbol: string) => void;
 }
 
 const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
@@ -17,13 +15,16 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
   theme = "dark",
   width = "100%",
   interval = "D",
-  backgroundColor = "#0F0F0F",
-  gridColor = "rgba(242, 242, 242, 0.06)",
   range = "YTD",
   onSymbolChange,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const uniqueId = useId();
+
+  // Dynamic colors based on theme
+  const isDark = theme === "dark";
+  const backgroundColor = isDark ? "#0a0a0a" : "#ffffff";
+  const gridColor = isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)";
 
   useEffect(() => {
     const container = containerRef.current;
@@ -41,14 +42,13 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
       autosize: true,
       symbol,
       interval,
-      theme,
+      theme, // TradingView's built-in theme (light/dark)
       style: "1",
       timezone: "Etc/UTC",
       locale: "en",
-      allow_symbol_change: true,
-      // allow_symbol_change: false,
-      hide_side_toolbar: false, // ✅ show drawing tools
-      hide_top_toolbar: false, // ✅ show top toolbar (timeframes, settings, etc.)
+      allow_symbol_change: false,
+      hide_side_toolbar: false,
+      hide_top_toolbar: false,
       details: true,
       calendar: true,
       studies: [],
@@ -60,7 +60,7 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
 
     container.appendChild(script);
 
-    // ✅ Listen for symbol changes via postMessage
+    // Listen for symbol changes via postMessage
     const handleMessage = (event: MessageEvent) => {
       if (typeof event.data !== "string") return;
       try {
@@ -77,15 +77,7 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
       window.removeEventListener("message", handleMessage);
       container.innerHTML = "";
     };
-  }, [
-    symbol,
-    theme,
-    interval,
-    backgroundColor,
-    gridColor,
-    range,
-    onSymbolChange,
-  ]);
+  }, [symbol, theme, interval, backgroundColor, gridColor, range, onSymbolChange]);
 
   return (
     <div
