@@ -10,7 +10,8 @@ const getUserWallets = async (userId: string): Promise<WalletData[]> => {
       `
     *,
     wallets (
-      address
+      address,
+      addresses
     )
   `
     )
@@ -29,7 +30,7 @@ const getUserWallets = async (userId: string): Promise<WalletData[]> => {
     .filter((row: any) => row.wallets !== null) // skip rows without wallets
     .map((row: any) => {
       const { wallet_type, balance, id, wallets } = row;
-      const { address } = wallets;
+      const { address, addresses } = wallets;
 
       console.log(wallets, row);
 
@@ -40,6 +41,7 @@ const getUserWallets = async (userId: string): Promise<WalletData[]> => {
         name: row.wallets!.symbol, // optional: map to friendly names
         balance,
         address,
+        addresses, // new: { "ERC20": "0x...", "TRC20": "T..." }
         change24h: 0,
         icon,
       } as WalletData;

@@ -22,6 +22,7 @@ export interface WalletData {
   name: string;
   balance: number;
   address?: string;
+  addresses?: Record<string, string>; // { "ERC20": "0x...", "TRC20": "T..." }
   change24h?: number; // 24 h % change
   icon?: string;
 }

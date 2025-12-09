@@ -2,7 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/select";
 
 import useInitTransaction from "@/queries/transactions/use-init-transcation";
-import { ArrowDownLeft, Loader2 as WalletIcon } from "lucide-react";
+import { ArrowDownLeft, Loader2 as WalletIcon, Copy, CheckCircle2, AlertTriangle } from "lucide-react";
 import { WalletData } from "./wallet-card";
 // import { toast } from "sonner";
 
@@ -68,6 +68,37 @@ export default function DepositDialog({
   const balance = selected?.balance ?? wallet?.balance ?? 0;
   const { initTransaction, isPending } = useInitTransaction();
   const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Get available networks from addresses
+  const addresses = selected?.addresses ?? wallet?.addresses;
+  const availableNetworks = useMemo(() => {
+    if (!addresses) return [];
+    return Object.keys(addresses);
+  }, [addresses]);
+
+  // Default to first network or empty
+  const [selectedNetwork, setSelectedNetwork] = useState<string>("");
+
+  // Get the deposit address for selected network
+  const depositAddress = useMemo(() => {
+    if (!addresses || !selectedNetwork) return null;
+    return addresses[selectedNetwork];
+  }, [addresses, selectedNetwork]);
+
+  // Update selected network when wallet changes
+  useEffect(() => {
+    if (availableNetworks.length > 0) {
+      setSelectedNetwork(availableNetworks[0]);
+    }
+  }, [availableNetworks]);
+
+  const handleCopyAddress = async () => {
+    if (!depositAddress) return;
+    await navigator.clipboard.writeText(depositAddress);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const form = useForm<DepositSchema>({
     resolver: zodResolver(depositSchema),
@@ -163,6 +194,60 @@ export default function DepositDialog({
                 </div>
               </div>
             </div>
+
+            {/* Network Selection */}
+            {availableNetworks.length > 0 && (
+              <div className="space-y-2">
+                <FormLabel>Select Network</FormLabel>
+                <Select
+                  value={selectedNetwork}
+                  onValueChange={setSelectedNetwork}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select network" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableNetworks.map((network) => (
+                      <SelectItem key={network} value={network}>
+                        {network}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Deposit Address */}
+            {depositAddress && (
+              <div className="space-y-2">
+                <FormLabel>Deposit Address ({selectedNetwork})</FormLabel>
+                <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-border">
+                  <code className="flex-1 text-sm font-mono break-all text-foreground">
+                    {depositAddress}
+                  </code>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleCopyAddress}
+                    className="shrink-0"
+                  >
+                    {copied ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+                <div className="flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                  <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <p className="text-xs text-amber-500">
+                    Only send {wallet_type} on the <strong>{selectedNetwork}</strong> network. 
+                    Sending on a different network may result in permanent loss of funds.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Amount */}
             <FormField
