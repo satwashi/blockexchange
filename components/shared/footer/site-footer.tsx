@@ -2,6 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Globe, Mail } from "lucide-react";
+import Link from "next/link";
 
 export default function SiteFooter() {
   return (
@@ -26,28 +27,28 @@ export default function SiteFooter() {
             <h4 className="font-semibold mb-3">Product</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a
+                <Link
                   href="/wallet"
                   className="hover:text-primary transition-colors"
                 >
                   Wallet
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/market"
                   className="hover:text-primary transition-colors"
                 >
                   Market
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/trading"
                   className="hover:text-primary transition-colors"
                 >
                   Trade
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -56,36 +57,36 @@ export default function SiteFooter() {
             <h4 className="font-semibold mb-3">Company</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a
+                <Link
                   href="/about"
                   className="hover:text-primary transition-colors"
                 >
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/careers"
                   className="hover:text-primary transition-colors"
                 >
                   Careers
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/blog"
                   className="hover:text-primary transition-colors"
                 >
                   Blog
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/news"
                   className="hover:text-primary transition-colors"
                 >
                   News
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -117,18 +118,17 @@ export default function SiteFooter() {
             © 2022 Blockechange. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <a href="/privacy" className="hover:text-primary transition-colors">
+            <Link href="/privacy" className="hover:text-primary transition-colors">
               Privacy
-            </a>
-            <a href="/terms" className="hover:text-primary transition-colors">
+            </Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">
               Terms
-            </a>
-            <a
-              href="#"
-              className="hover:text-primary transition-colors flex items-center gap-1"
+            </Link>
+            <span
+              className="hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Globe className="h-4 w-4" /> EN
-            </a>
+            </span>
           </div>
         </div>
       </div>
