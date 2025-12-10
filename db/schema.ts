@@ -1,5 +1,5 @@
 import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
-
+// helooo word
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
