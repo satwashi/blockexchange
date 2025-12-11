@@ -16,9 +16,10 @@ export default function useCountdown(targetDate: Date) {
     return () => clearInterval(interval);
   }, [targetDate]);
 
-  // Return both seconds and formatted string
+  // Return seconds, formatted string, and expired state
   return {
     seconds: remainingSeconds,
     formatted: formatDuration(remainingSeconds),
+    isExpired: remainingSeconds === 0,
   };
 }

@@ -1,18 +1,39 @@
 "use client";
-import { useSession } from "@/queries/useSession";
-import WelcomeHeader from "./_cmp/welcome-header";
 
-const DashboardOverview = () => {
+import { useSession } from "@/queries/useSession";
+import DashboardOverview from "./_cmp/dashboard-overview";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const DashboardPage = () => {
   const { user, isLoading } = useSession();
 
-  // if (user?.role !== "admin") {
-  //   router.push("/"); // redirect non-admins
-  // }
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-96" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-32 rounded-xl" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Skeleton className="h-64 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
 
-  if (isLoading) return <div>Loading...</div>;
-  if (!user) return null; // prevent rendering until session loads
+  if (!user) return null;
 
-  return <WelcomeHeader />;
+  return (
+    <div className="p-6">
+      <DashboardOverview />
+    </div>
+  );
 };
 
-export default DashboardOverview;
+export default DashboardPage;

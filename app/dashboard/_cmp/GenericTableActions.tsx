@@ -4,10 +4,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreVertical } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { ActionItem } from "./Generic-table";
+import { cn } from "@/lib/utils";
 
 interface GenericTableActionsProps<T> {
   actions: ActionItem<T>[];
@@ -18,33 +20,49 @@ export function GenericTableActions<T>({
   item,
   actions,
 }: GenericTableActionsProps<T>) {
-  return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0" aria-label="Actions">
-            <MoreVertical className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {actions.map((action, index: number) => {
-            if (action.render) {
-              // render may wrap DropdownMenuItem in DialogTrigger
-              return (
-                <DropdownMenuItem key={index}>
-                  <React.Fragment key={index}>
-                    {action.render(item)}
-                  </React.Fragment>
-                </DropdownMenuItem>
-              );
-            }
+  if (actions.length === 0) return null;
 
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-colors"
+          aria-label="Actions"
+        >
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="w-48 rounded-xl border-border/50 bg-popover/95 backdrop-blur-md shadow-xl"
+      >
+        {actions.map((action, index) => {
+          // Add separator before last item if there are multiple items
+          const showSeparator = index === actions.length - 1 && actions.length > 1;
+
+          if (action.render) {
             return (
+              <React.Fragment key={index}>
+                {showSeparator && <DropdownMenuSeparator className="bg-border/50" />}
+                <DropdownMenuItem
+                  className="rounded-lg cursor-pointer focus:bg-accent/50"
+                >
+                  {action.render(item)}
+                </DropdownMenuItem>
+              </React.Fragment>
+            );
+          }
+
+          const isDisabled = action.disabled?.(item);
+
+          return (
+            <React.Fragment key={index}>
+              {showSeparator && <DropdownMenuSeparator className="bg-border/50" />}
               <DropdownMenuItem
-                key={index}
-                disabled={action.disabled?.(item)}
+                disabled={isDisabled}
                 onSelect={(e) => {
-                  if (action.disabled?.(item)) {
+                  if (isDisabled) {
                     e.preventDefault();
                     return;
                   }
@@ -57,14 +75,21 @@ export function GenericTableActions<T>({
                     action.onClick?.(item);
                   }
                 }}
+                className={cn(
+                  "rounded-lg cursor-pointer transition-colors",
+                  "focus:bg-accent/50",
+                  isDisabled && "opacity-50 cursor-not-allowed"
+                )}
               >
-                {action.icon && <span className="mr-2">{action.icon}</span>}
-                {action.label}
+                {action.icon && (
+                  <span className="mr-2 text-muted-foreground">{action.icon}</span>
+                )}
+                <span className="text-sm">{action.label}</span>
               </DropdownMenuItem>
-            );
-          })}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+            </React.Fragment>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

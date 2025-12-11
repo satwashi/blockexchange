@@ -34,11 +34,6 @@ const getTradingViewSymbol = (symbol: string): string => {
   }
 };
 
-// Get clean symbol for the form (e.g., "BTCUSD" -> "BTC")
-const getFormSymbol = (symbol: string): string => {
-  return symbol.replace(/USD$/, "");
-};
-
 export default function TradingPage() {
   const { symbol } = useParams<{ symbol: string }>();
   const { resolvedTheme } = useTheme();
@@ -51,7 +46,6 @@ export default function TradingPage() {
   
   const currentSymbol = symbol || "BTCUSD";
   const tradingViewSymbol = getTradingViewSymbol(currentSymbol);
-  const formSymbol = getFormSymbol(currentSymbol);
   
   // Only use theme after mounted to avoid hydration mismatch
   const chartTheme = mounted && resolvedTheme === "light" ? "light" : "dark";
@@ -85,7 +79,7 @@ export default function TradingPage() {
 
         {/* --- Trading Form Section --- */}
         <div className="w-full md:w-1/3">
-          <TradingForm symbol={formSymbol} />
+          <TradingForm symbol={currentSymbol} />
         </div>
       </div>
     </div>

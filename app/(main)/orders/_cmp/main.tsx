@@ -18,18 +18,18 @@ export default function Main({ user_id }: { user_id: string }) {
         </TabsList>
 
         <TabsContent value="all">
-          {isLoading ? <OrdersSkeleton /> : <OrdersList orders={orders} />}
+          {isLoading ? <OrdersSkeleton /> : <OrdersList orders={orders} filter="all" />}
         </TabsContent>
 
         <TabsContent value="open">
-          {isLoading ? <OrdersSkeleton /> : <OrdersList orders={openOrders} />}
+          {isLoading ? <OrdersSkeleton /> : <OrdersList orders={openOrders} filter="open" />}
         </TabsContent>
 
         <TabsContent value="closed">
           {isLoading ? (
             <OrdersSkeleton />
           ) : (
-            <OrdersList orders={closedOrders} />
+            <OrdersList orders={closedOrders} filter="closed" />
           )}
         </TabsContent>
       </Tabs>

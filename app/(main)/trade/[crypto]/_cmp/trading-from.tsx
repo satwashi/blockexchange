@@ -102,7 +102,7 @@ export default function TradingForm({ symbol }: { symbol: string }) {
       time: time.toString(),
       amount,
       side,
-      symbol: `${symbol.toUpperCase()}-USDT`,
+      symbol: symbol.toUpperCase(),
       status: "OPEN",
       profit_range: `${profit_range.min_profit}-${profit_range.max_profit}`,
       on_market: !close_market,
