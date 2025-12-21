@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import CoinList from "./coin-list";
 import useCoins from "@/queries/coins/use-coins";
@@ -6,8 +7,15 @@ import Link from "next/link";
 import CoinListSkeleton from "../skeletons/coin-list";
 
 export default function CoinShowCase() {
+  const [mounted, setMounted] = useState(false);
   const { popular5, newListings5, isLoading, top5Gainers } = useCoins();
-  if (isLoading) return <CoinListSkeleton />;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || isLoading) return <CoinListSkeleton />;
+
   return (
     <div className="space-y-4">
       <Tabs defaultValue="popular" className="w-full">

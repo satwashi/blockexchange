@@ -12,3 +12,12 @@ export interface Kyc {
   verified_at: string | null; // ISO date string
   created_at: string; // when the record was created
 }
+
+export interface KycUser {
+  id: string;
+  name: string;
+}
+
+export interface KycWithUser extends Kyc {
+  user: KycUser | null;
+}

@@ -1,12 +1,20 @@
 "use server";
 
 import supabaseAdmin from "@/lib/supabaseAdmin";
-import { Kyc } from "@/types/kyc/kyc";
+import { KycWithUser } from "@/types/kyc/kyc";
 
-export async function getKycs(): Promise<Kyc[]> {
+export async function getKycs(): Promise<KycWithUser[]> {
   const { data, error } = await supabaseAdmin
     .from("kyc_verifications")
-    .select("*")
+    .select(
+      `
+      *,
+      user:user_id (
+        id,
+        name
+      )
+    `
+    )
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -14,5 +22,5 @@ export async function getKycs(): Promise<Kyc[]> {
     throw new Error("Failed to fetch KYCs");
   }
 
-  return data as Kyc[];
+  return data as KycWithUser[];
 }

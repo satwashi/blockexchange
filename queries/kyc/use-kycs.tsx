@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import supabase from "@/lib/client";
 
-import { Kyc } from "@/types/kyc/kyc";
+import { KycWithUser } from "@/types/kyc/kyc";
 import { getKycs } from "@/server/kyc/get-kycs";
 
 export const useKycs = () => {
@@ -13,7 +13,7 @@ export const useKycs = () => {
     data: kycs,
     isLoading,
     error,
-  } = useQuery<Kyc[]>({
+  } = useQuery<KycWithUser[]>({
     queryKey: ["kycs"],
     queryFn: getKycs, // no need to unwrap
   });
