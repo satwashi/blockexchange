@@ -88,7 +88,7 @@ export function LoginForm({
               </div>
               <section className="flex items-center justify-center">
                 <div className="flex flex-col items-center justify-center gap-4">
-                  <TelegramLogin className="w-[300px] flex items-center justify-center gap-2" />
+                  {/* <TelegramLogin className="w-[300px] flex items-center justify-center gap-2" /> */}
                   <GoogleLogin className="w-[300px] flex items-center justify-center gap-2" />
                 </div>
               </section>
