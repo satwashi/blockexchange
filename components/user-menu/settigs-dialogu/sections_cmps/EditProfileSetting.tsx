@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Save, Loader2, Pencil, X, ChevronRight } from "lucide-react";
+import { User, Save, Loader2, Pencil, X } from "lucide-react";
 import { ReactNode, useState } from "react";
 import {
   Dialog,

@@ -9,7 +9,6 @@ import {
   Settings,
   LayoutDashboard,
 } from "lucide-react";
-import { queryClient } from "@/providers/query-provider";
 import { signOut } from "@/utils/auth-client";
 import { Button } from "@/components/ui/button";
 import { ProfileDialog } from "./profile-dialogue";

@@ -56,9 +56,9 @@ const getIconPath = (symbol: string, name: string, type: string): string => {
 };
 
 // Get display symbol (e.g., "BTCUSD" -> "BTC")
-const getDisplaySymbol = (symbol: string): string => {
-  return symbol.replace(/USD$/, "");
-};
+// const getDisplaySymbol = (symbol: string): string => {
+//   return symbol.replace(/USD$/, "");
+// };
 
 // Get full pair display (e.g., "BTCUSD" -> "BTC/USD", "EURUSD" -> "EUR/USD")
 const getFullPairDisplay = (symbol: string): string => {

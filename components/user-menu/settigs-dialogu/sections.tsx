@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
 import type { UserType } from "@/types/user";
-import { Palette, FileCheck } from "lucide-react";
+ 
 
 import EditProfileSetting from "./sections_cmps/EditProfileSetting";
 import ChangePasswordSetting from "./sections_cmps/changePassword";
 
 import EmailAlertsSetting from "./sections_cmps/EmailAlertsSetting";
 import SMSAlertsSetting from "./sections_cmps/SMSAlertsSetting";
-import ContactSupportSetting from "./sections_cmps/ContactSupportSetting";
+ 
 import KycStatusSetting from "./sections_cmps/KycStatusSettings";
 import ThemeSelection from "./sections_cmps/themeSelection";
 

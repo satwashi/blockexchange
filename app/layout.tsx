@@ -10,6 +10,8 @@ import QueryProvider from "@/providers/query-provider";
 import { ImpersonationProvider } from "@/providers/impersonate-provider";
 import ImpersonationAlert from "@/components/impersonation-alert";
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "Blockechange";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,29 +23,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Blockechange – Secure & Simple Digital Asset Exchange",
+  title: `${appName} – Secure & Simple Digital Asset Exchange`,
   description:
-    "Blockechange is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.",
+    `${appName} is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.`,
   openGraph: {
     type: "website",
     url: getWebsiteUrl(),
-    title: "Blockechange – Secure & Simple Digital Asset Exchange",
+    title: `${appName} – Secure & Simple Digital Asset Exchange`,
     description:
-      "Blockechange is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.",
+      `${appName} is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.`,
     images: [
       {
         url: `${getWebsiteUrl().replace(/\/$/, "")}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "Blockechange logo",
+        alt: `${appName} logo`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blockechange – Secure & Simple Digital Asset Exchange",
+    title: `${appName} – Secure & Simple Digital Asset Exchange`,
     description:
-      "Blockechange is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.",
+      `${appName} is a secure and user-friendly platform for trading and exchanging digital assets, built to make blockchain technology accessible to everyone.`,
     images: [`${getWebsiteUrl().replace(/\/$/, "")}/og-image.png`],
   },
 };

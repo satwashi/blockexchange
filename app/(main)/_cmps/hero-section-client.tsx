@@ -306,6 +306,8 @@ import DepositDialog from "../wallet/_cmp/deposite-dialogue";
 import ConvertDialog from "../wallet/_cmp/convert-dialogue";
 import { DialogTrigger } from "@/components/ui/dialog";
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "Blockechange";
+
 export function HeroSectionClient() {
   return (
     <section className="relative overflow-hidden">
@@ -557,7 +559,7 @@ function NoSessionHeroSectionContent() {
         </h1>
         <p className="text-muted-foreground max-w-xl">
           Low fees, lightning-fast execution, and security-first design. Join
-          Blockechange and start your journey today.
+          {appName} and start your journey today.
         </p>
 
         <div className="flex flex-wrap gap-3">

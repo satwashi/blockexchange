@@ -1,5 +1,7 @@
 import { email } from "@/lib/site";
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "Blockechange";
+
 export default function TermsPage() {
   return (
     <div className="container mx-auto px-4 py-10">
@@ -9,7 +11,7 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="text-muted-foreground mt-2 max-w-2xl">
-            These Terms govern your use of Blockechange. By accessing or using
+            These Terms govern your use of {appName}. By accessing or using
             the platform, you agree to these Terms.
           </p>
         </div>

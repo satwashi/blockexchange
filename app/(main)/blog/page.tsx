@@ -2,20 +2,22 @@
 
 import { useMemo, useState } from "react";
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "Blockechange";
+
 export default function BlogPage() {
   const posts = [
     {
       id: "launch-announcement",
-      title: "Blockechange Beta Launch",
+      title: `${appName} Beta Launch`,
       date: "2025-08-15",
       excerpt:
-        "We are excited to announce the beta launch of Blockechange — a fast, secure, and user-first crypto exchange.",
+        `We are excited to announce the beta launch of ${appName} — a fast, secure, and user-first crypto exchange.`,
       content:
         "Today we are opening our beta to early users. Expect low-latency order placement, robust security, and a clean UX. Sign up, give us feedback, and help shape the roadmap!",
     },
     {
       id: "security-update",
-      title: "Security at Blockechange",
+      title: `Security at ${appName}`,
       date: "2025-09-01",
       excerpt:
         "An overview of our multi-layer security model, custody practices, and continuous monitoring.",

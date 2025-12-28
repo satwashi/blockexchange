@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Hexagon } from "lucide-react";
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "Blockechange";
+
 export default function Logo() {
   return (
     <Link
@@ -21,7 +23,7 @@ export default function Logo() {
       
       <div className="flex flex-col">
         <span className="text-lg font-bold tracking-tight text-foreground leading-none">
-          Blocke<span className="text-yellow-500">change</span>
+          {appName}
         </span>
         <span className="text-[10px] text-muted-foreground font-medium tracking-wider uppercase hidden sm:block">
           Trade Smart

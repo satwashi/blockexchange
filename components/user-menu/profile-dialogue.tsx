@@ -37,12 +37,12 @@ export function ProfileDialog({
     if (error) return <div>Error: {error.message}</div>;
   }
   // Normalize field names between session user (camelCase) and UserType (snake_case)
-  const emailVerified =
-    (user as any).emailVerified ?? (user as any).email_verified;
-  const banReason = (user as any).banReason ?? (user as any).ban_reason;
-  const banExpires = (user as any).banExpires ?? (user as any).ban_expires;
-  const createdAt = (user as any).createdAt ?? (user as any).created_at;
-  const updatedAt = (user as any).updatedAt ?? (user as any).updated_at;
+  // const emailVerified =
+  //   (user as any).emailVerified ?? (user as any).email_verified;
+  // const banReason = (user as any).banReason ?? (user as any).ban_reason;
+  // const banExpires = (user as any).banExpires ?? (user as any).ban_expires;
+  // const createdAt = (user as any).createdAt ?? (user as any).created_at;
+  // const updatedAt = (user as any).updatedAt ?? (user as any).updated_at;
   const getInitials = (name: string) => {
     return name
       .split(" ")

@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Globe, Mail } from "lucide-react";
 import Link from "next/link";
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "Blockechange";
+
 export default function SiteFooter() {
   return (
     <footer className="py-12 border-t">
@@ -13,7 +15,7 @@ export default function SiteFooter() {
             <div className="flex items-center gap-2 mb-4">
               <div className="h-8 w-8 rounded bg-primary" />
               <span className="text-xl font-bold text-primary">
-                Blockechange
+                {appName}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -115,7 +117,7 @@ export default function SiteFooter() {
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t pt-6 md:flex-row">
           <p className="text-xs text-muted-foreground">
-            © 2022 Blockechange. All rights reserved.
+            © 2022 {appName}. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <Link href="/privacy" className="hover:text-primary transition-colors">
