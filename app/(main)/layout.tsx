@@ -1,7 +1,7 @@
 import { Header } from "@/components/shared/header/Header";
 
 import SiteFooter from "@/components/shared/footer/site-footer";
-import { DomainChangeAlert } from "@/components/domain-change-alert";
+
 
 export default function layout({
   children,
