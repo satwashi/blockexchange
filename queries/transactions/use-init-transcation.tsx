@@ -10,6 +10,7 @@ import {
 } from "@/types/transactions";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { compressImage } from "@/lib/image-compression";
 
 interface InitTransactionParamsLocal {
   wallet_type: string;
@@ -36,7 +37,8 @@ const useInitTransaction = () => {
         address,
       };
       if (image) {
-        const { publicUrl } = await uploadDepositPhoto(image);
+        const compressedImage = await compressImage(image);
+        const { publicUrl } = await uploadDepositPhoto(compressedImage);
         data_.image = publicUrl;
       }
 

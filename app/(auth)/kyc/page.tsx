@@ -220,6 +220,7 @@ const KYCVerification = () => {
                       <FileUpload
                         label="Upload ID Photo"
                         required
+                        maxSize={30}
                         onFileSelect={(file) => {
                           field.onChange(file);
                           idPhoto.handleFileSelect(file);
@@ -252,6 +253,7 @@ const KYCVerification = () => {
                       <FileUpload
                         label="Upload Selfie"
                         required
+                        maxSize={30}
                         onFileSelect={(file) => {
                           field.onChange(file);
                           selfie.handleFileSelect(file);

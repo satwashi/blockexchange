@@ -1,4 +1,6 @@
 "use client";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { UserType } from "@/types/user";
 import { Ban, Eye, Key, Mail, ShieldX, Trash, User } from "lucide-react";
 import UsersSkeleton from "./_cmps/skeletons/users-skeleton";
@@ -20,9 +22,12 @@ import { useImpersonation } from "@/providers/impersonate-provider";
 // };
 
 export default function Page() {
-  const { users, isLoading, error } = useListUsers({
-    page: 1,
-    limit: 40,
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
+  const { users, isLoading, error, totalPages, total } = useListUsers({
+    page,
+    limit,
   });
 
   const { impersonateUser } = useImpersonation();
@@ -95,6 +100,32 @@ export default function Page() {
           columns={userColumns}
           actions={getUserActions}
         />
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          Showing {(page - 1) * limit + 1} to{" "}
+          {Math.min(page * limit, total)} of {total} users
+        </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

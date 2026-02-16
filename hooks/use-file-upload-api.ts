@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { compressImage } from "@/lib/image-compression";
 
 interface UploadResult {
   url: string;
@@ -20,8 +21,10 @@ export function useFileUploadAPI() {
     setUploadProgress(0);
 
     try {
+      const compressedFile = await compressImage(file);
+
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", compressedFile);
       formData.append("bucket", bucket);
       if (folder) {
         formData.append("folder", folder);

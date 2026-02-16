@@ -36,7 +36,7 @@ export const auth = betterAuth({
           const { id } = user;
           console.log(
             id,
-            "idddddddddddddddddddddddddddddddddddddddd , new use cominng"
+            "idddddddddddddddddddddddddddddddddddddddd , new use cominng",
           );
 
           await syncUser({ id, name: user.name });
