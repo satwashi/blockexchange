@@ -37,6 +37,10 @@ export default function NewsSection() {
     return <div className="text-red-500 text-center">Failed to load news.</div>;
   }
 
+  if (news) {
+    return;
+  }
+
   return (
     <section className="py-8 md:py-12">
       <div className="max-w-7xl mx-auto px-4 md:px-6">

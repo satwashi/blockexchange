@@ -20,9 +20,9 @@ async function SessionAwareLanding() {
   const isLoggedIn = Boolean(session);
   const userVerified = Boolean(
     session?.user?.verified === "verified" ||
-      session?.user?.verified === true ||
-      session?.user?.kyc_status === "verified" ||
-      session?.user?.kyc_status === "approved"
+    session?.user?.verified === true ||
+    session?.user?.kyc_status === "verified" ||
+    session?.user?.kyc_status === "approved",
   );
   return (
     <>
