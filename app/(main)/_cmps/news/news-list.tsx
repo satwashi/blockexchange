@@ -37,10 +37,6 @@ export default function NewsSection() {
     return <div className="text-red-500 text-center">Failed to load news.</div>;
   }
 
-  if (news) {
-    return;
-  }
-
   return (
     <section className="py-8 md:py-12">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -61,7 +57,7 @@ export default function NewsSection() {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center md:justify-items-stretch">
-          {news?.slice(0, 6).map((article, index) => (
+          {Array.isArray(news) && news.slice(0, 6).map((article, index) => (
             <div key={index} className="w-full max-w-md md:max-w-none px-2">
               <NewsCard article={article} />
             </div>
