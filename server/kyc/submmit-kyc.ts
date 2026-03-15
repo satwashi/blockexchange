@@ -25,6 +25,30 @@ export async function submitKYC({
   if (!user_id) throw new Error("Please login");
 
   try {
+    // Check for recent submissions (48h cooldown)
+    const { data: lastKyc, error: checkError } = await supabaseAdmin
+      .from("kyc_verifications")
+      .select("created_at, kyc_status")
+      .eq("user_id", user_id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (checkError) throw checkError;
+
+    if (lastKyc) {
+      const lastCreated = new Date(lastKyc.created_at).getTime();
+      const now = Date.now();
+      const COOLDOWN_MS = 48 * 60 * 60 * 1000;
+
+      if (now - lastCreated < COOLDOWN_MS && lastKyc.kyc_status === "pending") {
+        return {
+          success: false,
+          error: "A recent application is already being processed. Please wait 48 hours.",
+        };
+      }
+    }
+
     // Insert KYC record with the provided URLs
     const { data, error } = await supabaseAdmin
       .from("kyc_verifications")

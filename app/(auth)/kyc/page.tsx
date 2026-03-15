@@ -33,6 +33,9 @@ import { useFilePreview } from "./_hooks/use-file-preview";
 import { useModal } from "./_hooks/useModals";
 import useSubmitKyc from "@/queries/kyc/use-submit-kyc";
 import { useFileUploadAPI } from "@/hooks/use-file-upload-api";
+import { useSession } from "@/queries/useSession";
+import { useMyKyc } from "@/queries/kyc/use-my-kyc";
+import { useEffect, useState } from "react";
 
 interface KYCFormData {
   fullName: string;
@@ -48,7 +51,14 @@ const idTypes = [
   { value: "national_id", label: "National ID" },
 ];
 
+const COOLDOWN_HOURS = 48;
+const COOLDOWN_MS = COOLDOWN_HOURS * 60 * 60 * 1000;
+
 const KYCVerification = () => {
+  const { user, isLoading: isSessionLoading } = useSession();
+  const { status, isLoading: isKycLoading } = useMyKyc(user?.id);
+  const [cooldownTimeRemaining, setCooldownTimeRemaining] = useState<string | null>(null);
+
   const form = useForm<KYCFormData>({
     defaultValues: {
       fullName: "",
@@ -65,6 +75,29 @@ const KYCVerification = () => {
   const { uploadFile, isUploading } = useFileUploadAPI();
 
   const { submitKYC, isPending } = useSubmitKyc();
+
+  useEffect(() => {
+    const checkCooldown = () => {
+      const lastSubmission = localStorage.getItem("kyc_last_submission");
+      if (lastSubmission) {
+        const elapsed = Date.now() - parseInt(lastSubmission);
+        if (elapsed < COOLDOWN_MS) {
+          const remainingArr = COOLDOWN_MS - elapsed;
+          const hours = Math.floor(remainingArr / (60 * 60 * 1000));
+          const minutes = Math.floor((remainingArr % (60 * 60 * 1000)) / (60 * 1000));
+          setCooldownTimeRemaining(`${hours}h ${minutes}m`);
+          return;
+        }
+      }
+      setCooldownTimeRemaining(null);
+    };
+
+    checkCooldown();
+    const interval = setInterval(checkCooldown, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const isLocked = status === "pending" || !!cooldownTimeRemaining;
 
   const clearForm = () => {
     form.reset();
@@ -135,13 +168,50 @@ const KYCVerification = () => {
               <span>Identity Verification</span>
             </CardTitle>
             <CardDescription>
-              Please provide accurate information and clear photos for quick
-              processing.
+              {isLocked
+                ? "Your identity verification is being processed."
+                : "Please provide accurate information and clear photos for quick processing."}
             </CardDescription>
           </CardHeader>
 
           <CardContent>
-            <Form {...form}>
+            {isSessionLoading || isKycLoading ? (
+              <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                <Loader2 className="w-12 h-12 text-primary animate-spin" />
+                <p className="text-muted-foreground">Checking verification status...</p>
+              </div>
+            ) : isLocked ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center space-y-6">
+                <div className="bg-primary/10 p-4 rounded-full">
+                  <RotateCcw className="w-12 h-12 text-primary animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">Verification in Progress</h3>
+                  <p className="text-muted-foreground max-w-sm">
+                    {status === "pending"
+                      ? "Your application is currently under review by our team. This process typically takes 24-48 hours."
+                      : "You recently submitted an application. Please wait for the cooldown period to end before trying again."}
+                  </p>
+                </div>
+
+                {cooldownTimeRemaining && (
+                  <div className="bg-secondary/50 px-4 py-2 rounded-lg">
+                    <p className="text-sm font-medium">
+                      Cooldown ends in: <span className="text-primary">{cooldownTimeRemaining}</span>
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  variant="outline"
+                  onClick={() => router.back()}
+                  className="mt-4"
+                >
+                  Back to Dashboard
+                </Button>
+              </div>
+            ) : (
+              <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
@@ -311,6 +381,7 @@ const KYCVerification = () => {
                 </div>
               </form>
             </Form>
+            )}
           </CardContent>
         </Card>
 

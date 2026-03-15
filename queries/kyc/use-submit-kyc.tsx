@@ -16,6 +16,7 @@ export default function useSubmitKyc() {
 
     onSuccess: (data) => {
       if (data.success) {
+        localStorage.setItem("kyc_last_submission", Date.now().toString());
         toast.success(
           "KYC submitted successfully! Verification might take 24-48h."
         );

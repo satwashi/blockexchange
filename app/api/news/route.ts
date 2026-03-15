@@ -19,7 +19,9 @@ export async function GET() {
   }
 
   try {
-    const apiKey = process.env.NEWSDATA_API_KEY;
+    const apiKey =
+      process.env.NEWSDATA_API_KEY ||
+      process.env.NEXT_PUBLIC_NEWSDATA_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
         { error: "NEWSDATA_API_KEY is not configured on the server" },
@@ -29,6 +31,7 @@ export async function GET() {
 
     const url = new URL("https://newsdata.io/api/1/latest");
     url.searchParams.append("language", "en");
+    url.searchParams.append("q", "cryptocurrency OR bitcoin OR ethereum OR blockchain");
     url.searchParams.append("apikey", apiKey);
 
     const res = await fetch(url.toString());
