@@ -36,6 +36,9 @@ import { useFileUploadAPI } from "@/hooks/use-file-upload-api";
 import { useSession } from "@/queries/useSession";
 import { useMyKyc } from "@/queries/kyc/use-my-kyc";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+ 
 
 interface KYCFormData {
   fullName: string;
@@ -57,6 +60,8 @@ const COOLDOWN_MS = COOLDOWN_HOURS * 60 * 60 * 1000;
 const KYCVerification = () => {
   const { user, isLoading: isSessionLoading } = useSession();
   const { status, isLoading: isKycLoading } = useMyKyc(user?.id);
+
+  const router=useRouter()
   const [cooldownTimeRemaining, setCooldownTimeRemaining] = useState<string | null>(null);
 
   const form = useForm<KYCFormData>({
@@ -207,7 +212,7 @@ const KYCVerification = () => {
                   onClick={() => router.back()}
                   className="mt-4"
                 >
-                  Back to Dashboard
+                  Back to Home
                 </Button>
               </div>
             ) : (
