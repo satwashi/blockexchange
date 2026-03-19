@@ -17,7 +17,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatDistance } from "date-fns";
+import { format } from "date-fns";
 
 export default function Main() {
   const { transactions, deposits, withdrawals, isLoading, error } =
@@ -198,9 +198,7 @@ function TransactionCard({ tx }: { tx: Transaction }) {
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Clock className="w-3 h-3" />
             <span>
-              {formatDistance(new Date(tx.created_at), new Date(), {
-                addSuffix: true,
-              })}
+              {format(new Date(tx.created_at), "PPP p")}
             </span>
           </div>
         </div>
