@@ -31,7 +31,6 @@ export async function storeMessage(
     finalSenderId = sessionResult.id;
   }
 
-  console.log(finalSenderId, "sender id");
   if (!finalSenderId) throw new Error("Unauthorized");
 
   const { data, error } = await supabaseAdmin.from("messages").insert({

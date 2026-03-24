@@ -47,7 +47,7 @@ export function useTelegramHiddenWidget({
       "iframe"
     ) as HTMLIFrameElement | null;
 
-    console.log("iframe", iframe);
+
     if (!iframe) {
       console.warn("Telegram iframe not found yet");
       return;

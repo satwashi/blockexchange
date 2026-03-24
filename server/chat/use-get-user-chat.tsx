@@ -13,6 +13,7 @@ export async function getMessagesForUser(userId: string) {
       `
     id,
     content,
+    image_url,
     created_at,
     room_id,
     sender:users!messages_sender_id_fkey (
@@ -29,7 +30,7 @@ export async function getMessagesForUser(userId: string) {
     throw new Error("Failed to load messages");
   }
 
-  console.log("data,.................", data);
+
 
   return data;
 }

@@ -12,6 +12,7 @@ export const useRoomsMessages = (roomName: string) => {
       const transformedMessages: ChatMessage[] = response.map((msg: any) => ({
         id: msg.id,
         content: msg.content,
+        imageUrl: msg.image_url ?? undefined,
         user: { name: msg.sender?.name ?? "Unknown" },
         createdAt: msg.created_at,
       }));

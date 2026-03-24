@@ -48,7 +48,6 @@ const fetchChats = async (): Promise<Chat[]> => {
 
   if (error) throw new Error(error.message);
 
-  console.log(data);
 
   return data.map((chat) => ({
     id: chat.id,
