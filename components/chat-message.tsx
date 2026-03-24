@@ -39,13 +39,23 @@ export const ChatMessageItem = ({
         )}
         <div
           className={cn(
-            "py-2 px-3 rounded-xl text-sm w-fit",
+            "flex flex-col gap-2 rounded-xl text-sm w-fit overflow-hidden",
+            (message.content || !message.imageUrl) ? "py-2 px-3" : "py-1 px-1",
             isOwnMessage
               ? "bg-primary text-primary-foreground"
               : "bg-muted text-foreground"
           )}
         >
-          {message.content}
+          {message.imageUrl && (
+            <a href={message.imageUrl} target="_blank" rel="noreferrer">
+              <img 
+                src={message.imageUrl} 
+                alt="Attachment" 
+                className="max-h-60 max-w-full rounded-md object-contain cursor-pointer transition-opacity hover:opacity-90" 
+              />
+            </a>
+          )}
+          {message.content && <span>{message.content}</span>}
         </div>
       </div>
     </div>

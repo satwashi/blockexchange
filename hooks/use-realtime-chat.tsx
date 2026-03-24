@@ -149,6 +149,7 @@ interface UseRealtimeChatProps {
 export interface ChatMessage {
   id: string;
   content: string;
+  imageUrl?: string;
   user: {
     name: string;
   };
@@ -248,12 +249,13 @@ export function useRealtimeChat({ roomName, username }: UseRealtimeChatProps) {
 
   // send chat message with optimistic UI + broadcast first, then store
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, imageUrl?: string) => {
       if (!isConnected || !channel) return;
 
       const message: ChatMessage = {
         id: crypto.randomUUID(),
         content,
+        imageUrl,
         user: { name: username },
         createdAt: new Date().toISOString(),
       };

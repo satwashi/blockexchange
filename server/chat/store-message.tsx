@@ -5,6 +5,7 @@ import { getServerSession } from "../user/users";
 export interface ChatMessage {
   id: string;
   content: string;
+  imageUrl?: string;
   user: {
     name: string; // userId in your setup
   };
@@ -37,6 +38,7 @@ export async function storeMessage(
     room_id: roomId,
     sender_id: finalSenderId,
     content: message.content,
+    image_url: message.imageUrl,
     created_at: message.createdAt,
   });
 
