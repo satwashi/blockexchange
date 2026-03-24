@@ -47,13 +47,11 @@ export const ChatMessageItem = ({
           )}
         >
           {message.imageUrl && (
-            <a href={message.imageUrl} target="_blank" rel="noreferrer">
-              <img 
-                src={message.imageUrl} 
-                alt="Attachment" 
-                className="max-h-60 max-w-full rounded-md object-contain cursor-pointer transition-opacity hover:opacity-90" 
-              />
-            </a>
+            <img
+              src={message.imageUrl}
+              alt="Attachment"
+              className="max-h-60 max-w-full rounded-md object-contain"
+            />
           )}
           {message.content && <span>{message.content}</span>}
         </div>
